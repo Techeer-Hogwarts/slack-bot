@@ -53,12 +53,11 @@ func TriggerEvent(w http.ResponseWriter, r *http.Request) {
 	var payload struct {
 		Message string `json:"message"`
 	}
-
+	log.Print("Payload: ", payload)
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
 	api := slack.New(botToken)
 
 	_, _, err := api.PostMessage(channelID, slack.MsgOptionText(payload.Message, false))
@@ -67,7 +66,7 @@ func TriggerEvent(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
+	log.Println("Message sent: ", payload.Message)
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "Message sent: %s", payload.Message)
 	log.Println("Trigger event processed successfully")
