@@ -40,41 +40,50 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleBlockActions(payload slack.InteractionCallback) {
-	log.Println(payload.Value)
 	log.Println(payload.View)
-	for _, action := range payload.ActionCallback.BlockActions {
-		log.Printf("Received action ID: %s", action.ActionID)
-		// Handle different block types
-		switch action.Type {
-		case "input":
-			// Assuming you have a form submission action
-			// For input blocks, you might have to check the parent view's state
-			// Note: Slack does not include input block data directly in block actions
-			// You might need to refer to `payload.View.State.Values` for input data
-			// See below for handling values in `payload.View.State.Values`
+	// for _, action := range payload.ActionCallback.BlockActions {
+	// 	log.Printf("Received action ID: %s", action.ActionID)
+	// 	// Handle different block types
+	// 	switch action.Type {
+	// 	case "input":
+	// 		// Assuming you have a form submission action
+	// 		// For input blocks, you might have to check the parent view's state
+	// 		// Note: Slack does not include input block data directly in block actions
+	// 		// You might need to refer to `payload.View.State.Values` for input data
+	// 		// See below for handling values in `payload.View.State.Values`
 
-		case "static_select":
-			// Handle static select (dropdown)
-			log.Printf("Selected option value: %s", action.SelectedOption.Value)
+	// 	case "static_select":
+	// 		// Handle static select (dropdown)
+	// 		log.Printf("Selected option value: %s", action.SelectedOption.Value)
 
-		case "multi_static_select":
-			// Handle multi-static select
-			if action.SelectedOptions != nil {
-				for _, option := range action.SelectedOptions {
-					log.Printf("Selected option value: %s", option.Value)
-				}
-			}
+	// 	case "multi_static_select":
+	// 		// Handle multi-static select
+	// 		if action.SelectedOptions != nil {
+	// 			for _, option := range action.SelectedOptions {
+	// 				log.Printf("Selected option value: %s", option.Value)
+	// 			}
+	// 		}
 
-		default:
-			// Log any unhandled block types
-			log.Printf("Unhandled block type: %s", action.Type)
-		}
-	}
+	// 	default:
+	// 		// Log any unhandled block types
+	// 		log.Printf("Unhandled block type: %s", action.Type)
+	// 	}
+	// }
 
 	// Handle values from input blocks in the view's state
 	for blockID, actionValues := range payload.View.State.Values {
 		for actionID, blockAction := range actionValues {
-			log.Printf("Block ID: %s, Action ID: %s, Value: %s", blockID, actionID, blockAction.Value)
+			if blockID == "tech_stack_block" {
+				log.Printf("Block ID: %s, Action ID: %s, Value: %v, Type: %v", blockID, actionID, blockAction.SelectedOptions, blockAction.Type)
+			}
+			if blockID == "current_members_block" {
+				log.Printf("Block ID: %s, Action ID: %s, Value: %v, Type: %v", blockID, actionID, blockAction.SelectedUsers, blockAction.Type)
+			}
+			if actionID == "rich_text_input-action" {
+				log.Printf("Block ID: %s, Action ID: %s, Value: %v, Type: %v", blockID, actionID, blockAction.Text, blockAction.Type)
+			} else {
+				log.Printf("Block ID: %s, Action ID: %s, Value: %v, Type: %v", blockID, actionID, blockAction.Text, blockAction.Type)
+			}
 		}
 	}
 }
