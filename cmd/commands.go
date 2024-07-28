@@ -9,6 +9,7 @@ import (
 )
 
 func SendHelloWorld(w http.ResponseWriter, r *http.Request) {
+	log.Println("Received a request to the root path")
 	w.Write([]byte("Hello, World!"))
 }
 
