@@ -7,6 +7,10 @@ import (
 	"github.com/slack-go/slack"
 )
 
+func SendHelloWorld(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Hello, World!"))
+}
+
 func HandleSlashCommand(w http.ResponseWriter, r *http.Request) {
 	if err := VerifySlackRequest(r); err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
