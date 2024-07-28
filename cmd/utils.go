@@ -3,7 +3,6 @@ package cmd
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -47,28 +46,39 @@ func VerifySlackRequest(req *http.Request) error {
 	return nil
 }
 
+func getChannelMessages(api *slack.Client, channelID string) ([]slack.Message, error) {
+	var messages []slack.Message
+	historyParams := slack.GetConversationHistoryParameters{
+		ChannelID: channelID,
+		Limit:     100, // Adjust the limit as needed
+	}
+
+	history, err := api.GetConversationHistory(&historyParams)
+	if err != nil {
+		return nil, err
+	}
+
+	messages = append(messages, history.Messages...)
+	return messages, nil
+}
+
 func TriggerEvent(w http.ResponseWriter, r *http.Request) {
 	log.Println("Received a trigger event request")
 
-	var payload struct {
-		Message string `json:"message"`
-	}
-	log.Print("Payload: ", payload)
-	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	log.Println("body: ", r.Body)
 	api := slack.New(botToken)
-
-	_, _, err := api.PostMessage(channelID, slack.MsgOptionText(payload.Message, false))
+	messages, err := getChannelMessages(api, channelID)
 	if err != nil {
-		log.Printf("Failed posting message: %v", err)
+		log.Printf("Failed to retrieve messages: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	log.Println("Message sent: ", payload.Message)
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Message sent: %s", payload.Message)
+	log.Println(messages)
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(messages); err != nil {
+		log.Printf("Failed to encode messages: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	log.Println("Trigger event processed successfully")
 }
