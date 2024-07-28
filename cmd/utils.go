@@ -20,7 +20,7 @@ func init() {
 	LoadEnv()
 	signingKey = GetEnv("SLACK_SIGNING_SECRET", "")
 	botToken = GetEnv("SLACK_BOT_TOKEN", "")
-	channelID = GetEnv("SLACK_CHANNEL_ID", "")
+	channelID = GetEnv("CHANNEL_ID", "")
 }
 
 func VerifySlackRequest(req *http.Request) error {
