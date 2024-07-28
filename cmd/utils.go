@@ -49,7 +49,7 @@ func VerifySlackRequest(req *http.Request) error {
 func getChannelMessages(api *slack.Client, channelID string) ([]slack.Message, error) {
 	var messages []slack.Message
 	historyParams := slack.GetConversationHistoryParameters{
-		ChannelID: channelID,
+		ChannelID: "#bot-testing",
 		Limit:     100, // Adjust the limit as needed
 	}
 
