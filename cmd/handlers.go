@@ -14,28 +14,32 @@ func SendHelloWorld(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleInteraction(w http.ResponseWriter, r *http.Request) {
-	if err := VerifySlackRequest(r); err != nil {
-		log.Printf("Failed to verify request: %v", err)
-		http.Error(w, "Unauthorized request", http.StatusUnauthorized)
-		return
-	}
-
-	log.Println("Received an interaction payload")
-	log.Println(r.Body)
-	var payload slack.InteractionCallback
-	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
-		log.Printf("Failed to decode interaction payload: %v", err)
+	// Parse the form data
+	if err := r.ParseForm(); err != nil {
+		log.Printf("Failed to parse form data: %v", err)
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
 
-	if payload.Type == slack.InteractionTypeBlockActions {
-		handleBlockActions(payload)
-	} else {
-		log.Printf("Unhandled interaction type: %s", payload.Type)
+	// Extract the payload from the form data
+	payloadStr := r.FormValue("payload")
+	if payloadStr == "" {
+		log.Println("Payload not found in form data")
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		return
 	}
 
-	w.WriteHeader(http.StatusOK)
+	// Decode the JSON payload
+	var payload slack.InteractionCallback
+	if err := json.Unmarshal([]byte(payloadStr), &payload); err != nil {
+		log.Printf("Failed to decode interaction payload: %v", err)
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		return
+	}
+	// Process the payload as needed
+	log.Printf("Received payload: %+v", payload)
+
+	handleBlockActions(payload)
 }
 
 func handleBlockActions(payload slack.InteractionCallback) {
