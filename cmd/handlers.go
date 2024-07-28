@@ -36,25 +36,46 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
-	// Process the payload as needed
-	log.Printf("Received payload: %+v", payload)
-
 	handleBlockActions(payload)
 }
 
 func handleBlockActions(payload slack.InteractionCallback) {
+	log.Println(payload.Value)
+	log.Println(payload.View)
 	for _, action := range payload.ActionCallback.BlockActions {
-		log.Printf("Received action ID: %s, Received action Value: %s", action.ActionID, action.Value)
-		// 	switch action.ActionID {
-		// 	case "name_input":
-		// 		log.Printf("Name: %s", action.Value)
-		// 	case "email_input":
-		// 		log.Printf("Email: %s", action.Value)
-		// 	case "team_select":
-		// 		log.Printf("Selected Team: %s", action.SelectedOption.Value)
-		// 	default:
-		// 		log.Printf("Unhandled action ID: %s", action.ActionID)
-		// 	}
+		log.Printf("Received action ID: %s", action.ActionID)
+		// Handle different block types
+		switch action.Type {
+		case "input":
+			// Assuming you have a form submission action
+			// For input blocks, you might have to check the parent view's state
+			// Note: Slack does not include input block data directly in block actions
+			// You might need to refer to `payload.View.State.Values` for input data
+			// See below for handling values in `payload.View.State.Values`
+
+		case "static_select":
+			// Handle static select (dropdown)
+			log.Printf("Selected option value: %s", action.SelectedOption.Value)
+
+		case "multi_static_select":
+			// Handle multi-static select
+			if action.SelectedOptions != nil {
+				for _, option := range action.SelectedOptions {
+					log.Printf("Selected option value: %s", option.Value)
+				}
+			}
+
+		default:
+			// Log any unhandled block types
+			log.Printf("Unhandled block type: %s", action.Type)
+		}
+	}
+
+	// Handle values from input blocks in the view's state
+	for blockID, actionValues := range payload.View.State.Values {
+		for actionID, blockAction := range actionValues {
+			log.Printf("Block ID: %s, Action ID: %s, Value: %s", blockID, actionID, blockAction.Value)
+		}
 	}
 }
 
