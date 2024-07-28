@@ -1,0 +1,426 @@
+{
+    "type": "modal",
+    "title": {
+        "type": "plain_text",
+        "text": "Recruitment Form"
+    },
+    "callback_id": "recruitment_form",
+    "blocks": [
+        {
+            "type": "input",
+            "element": {
+                "type": "rich_text_input",
+                "action_id": "rich_text_input-action"
+            },
+            "label": {
+                "type": "plain_text",
+                "text": "소개",
+                "emoji": true
+            }
+        },
+        {
+            "type": "input",
+            "block_id": "team_name_block",
+            "label": {
+                "type": "plain_text",
+                "text": "팀 이름"
+            },
+            "element": {
+                "type": "plain_text_input",
+                "action_id": "team_name"
+            }
+        },
+        {
+            "type": "input",
+            "element": {
+                "type": "checkboxes",
+                "options": [
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "UX/UI Designer",
+                            "emoji": true
+                        },
+                        "value": "uxui"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Frontend Developer",
+                            "emoji": true
+                        },
+                        "value": "frontend"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Backend Developer",
+                            "emoji": true
+                        },
+                        "value": "backend"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Data Engineer",
+                            "emoji": true
+                        },
+                        "value": "data"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "OPS/SRE",
+                            "emoji": true
+                        },
+                        "value": "devops"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "스터디",
+                            "emoji": true
+                        },
+                        "value": "etc"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "기타",
+                            "emoji": true
+                        },
+                        "value": "etc"
+                    }
+                ],
+                "action_id": "checkboxes-action"
+            },
+            "label": {
+                "type": "plain_text",
+                "text": "구하는 직군",
+                "emoji": true
+            }
+        },
+        {
+            "type": "input",
+            "element": {
+                "type": "multi_static_select",
+                "placeholder": {
+                    "type": "plain_text",
+                    "text": "Select options",
+                    "emoji": true
+                },
+                "options": [
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "없음",
+                            "emoji": true
+                        },
+                        "value": "none"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "React.js",
+                            "emoji": true
+                        },
+                        "value": "react"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Vue.js",
+                            "emoji": true
+                        },
+                        "value": "vue"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Next.js",
+                            "emoji": true
+                        },
+                        "value": "next"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "SvelteKit",
+                            "emoji": true
+                        },
+                        "value": "svelte"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Angular",
+                            "emoji": true
+                        },
+                        "value": "angular"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Django",
+                            "emoji": true
+                        },
+                        "value": "django"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Flask",
+                            "emoji": true
+                        },
+                        "value": "flask"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Ruby on Rails",
+                            "emoji": true
+                        },
+                        "value": "rails"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Spring Boot",
+                            "emoji": true
+                        },
+                        "value": "spring"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Express.js",
+                            "emoji": true
+                        },
+                        "value": "express"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Laravel",
+                            "emoji": true
+                        },
+                        "value": "laravel"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "S3/Cloud Storage",
+                            "emoji": true
+                        },
+                        "value": "s3"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Go Lang",
+                            "emoji": true
+                        },
+                        "value": "go"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "AI/ML (Tensorflow, PyTorch)",
+                            "emoji": true
+                        },
+                        "value": "ai"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Kubernetes",
+                            "emoji": true
+                        },
+                        "value": "kubernetes"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Jenkins CI",
+                            "emoji": true
+                        },
+                        "value": "jenkins"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Github Actions",
+                            "emoji": true
+                        },
+                        "value": "actions"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Spinnaker",
+                            "emoji": true
+                        },
+                        "value": "spin"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Graphite",
+                            "emoji": true
+                        },
+                        "value": "grahpite"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Kafka",
+                            "emoji": true
+                        },
+                        "value": "kafka"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Docker",
+                            "emoji": true
+                        },
+                        "value": "docker"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Ansible",
+                            "emoji": true
+                        },
+                        "value": "ansible"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Terraform",
+                            "emoji": true
+                        },
+                        "value": "terraform"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "FastAPI",
+                            "emoji": true
+                        },
+                        "value": "fast"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Redis",
+                            "emoji": true
+                        },
+                        "value": "redis"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "RabbitMQ",
+                            "emoji": true
+                        },
+                        "value": "rabbit"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "MSA",
+                            "emoji": true
+                        },
+                        "value": "msa"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Java",
+                            "emoji": true
+                        },
+                        "value": "java"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Python",
+                            "emoji": true
+                        },
+                        "value": "python"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "JS/TS",
+                            "emoji": true
+                        },
+                        "value": "jsts"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "C++",
+                            "emoji": true
+                        },
+                        "value": "cpp"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "C#",
+                            "emoji": true
+                        },
+                        "value": "csh"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Ruby",
+                            "emoji": true
+                        },
+                        "value": "ruby"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "PHP",
+                            "emoji": true
+                        },
+                        "value": "php"
+                    },
+                    {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Go",
+                            "emoji": true
+                        },
+                        "value": "go"
+                    }
+                ],
+                "action_id": "multi_static_select-action"
+            },
+            "label": {
+                "type": "plain_text",
+                "text": "스킬/기술"
+            }
+        },
+        {
+            "type": "input",
+            "element": {
+                "type": "plain_text_input",
+                "multiline": true,
+                "action_id": "multiline_input-action"
+            },
+            "label": {
+                "type": "plain_text",
+                "text": "기타"
+            }
+        }
+    ],
+    "submit": {
+        "type": "plain_text",
+        "text": "제출"
+    }
+}
