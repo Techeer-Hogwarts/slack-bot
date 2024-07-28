@@ -10,7 +10,6 @@ import (
 func main() {
 	http.HandleFunc("/slack/commands", cmd.HandleSlashCommand)
 	http.HandleFunc("/trigger_event", cmd.TriggerEvent)
-	http.HandleFunc("/list_channels", cmd.ListChannels)
 	http.HandleFunc("/", cmd.SendHelloWorld)
 
 	log.Println("Server started on :3000")
