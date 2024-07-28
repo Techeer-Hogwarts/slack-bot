@@ -19,5 +19,6 @@ func GetEnv(key string, defaultVal string) string {
 	if !found {
 		return defaultVal
 	}
+	log.Printf("env %s: found \n", key)
 	return value
 }
