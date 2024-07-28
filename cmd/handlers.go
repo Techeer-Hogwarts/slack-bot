@@ -27,7 +27,7 @@ func HandleSlashCommand(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
-
+	log.Println("Received a request to the slash command path")
 	if request.Command == "/구인" {
 		OpenRecruitmentModal(w, request.TriggerID)
 		return
