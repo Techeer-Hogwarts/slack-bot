@@ -6,15 +6,21 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/slack-go/slack"
 )
 
+func init() {
+	LoadEnv()
+	signingKey = GetEnv("SLACK_SIGNING_SECRET", "")
+	botToken = GetEnv("SLACK_BOT_TOKEN", "")
+	channelID = GetEnv("SLACK_CHANNEL_ID", "")
+}
+
 var (
-	signingKey = os.Getenv("SLACK_SIGNING_SECRET")
-	botToken   = os.Getenv("SLACK_BOT_TOKEN")
-	channelID  = os.Getenv("CHANNEL_ID")
+	signingKey string
+	botToken   string
+	channelID  string
 )
 
 func VerifySlackRequest(req *http.Request) error {
