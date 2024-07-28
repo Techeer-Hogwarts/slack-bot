@@ -1,0 +1,117 @@
+{
+    "e1jRa": {
+      "rich_text_input-action": {
+        "type": "rich_text_input",
+        "rich_text_value": {
+          "type": "rich_text",
+          "elements": [
+            {
+              "type": "rich_text_section",
+              "elements": [
+                {
+                  "type": "text",
+                  "text": "d"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "team_name_block": {
+      "team_name": {
+        "type": "plain_text_input",
+        "value": "d"
+      }
+    },
+    "+pXPS": {
+      "checkboxes-action": {
+        "type": "checkboxes",
+        "selected_options": [
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "UX/UI Designer",
+              "emoji": true
+            },
+            "value": "uxui"
+          }
+        ]
+      }
+    },
+    "OoXr4": {
+      "multi_static_select-action": {
+        "type": "multi_static_select",
+        "selected_options": [
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "Django",
+              "emoji": true
+            },
+            "value": "django"
+          },
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "React.js",
+              "emoji": true
+            },
+            "value": "react"
+          }
+        ]
+      }
+    },
+    "zu0kY": {
+      "multi_users_select-action": {
+        "type": "multi_users_select",
+        "selected_users": [
+          "U02AES3BH17"
+        ]
+      }
+    },
+    "num_members_block": {
+      "num_members": {
+        "type": "plain_text_input",
+        "value": "1"
+      }
+    },
+    "4m5I2": {
+      "rich_text_input-action": {
+        "type": "rich_text_input",
+        "rich_text_value": {
+          "type": "rich_text",
+          "elements": [
+            {
+              "type": "rich_text_section",
+              "elements": [
+                {
+                  "type": "text",
+                  "text": "d"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "S77Oq": {
+      "rich_text_input-action": {
+        "type": "rich_text_input",
+        "rich_text_value": {
+          "type": "rich_text",
+          "elements": [
+            {
+              "type": "rich_text_section",
+              "elements": [
+                {
+                  "type": "text",
+                  "text": "d"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
