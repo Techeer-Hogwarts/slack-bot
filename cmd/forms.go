@@ -20,7 +20,6 @@ func OpenRecruitmentModal(w http.ResponseWriter, triggerID string) {
 		return
 	}
 
-	// Open the modal
 	_, err = api.OpenView(triggerID, modal)
 	if err != nil {
 		log.Printf("Failed to open modal: %v", err)

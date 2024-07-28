@@ -1,8 +1,11 @@
 package cmd
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
+
+	"github.com/slack-go/slack"
 )
 
 func SendHelloWorld(w http.ResponseWriter, r *http.Request) {
@@ -10,28 +13,47 @@ func SendHelloWorld(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Hello, World!"))
 }
 
-// func HandleSlashCommand(w http.ResponseWriter, r *http.Request) {
-// 	if err := VerifySlackRequest(r); err != nil {
-// 		log.Printf("Invalid request: %v", err)
-// 		http.Error(w, "Invalid request", http.StatusBadRequest)
-// 		return
-// 	}
+func HandleInteraction(w http.ResponseWriter, r *http.Request) {
+	if err := VerifySlackRequest(r); err != nil {
+		log.Printf("Failed to verify request: %v", err)
+		http.Error(w, "Unauthorized request", http.StatusUnauthorized)
+		return
+	}
 
-// 	var request slack.SlashCommand
-// 	log.Println(r.Body)
-// 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-// 		log.Printf("Failed to decode request body: %v", err)
-// 		http.Error(w, "Invalid request body", http.StatusBadRequest)
-// 		return
-// 	}
-// 	log.Println("Received a request to the slash command path")
-// 	if request.Command == "/구인" {
-// 		OpenRecruitmentModal(w, request.TriggerID)
-// 		return
-// 	}
+	log.Println("Received an interaction payload")
+	log.Println(r.Body)
+	var payload slack.InteractionCallback
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+		log.Printf("Failed to decode interaction payload: %v", err)
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		return
+	}
 
-//		w.WriteHeader(http.StatusOK)
-//	}
+	if payload.Type == slack.InteractionTypeBlockActions {
+		handleBlockActions(payload)
+	} else {
+		log.Printf("Unhandled interaction type: %s", payload.Type)
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func handleBlockActions(payload slack.InteractionCallback) {
+	for _, action := range payload.ActionCallback.BlockActions {
+		log.Printf("Received action ID: %s, Received action Value: %s", action.ActionID, action.Value)
+		// 	switch action.ActionID {
+		// 	case "name_input":
+		// 		log.Printf("Name: %s", action.Value)
+		// 	case "email_input":
+		// 		log.Printf("Email: %s", action.Value)
+		// 	case "team_select":
+		// 		log.Printf("Selected Team: %s", action.SelectedOption.Value)
+		// 	default:
+		// 		log.Printf("Unhandled action ID: %s", action.ActionID)
+		// 	}
+	}
+}
+
 func HandleSlashCommand(w http.ResponseWriter, r *http.Request) {
 	if err := VerifySlackRequest(r); err != nil {
 		log.Printf("Invalid request: %v", err)
