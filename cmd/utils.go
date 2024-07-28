@@ -58,6 +58,7 @@ func TriggerEvent(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	log.Println("body: ", r.Body)
 	api := slack.New(botToken)
 
 	_, _, err := api.PostMessage(channelID, slack.MsgOptionText(payload.Message, false))
