@@ -46,11 +46,11 @@ func VerifySlackRequest(req *http.Request) error {
 	return nil
 }
 
-func getChannelMessages(api *slack.Client, channelID string) ([]slack.Message, error) {
-	var messages []slack.Message
+func getChannelMessages(api *slack.Client, channelID string) ([]string, error) {
+	var messageTexts []string
 	historyParams := slack.GetConversationHistoryParameters{
 		ChannelID: channelID,
-		Limit:     100, // Adjust the limit as needed
+		Limit:     100,
 	}
 
 	history, err := api.GetConversationHistory(&historyParams)
@@ -58,8 +58,10 @@ func getChannelMessages(api *slack.Client, channelID string) ([]slack.Message, e
 		return nil, err
 	}
 
-	messages = append(messages, history.Messages...)
-	return messages, nil
+	for _, message := range history.Messages {
+		messageTexts = append(messageTexts, message.Text)
+	}
+	return messageTexts, nil
 }
 
 func TriggerEvent(w http.ResponseWriter, r *http.Request) {
@@ -81,46 +83,4 @@ func TriggerEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Println("Trigger event processed successfully")
-}
-
-func listChannels(api *slack.Client) ([]slack.Channel, error) {
-	var allChannels []slack.Channel
-	cursor := ""
-	for {
-		params := &slack.GetConversationsParameters{
-			Limit:  100, // Adjust the limit as needed
-			Cursor: cursor,
-		}
-		channels, nextCursor, err := api.GetConversations(params)
-		if err != nil {
-			return nil, err
-		}
-		allChannels = append(allChannels, channels...)
-		if nextCursor == "" {
-			break
-		}
-		cursor = nextCursor
-	}
-	return allChannels, nil
-}
-
-func ListChannels(w http.ResponseWriter, r *http.Request) {
-	log.Println("Received a list channels request")
-
-	api := slack.New(botToken)
-	channels, err := listChannels(api)
-	if err != nil {
-		log.Printf("Failed to retrieve channels: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(channels); err != nil {
-		log.Printf("Failed to encode channels: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	log.Println("List channels processed successfully")
 }

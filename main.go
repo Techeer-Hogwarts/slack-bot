@@ -10,9 +10,9 @@ import (
 
 func main() {
 	port := os.Getenv("PORT")
+	port = "3000"
 	http.HandleFunc("/slack/commands", cmd.HandleSlashCommand)
 	http.HandleFunc("/trigger_event", cmd.TriggerEvent)
-	http.HandleFunc("/list_channels", cmd.ListChannels)
 	http.HandleFunc("/", cmd.SendHelloWorld)
 
 	log.Printf("Server started on port: %v", port)
