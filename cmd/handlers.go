@@ -21,6 +21,7 @@ func HandleSlashCommand(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var request slack.SlashCommand
+	log.Println(r.Body)
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		log.Printf("Failed to decode request body: %v", err)
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
