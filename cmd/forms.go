@@ -9,40 +9,39 @@ import (
 	"github.com/slack-go/slack"
 )
 
-func loadModalJSON(filename string) (string, error) {
-	data, err := os.ReadFile(filename)
-	if err != nil {
-		return "", err
-	}
-	return string(data), nil
-}
-
 func OpenRecruitmentModal(w http.ResponseWriter, triggerID string) {
-	modalJSON, err := loadModalJSON("recruitment_form.json")
-	if err != nil {
-		log.Printf("Failed to load modal JSON: %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-
 	api := slack.New(botToken)
-	viewRequest := slack.ModalViewRequest{
-		Type:   slack.VTModal,
-		Blocks: slack.Blocks{},
-	}
-	err = json.Unmarshal([]byte(modalJSON), &viewRequest)
+
+	// Read the modal JSON from a file
+	modal, err := readModalJSON("recruitment_form.json")
 	if err != nil {
-		log.Printf("Failed to unmarshal modal JSON: %v", err)
+		log.Printf("Failed to read modal JSON: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
-	_, err = api.OpenView(triggerID, viewRequest)
+	// Open the modal
+	_, err = api.OpenView(triggerID, modal)
 	if err != nil {
 		log.Printf("Failed to open modal: %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		http.Error(w, "Failed to open modal", http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+// Read modal JSON from a file
+func readModalJSON(filename string) (slack.ModalViewRequest, error) {
+	var modal slack.ModalViewRequest
+	data, err := os.ReadFile(filename)
+	if err != nil {
+		return modal, err
+	}
+
+	if err := json.Unmarshal(data, &modal); err != nil {
+		return modal, err
+	}
+
+	return modal, nil
 }
