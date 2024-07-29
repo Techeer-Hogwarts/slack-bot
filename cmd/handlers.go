@@ -120,11 +120,36 @@ func HandleSlashCommand(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Received command: %s", command)
 	log.Printf("Trigger ID: %s", triggerID)
 
-	if command == "/구인" {
-		OpenRecruitmentModal(w, triggerID)
-		return
-	}
+	api := slack.New(botToken)
 
-	// Handle other commands or respond to invalid commands
-	w.WriteHeader(http.StatusOK)
+	switch command {
+	case "/구인":
+		openRecruitmentModal(w, triggerID)
+	case "/지원":
+		// Fetch recruitment messages from "bot-testing" channel
+		recruitmentMessages, err := getChannelMessages(api, "bot-testing")
+		if err != nil {
+			http.Error(w, "Failed to retrieve recruitment messages", http.StatusInternalServerError)
+			return
+		}
+
+		// Extract team names from recruitment messages (assuming each message has a unique team name)
+		var teams []string
+		for _, msg := range recruitmentMessages.Messages {
+			teams = append(teams, msg.Text) // Modify as per your message structure to extract team names
+		}
+
+		// Create a selection form or modal for the user to choose a team
+		modalRequest := createModal(teams)
+
+		// Open the modal
+		_, err = api.OpenView(triggerID, modalRequest)
+		if err != nil {
+			http.Error(w, "Failed to open modal", http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	default:
+		w.WriteHeader(http.StatusOK)
+	}
 }
