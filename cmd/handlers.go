@@ -80,7 +80,7 @@ func handleBlockActions(payload slack.InteractionCallback) {
 				}
 			}
 
-			if blockID == "rich_text_block" && actionID == "rich_text_input-action" {
+			if actionID == "rich_text_input-action" {
 				log.Println("Received rich text block action")
 				var richTextValue RichTextInputValue
 				if err := json.Unmarshal([]byte(blockAction.Value), &richTextValue); err != nil {
