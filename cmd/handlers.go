@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"strings"
 
 	"github.com/slack-go/slack"
 )
@@ -40,7 +39,6 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
-	log.Println(payloadStr)
 	var payload slack.InteractionCallback
 	if err := json.Unmarshal([]byte(payloadStr), &payload); err != nil {
 		log.Printf("Failed to decode interaction payload: %v", err)
@@ -54,25 +52,6 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to post message to channel", http.StatusInternalServerError)
 		return
 	}
-}
-
-func constructMessageText(message FormMessage) string {
-	return "New recruitment form submitted:\n" +
-		"Team Introduction: " + message.TeamIntro + "\n" +
-		"Team Name: " + message.TeamName + "\n" +
-		"Roles Needed: " + formatList(message.TeamRoles) + "\n" +
-		"Tech Stacks: " + formatList(message.TechStacks) + "\n" +
-		"Members: " + formatList(message.Members) + "\n" +
-		"Number of New Members: " + message.NumNewMembers + "\n" +
-		"Description: " + message.Description + "\n" +
-		"Other Details: " + message.Etc
-}
-
-func formatList(items []string) string {
-	if len(items) == 0 {
-		return "None"
-	}
-	return "- " + strings.Join(items, "\n- ")
 }
 
 func postMessageToChannel(channelID string, message FormMessage) error {

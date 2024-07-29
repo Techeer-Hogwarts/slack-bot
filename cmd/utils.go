@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/slack-go/slack"
 )
@@ -123,8 +124,29 @@ func TriggerEvent(w http.ResponseWriter, r *http.Request) {
 
 func getUsernameAndEmail(api *slack.Client, userID string) (string, string, error) {
 	user, err := api.GetUserInfo(userID)
+	log.Println("user: ", user)
 	if err != nil {
 		return "", "", err
 	}
 	return user.Name, user.Profile.Email, nil
+}
+
+func constructMessageText(message FormMessage) string {
+	return "New recruitment form submitted:\n" +
+		"Team Introduction: " + message.TeamIntro + "\n" +
+		"Team Name: " + message.TeamName + "\n" +
+		"Team Leader: " + message.TeamLeader + "\n" +
+		"Roles Needed: " + formatList(message.TeamRoles) + "\n" +
+		"Tech Stacks: " + formatList(message.TechStacks) + "\n" +
+		"Members: " + formatList(message.Members) + "\n" +
+		"Number of New Members: " + message.NumNewMembers + "\n" +
+		"Description: " + message.Description + "\n" +
+		"Other Details: " + message.Etc
+}
+
+func formatList(items []string) string {
+	if len(items) == 0 {
+		return "None"
+	}
+	return "- " + strings.Join(items, "\n- ")
 }
