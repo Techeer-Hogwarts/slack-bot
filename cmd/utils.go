@@ -194,12 +194,12 @@ func getUsernameAndEmail(api *slack.Client, userID string) (string, error) {
 	}
 
 	// Convert user object to JSON for detailed logging
-	userJSON, err := json.MarshalIndent(user, "", "  ")
-	if err != nil {
-		log.Printf("Failed to marshal user object: %v", err)
-	} else {
-		log.Printf("User details: %s", userJSON)
-	}
+	// userJSON, err := json.MarshalIndent(user, "", "  ")
+	// if err != nil {
+	// 	log.Printf("Failed to marshal user object: %v", err)
+	// } else {
+	// 	log.Printf("User details: %s", userJSON)
+	// }
 
 	return user.RealName, nil
 }
