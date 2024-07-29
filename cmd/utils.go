@@ -46,8 +46,24 @@ func VerifySlackRequest(req *http.Request) error {
 	return nil
 }
 
-func getChannelMessages(api *slack.Client, channelID string) ([]string, error) {
-	var messageTexts []string
+// func getChannelMessages(api *slack.Client, channelID string) ([]string, error) {
+// 	var messageTexts []string
+// 	historyParams := slack.GetConversationHistoryParameters{
+// 		ChannelID: channelID,
+// 		Limit:     100,
+// 	}
+
+// 	history, err := api.GetConversationHistory(&historyParams)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+//		for _, message := range history.Messages {
+//			messageTexts = append(messageTexts, message.Text)
+//		}
+//		return messageTexts, nil
+//	}
+func getChannelMessages(api *slack.Client, channelID string) (*slack.GetConversationHistoryResponse, error) {
 	historyParams := slack.GetConversationHistoryParameters{
 		ChannelID: channelID,
 		Limit:     100,
@@ -58,26 +74,46 @@ func getChannelMessages(api *slack.Client, channelID string) ([]string, error) {
 		return nil, err
 	}
 
-	for _, message := range history.Messages {
-		messageTexts = append(messageTexts, message.Text)
-	}
-	return messageTexts, nil
+	return history, nil
 }
+
+// func TriggerEvent(w http.ResponseWriter, r *http.Request) {
+// 	log.Println("Received a trigger event request")
+
+// 	api := slack.New(botToken)
+// 	messages, err := getChannelMessages(api, channelID)
+// 	log.Printf("channelID: %v", channelID)
+// 	if err != nil {
+// 		log.Printf("Failed to retrieve messages: %v", err)
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
+// 	w.Header().Set("Content-Type", "application/json")
+// 	if err := json.NewEncoder(w).Encode(messages); err != nil {
+// 		log.Printf("Failed to encode messages: %v", err)
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
+
+// 	log.Println("Trigger event processed successfully")
+// }
 
 func TriggerEvent(w http.ResponseWriter, r *http.Request) {
 	log.Println("Received a trigger event request")
 
 	api := slack.New(botToken)
-	messages, err := getChannelMessages(api, channelID)
-	log.Printf("channelID: %v", channelID)
+	history, err := getChannelMessages(api, channelID)
 	if err != nil {
 		log.Printf("Failed to retrieve messages: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	log.Printf("channelID: %v", channelID)
+
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(messages); err != nil {
-		log.Printf("Failed to encode messages: %v", err)
+	if err := json.NewEncoder(w).Encode(history); err != nil {
+		log.Printf("Failed to encode response: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
