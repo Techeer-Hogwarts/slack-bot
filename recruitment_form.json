@@ -255,7 +255,7 @@
 							"text": "Kubernetes",
 							"emoji": true
 						},
-						"value": "kubernetes"
+						"value": "kube"
 					},
 					{
 						"text": {
@@ -447,7 +447,7 @@
 							"text": "Grafana",
 							"emoji": true
 						},
-						"value": "Grafana"
+						"value": "grafana"
 					},
 					{
 						"text": {
@@ -511,7 +511,7 @@
 							"text": "PostgreSQL",
 							"emoji": true
 						},
-						"value": "Postgre"
+						"value": "postgre"
 					},
 					{
 						"text": {

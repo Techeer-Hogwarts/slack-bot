@@ -16,6 +16,8 @@ var (
 	signingKey string
 	botToken   string
 	channelID  string
+	roleMap    map[string]string
+	stackMap   map[string]string
 )
 
 func init() {
@@ -23,6 +25,68 @@ func init() {
 	signingKey = GetEnv("SLACK_SIGNING_SECRET", "")
 	botToken = GetEnv("SLACK_BOT_TOKEN", "")
 	channelID = GetEnv("CHANNEL_ID", "")
+	roleMap = map[string]string{
+		"frontend":  "Frontend Developer",
+		"backend":   "Backend Developer",
+		"fullstack": "Fullstack Developer",
+		"uxui":      "UX/UI Designer",
+		"devops":    "OPS/SRE",
+		"data":      "Data Engineer",
+		"study":     "스터디",
+		"etc":       "기타",
+	}
+	stackMap = map[string]string{
+		"none":          "없음",
+		"react":         "React.js",
+		"vue":           "Vue.js",
+		"next":          "Next.js",
+		"svelte":        "SvelteKit",
+		"angular":       "Angular",
+		"django":        "Django",
+		"flask":         "Flask",
+		"rails":         "Ruby on Rails",
+		"spring":        "Spring Boot",
+		"express":       "Express.js",
+		"laravel":       "Laravel",
+		"s3":            "S3/Cloud Storage",
+		"go":            "Go Lang",
+		"ai":            "AI/ML (Tensorflow, PyTorch)",
+		"kube":          "Kubernetes",
+		"jenkins":       "Jenkins CI",
+		"actions":       "Github Actions",
+		"spin":          "Spinnaker",
+		"graphite":      "Graphite",
+		"kafka":         "Kafka",
+		"docker":        "Docker",
+		"ansible":       "Ansible",
+		"terraform":     "Terraform",
+		"fastapi":       "FastAPI",
+		"redis":         "Redis",
+		"msa":           "MSA",
+		"java":          "Java",
+		"python":        "Python",
+		"jsts":          "JavaScript/TypeScript",
+		"cpp":           "C/C++",
+		"csharp":        "C#",
+		"ruby":          "Ruby",
+		"aws":           "AWS",
+		"gcp":           "GCP",
+		"ELK":           "ELK Stack",
+		"elasticsearch": "Elasticsearch",
+		"prom":          "Prometheus",
+		"grafana":       "Grafana",
+		"celery":        "Celery",
+		"nginx":         "Nginx",
+		"cdn":           "CDN (CloudFront)",
+		"nestjs":        "Nest.JS",
+		"zustand":       "Zustand",
+		"tailwind":      "Tailwind CSS",
+		"bootstrap":     "Bootstrap",
+		"postgre":       "PostgreSQL",
+		"mysql":         "MySQL",
+		"mongo":         "MongoDB",
+		"node":          "Node.js",
+	}
 }
 
 func VerifySlackRequest(req *http.Request) error {
@@ -148,15 +212,37 @@ func constructMessageText(message FormMessage) (string, error) {
 		"Team Introduction: " + message.TeamIntro + "\n" +
 		"Team Name: " + message.TeamName + "\n" +
 		"Team Leader: " + message.TeamLeader + "\n" +
-		"Roles Needed: " + formatList(message.TeamRoles) + "\n" +
-		"Tech Stacks: " + formatList(message.TechStacks) + "\n" +
-		"Members: " + formatList(message.Members) + "\n" +
+		"Roles Needed: " + formatListRoles(message.TeamRoles) + "\n" +
+		"Tech Stacks: " + formatListStacks(message.TechStacks) + "\n" +
+		"Members: " + formatListMembers(message.Members) + "\n" +
 		"Number of New Members: " + message.NumNewMembers + "\n" +
 		"Description: " + message.Description + "\n" +
 		"Other Details: " + message.Etc, nil
 }
 
-func formatList(items []string) string {
+func formatListRoles(items []string) string {
+	if len(items) == 0 {
+		return "None"
+	}
+	var roles []string
+	for _, role := range items {
+		roles = append(roles, roleMap[role])
+	}
+	return "- " + strings.Join(roles, "\n- ")
+}
+
+func formatListStacks(items []string) string {
+	if len(items) == 0 {
+		return "None"
+	}
+	var stacks []string
+	for _, stack := range items {
+		stacks = append(stacks, stackMap[stack])
+	}
+	return "- " + strings.Join(stacks, "\n- ")
+}
+
+func formatListMembers(items []string) string {
 	if len(items) == 0 {
 		return "None"
 	}
