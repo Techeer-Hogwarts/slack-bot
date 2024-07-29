@@ -69,9 +69,11 @@ func postMessageToChannel(channelID string, message FormMessage) error {
 	message.TeamLeader, _, _ = getUsernameAndEmail(api, message.TeamLeader)
 
 	// Construct the message text
-	messageText := constructMessageText(message)
-
-	_, _, err := api.PostMessage(channelID, slack.MsgOptionText(messageText, false))
+	messageText, err := constructMessageText(message)
+	if err != nil {
+		return err
+	}
+	_, _, err = api.PostMessage(channelID, slack.MsgOptionText(messageText, false))
 	return err
 }
 
