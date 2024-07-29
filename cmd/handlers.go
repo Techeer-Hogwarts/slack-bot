@@ -8,35 +8,6 @@ import (
 	"github.com/slack-go/slack"
 )
 
-type RichTextElement struct {
-	Type     string            `json:"type"`
-	Elements []RichTextElement `json:"elements,omitempty"`
-	Text     string            `json:"text,omitempty"`
-}
-
-type CheckboxesBlockAction struct {
-	ActionID        string   `json:"action_id"`
-	SelectedOptions []Option `json:"selected_options"`
-	Type            string   `json:"type"`
-}
-
-type RichTextInputValue struct {
-	Type     string            `json:"type"`
-	Elements []RichTextElement `json:"elements"`
-}
-
-type BlockAction struct {
-	ActionID        string          `json:"action_id"`
-	SelectedOptions []Option        `json:"selected_options,omitempty"`
-	SelectedUsers   []string        `json:"selected_users,omitempty"`
-	Value           json.RawMessage `json:"value"` // RawMessage to handle both plain and rich text
-	Type            string          `json:"type"`
-}
-
-type Option struct {
-	Value string `json:"value"`
-}
-
 func SendHelloWorld(w http.ResponseWriter, r *http.Request) {
 	log.Println("Received a request to the root path")
 	w.Write([]byte("Hello, World!"))
@@ -69,55 +40,31 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 }
 func handleBlockActions(payload slack.InteractionCallback) {
 	log.Println("Received block actions")
-	for blockID, actionValues := range payload.View.State.Values {
+	for _, actionValues := range payload.View.State.Values {
 		for actionID, blockAction := range actionValues {
-			if blockID == "tech_stack_block" {
-				log.Println("Received tech stack block action")
-				log.Printf("Block ID: %s, Action ID: %s, Value: %v, Type: %v", blockID, actionID, blockAction.SelectedOptions, blockAction.Type)
-				for _, option := range blockAction.SelectedOptions {
-					log.Printf("Selected option value: %s", option.Value)
+			switch actionID {
+			case "multi_static_select-action":
+				log.Println("Received multi_static_select block action")
+				for _, action := range blockAction.SelectedOptions {
+					log.Printf("Received input block action: %s", action.Value)
 				}
-			}
-			if blockID == "current_members_block" {
-				log.Println("Received current members block action")
-				log.Printf("Block ID: %s, Action ID: %s, Value: %v, Type: %v", blockID, actionID, blockAction.SelectedUsers, blockAction.Type)
-				for _, user := range blockAction.SelectedUsers {
-					log.Printf("Selected user ID: %s", user)
+			case "team_intro":
+				log.Println("Received team intro block action")
+				log.Printf("Received input block action: %s", blockAction.Value)
+			case "team_name":
+				log.Println("Received team name block action")
+				log.Printf("Received input block action: %s", blockAction.Value)
+			case "multi_users_select-action":
+				log.Println("Received multi_users_select block action")
+				for _, action := range blockAction.SelectedUsers {
+					log.Printf("Received input block action: %s", action)
 				}
-			}
-			if actionID == "checkboxes-action" {
-				var checkboxesValue CheckboxesBlockAction
-				if err := json.Unmarshal([]byte(blockAction.Value), &checkboxesValue); err != nil {
-					log.Printf("Failed to parse checkboxes input: %v", err)
-					continue
-				}
-				log.Printf("Block ID: %s, Action ID: %s, Checkboxes Value: %+v, Type: %s", blockID, actionID, checkboxesValue, blockAction.Type)
-				for _, option := range checkboxesValue.SelectedOptions {
-					log.Printf("Selected checkbox value: %s", option.Value)
-
-				}
-			}
-			if actionID == "rich_text_input-action" {
-				log.Println("Received rich text block action")
-				var richTextValue RichTextInputValue
-				log.Println(blockAction.Text.Type)
-				log.Println(blockAction.Text.Text)
-				if err := json.Unmarshal([]byte(blockAction.Value), &richTextValue); err != nil {
-					log.Printf("Failed to parse rich text input: %v", err)
-					continue
-				}
-				log.Printf("Block ID: %s, Action ID: %s, Rich Text Value: %+v, Type: %s", blockID, actionID, richTextValue, blockAction.Type)
-				for _, element := range richTextValue.Elements {
-					processRichTextElement(element)
-				}
-			} else {
-				log.Println("Received plain text block action")
-				var plainTextValue string
-				if err := json.Unmarshal([]byte(blockAction.Value), &plainTextValue); err == nil {
-					log.Printf("Block ID: %s, Action ID: %s, Plain Text Value: %s, Type: %s", blockID, actionID, plainTextValue, blockAction.Type)
-				} else {
-					log.Printf("Block ID: %s, Action ID: %s, Value: %v, Type: %v", blockID, actionID, blockAction.Value, blockAction.Type)
-				}
+			case "num_members":
+				log.Println("Received num members block action")
+				log.Printf("Received input block action: %s", blockAction.SelectedOption.Value)
+			case "plain_text_input-action":
+				log.Println("Received plain text input block action")
+				log.Printf("Received input block action: %s", blockAction.Value)
 			}
 		}
 	}

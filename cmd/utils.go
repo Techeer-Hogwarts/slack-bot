@@ -84,13 +84,3 @@ func TriggerEvent(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("Trigger event processed successfully")
 }
-
-func processRichTextElement(element RichTextElement) {
-	if element.Type == "rich_text_section" {
-		for _, subElement := range element.Elements {
-			if subElement.Type == "text" {
-				log.Printf("Rich text content: %s", subElement.Text)
-			}
-		}
-	}
-}
