@@ -31,6 +31,23 @@
 			}
 		},
 		{
+			"type": "section",
+			"block_id": "team_leader_block",
+			"text": {
+				"type": "plain_text",
+				"text": "팀장"
+			},
+			"accessory": {
+				"type": "users_select",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "Select a user",
+					"emoji": true
+				},
+				"action_id": "users_select-action"
+			}
+		},
+		{
 			"type": "input",
 			"block_id": "team_role_block",
 			"element": {
