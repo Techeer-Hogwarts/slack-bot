@@ -58,15 +58,15 @@ func postMessageToChannel(channelID string, message FormMessage) error {
 	api := slack.New(botToken)
 
 	// Convert user IDs to usernames and emails
-	for i, userID := range message.Members {
-		username, err := getUsernameAndEmail(api, userID)
-		if err != nil {
-			log.Printf("Failed to get user info for userID %s: %v", userID, err)
-			continue
-		}
-		message.Members[i] = username
-	}
-	message.TeamLeader, _ = getUsernameAndEmail(api, message.TeamLeader)
+	// for i, userID := range message.Members {
+	// 	username, err := getUsernameAndEmail(api, userID)
+	// 	if err != nil {
+	// 		log.Printf("Failed to get user info for userID %s: %v", userID, err)
+	// 		continue
+	// 	}
+	// 	message.Members[i] = username
+	// }
+	// message.TeamLeader, _ = getUsernameAndEmail(api, message.TeamLeader)
 
 	// Construct the message text
 	messageText, err := constructMessageText(message)
