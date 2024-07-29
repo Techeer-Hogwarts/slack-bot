@@ -132,16 +132,18 @@ func HandleSlashCommand(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Failed to retrieve recruitment messages", http.StatusInternalServerError)
 			return
 		}
+		log.Println("checkpoint 1")
 
 		// Extract team names from recruitment messages (assuming each message has a unique team name)
 		var teams []string
 		for _, msg := range recruitmentMessages.Messages {
 			teams = append(teams, msg.Text) // Modify as per your message structure to extract team names
 		}
+		log.Println("checkpoint 2")
 
 		// Create a selection form or modal for the user to choose a team
 		modalRequest := createModal(teams)
-
+		log.Println("checkpoint 3")
 		// Open the modal
 		_, err = api.OpenView(triggerID, modalRequest)
 		if err != nil {
