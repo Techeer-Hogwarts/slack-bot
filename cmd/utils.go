@@ -3,6 +3,7 @@ package cmd
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io"
 	"log"
 	"net/http"
@@ -124,14 +125,25 @@ func TriggerEvent(w http.ResponseWriter, r *http.Request) {
 
 func getUsernameAndEmail(api *slack.Client, userID string) (string, string, error) {
 	user, err := api.GetUserInfo(userID)
-	log.Println("user: ", user)
 	if err != nil {
 		return "", "", err
 	}
+
+	// Convert user object to JSON for detailed logging
+	userJSON, err := json.MarshalIndent(user, "", "  ")
+	if err != nil {
+		log.Printf("Failed to marshal user object: %v", err)
+	} else {
+		log.Printf("User details: %s", userJSON)
+	}
+
 	return user.Name, user.Profile.Email, nil
 }
 
-func constructMessageText(message FormMessage) string {
+func constructMessageText(message FormMessage) (string, error) {
+	if message.TeamRoles == nil {
+		return "", errors.New("TeamRoles is nil")
+	}
 	return "New recruitment form submitted:\n" +
 		"Team Introduction: " + message.TeamIntro + "\n" +
 		"Team Name: " + message.TeamName + "\n" +
@@ -141,7 +153,7 @@ func constructMessageText(message FormMessage) string {
 		"Members: " + formatList(message.Members) + "\n" +
 		"Number of New Members: " + message.NumNewMembers + "\n" +
 		"Description: " + message.Description + "\n" +
-		"Other Details: " + message.Etc
+		"Other Details: " + message.Etc, nil
 }
 
 func formatList(items []string) string {
