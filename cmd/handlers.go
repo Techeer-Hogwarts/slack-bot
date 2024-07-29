@@ -61,8 +61,8 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 	}
 	handleBlockActions(payload)
 }
-
 func handleBlockActions(payload slack.InteractionCallback) {
+	log.Println("Received block actions")
 	for blockID, actionValues := range payload.View.State.Values {
 		for actionID, blockAction := range actionValues {
 			if blockID == "tech_stack_block" {
