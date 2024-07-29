@@ -120,3 +120,11 @@ func TriggerEvent(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("Trigger event processed successfully")
 }
+
+func getUsernameAndEmail(api *slack.Client, userID string) (string, string, error) {
+	user, err := api.GetUserInfo(userID)
+	if err != nil {
+		return "", "", err
+	}
+	return user.Name, user.Profile.Email, nil
+}

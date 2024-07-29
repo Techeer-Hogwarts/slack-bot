@@ -4,12 +4,14 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/slack-go/slack"
 )
 
 type FormMessage struct {
 	FormID        string   `json:"form_id"`
+	TeamLeader    string   `json:"leader"`
 	TeamIntro     string   `json:"intro"`
 	TeamName      string   `json:"name"`
 	TeamRoles     []string `json:"roles"`
@@ -47,20 +49,62 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 	}
 	jsonVal := handleBlockActions(payload)
 	log.Println(jsonVal)
+	if err := postMessageToChannel(channelID, jsonVal); err != nil {
+		log.Printf("Failed to post message to channel: %v", err)
+		http.Error(w, "Failed to post message to channel", http.StatusInternalServerError)
+		return
+	}
 }
+
+func constructMessageText(message FormMessage) string {
+	return "New recruitment form submitted:\n" +
+		"Team Introduction: " + message.TeamIntro + "\n" +
+		"Team Name: " + message.TeamName + "\n" +
+		"Roles Needed: " + formatList(message.TeamRoles) + "\n" +
+		"Tech Stacks: " + formatList(message.TechStacks) + "\n" +
+		"Members: " + formatList(message.Members) + "\n" +
+		"Number of New Members: " + message.NumNewMembers + "\n" +
+		"Description: " + message.Description + "\n" +
+		"Other Details: " + message.Etc
+}
+
+func formatList(items []string) string {
+	if len(items) == 0 {
+		return "None"
+	}
+	return "- " + strings.Join(items, "\n- ")
+}
+
+func postMessageToChannel(channelID string, message FormMessage) error {
+	api := slack.New(botToken)
+
+	// Convert user IDs to usernames and emails
+	for i, userID := range message.Members {
+		username, email, err := getUsernameAndEmail(api, userID)
+		if err != nil {
+			log.Printf("Failed to get user info for userID %s: %v", userID, err)
+			continue
+		}
+		message.Members[i] = username + " (" + email + ")"
+	}
+	message.TeamLeader, _, _ = getUsernameAndEmail(api, message.TeamLeader)
+
+	// Construct the message text
+	messageText := constructMessageText(message)
+
+	_, _, err := api.PostMessage(channelID, slack.MsgOptionText(messageText, false))
+	return err
+}
+
 func handleBlockActions(payload slack.InteractionCallback) FormMessage {
-	log.Println(payload)
 	returnMessage := FormMessage{FormID: "test"}
-	log.Println("Received block actions")
 	for blockID, actionValues := range payload.View.State.Values {
 		for actionID, blockAction := range actionValues {
 			switch actionID {
 			case "multi_static_select-action":
-				log.Println("Received multi_static_select block action")
 				static_actions := []string{}
 				for _, action := range blockAction.SelectedOptions {
 					static_actions = append(static_actions, action.Value)
-					log.Printf("Received input block action: %s", action.Value)
 				}
 				if blockID == "team_role_block" {
 					returnMessage.TeamRoles = static_actions
@@ -68,27 +112,17 @@ func handleBlockActions(payload slack.InteractionCallback) FormMessage {
 				if blockID == "tech_stack_block" {
 					returnMessage.TechStacks = static_actions
 				}
+			case "users_select-action":
+				returnMessage.TeamLeader = blockAction.SelectedUser
 			case "team_intro":
-				log.Println("Received team intro block action")
-				log.Printf("Received input block action: %s", blockAction.Value)
 				returnMessage.TeamIntro = blockAction.Value
 			case "team_name":
-				log.Println("Received team name block action")
-				log.Printf("Received input block action: %s", blockAction.Value)
 				returnMessage.TeamName = blockAction.Value
 			case "multi_users_select-action":
-				log.Println("Received multi_users_select block action")
-				for _, action := range blockAction.SelectedUsers {
-					returnMessage.Members = append(returnMessage.Members, action)
-					log.Printf("Received input block action: %s", action)
-				}
+				returnMessage.Members = append(returnMessage.Members, blockAction.SelectedUsers...)
 			case "num_members":
-				log.Println("Received num members block action")
-				log.Printf("Received input block action: %s", blockAction.Value)
 				returnMessage.NumNewMembers = blockAction.Value
 			case "plain_text_input-action":
-				log.Println("Received plain text input block action")
-				log.Printf("Received input block action: %s", blockAction.Value)
 				if blockID == "team_desc_block" {
 					returnMessage.Description = blockAction.Value
 				}
@@ -128,8 +162,9 @@ func HandleSlashCommand(w http.ResponseWriter, r *http.Request) {
 	case "/지원":
 		// Fetch recruitment messages from "bot-testing" channel
 		log.Println("checkpoint 0")
-		recruitmentMessages, err := getChannelMessages(api, "bot-testing")
+		recruitmentMessages, err := getChannelMessages(api, channelID)
 		if err != nil {
+			log.Printf("Failed to retrieve recruitment messages: %v", err)
 			http.Error(w, "Failed to retrieve recruitment messages", http.StatusInternalServerError)
 			return
 		}
