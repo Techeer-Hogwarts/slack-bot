@@ -75,14 +75,20 @@ func handleBlockActions(payload slack.InteractionCallback) {
 		for actionID, blockAction := range actionValues {
 			if blockID == "tech_stack_block" {
 				log.Printf("Block ID: %s, Action ID: %s, Value: %v, Type: %v", blockID, actionID, blockAction.SelectedOptions, blockAction.Type)
+				for _, option := range blockAction.SelectedOptions {
+					log.Printf("Selected option value: %s", option.Value)
+				}
 			}
 			if blockID == "current_members_block" {
 				log.Printf("Block ID: %s, Action ID: %s, Value: %v, Type: %v", blockID, actionID, blockAction.SelectedUsers, blockAction.Type)
+				for _, user := range blockAction.SelectedUsers {
+					log.Printf("Selected user ID: %s", user)
+				}
 			}
 			if actionID == "rich_text_input-action" {
-				log.Printf("Block ID: %s, Action ID: %s, Value: %v, Type: %v", blockID, actionID, blockAction.Text, blockAction.Type)
+				log.Printf("Block ID: %s, Action ID: %s, Value: %v, Type: %v", blockID, actionID, blockAction.Text.Text, blockAction.Type)
 			} else {
-				log.Printf("Block ID: %s, Action ID: %s, Value: %v, Type: %v", blockID, actionID, blockAction.Text, blockAction.Type)
+				log.Printf("Block ID: %s, Action ID: %s, Value: %v, Type: %v", blockID, actionID, blockAction.Text.Text, blockAction.Type)
 			}
 		}
 	}
