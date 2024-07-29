@@ -214,7 +214,7 @@ func constructMessageText(message FormMessage) (string, error) {
 		"!팀장!: @" + message.TeamLeader + "\n" +
 		"모집하는 직군: \n" + formatListRoles(message.TeamRoles) + "\n" +
 		"사용되는 기술: \n" + formatListStacks(message.TechStacks) + "\n" +
-		"현 멤버들: \n" + formatListMembers(message.Members) + "\n" +
+		"현 멤버들: \n" + formatListMembers(message.Members) + ">\n" +
 		"추가 모집 인원: " + message.NumNewMembers + "명\n" +
 		"팀/프로젝트 설명: \n" + message.Description + "\n" +
 		"그 외 추가적인 정보: \n" + message.Etc, nil
@@ -246,5 +246,5 @@ func formatListMembers(items []string) string {
 	if len(items) == 0 {
 		return "None"
 	}
-	return "@" + strings.Join(items, "\t@")
+	return "<@" + strings.Join(items, ">\t<@")
 }
