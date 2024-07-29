@@ -141,7 +141,7 @@ func getUsernameAndEmail(api *slack.Client, userID string) (string, string, erro
 }
 
 func constructMessageText(message FormMessage) (string, error) {
-	if message.TeamRoles == nil {
+	if message.TeamRoles[0] == "" || message.NumNewMembers == "" {
 		return "", errors.New("TeamRoles is nil")
 	}
 	return "New recruitment form submitted:\n" +
