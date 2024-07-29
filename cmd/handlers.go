@@ -86,9 +86,9 @@ func handleBlockActions(payload slack.InteractionCallback) {
 				}
 			}
 			if actionID == "rich_text_input-action" {
-				log.Printf("Block ID: %s, Action ID: %s, Value: %v, Type: %v", blockID, actionID, blockAction.Text.Text, blockAction.Type)
+				log.Printf("Block ID: %s, Action ID: %s, Value: %v, Type: %v", blockID, actionID, blockAction.Value, blockAction.Type)
 			} else {
-				log.Printf("Block ID: %s, Action ID: %s, Value: %v, Type: %v", blockID, actionID, blockAction.Text.Text, blockAction.Type)
+				log.Printf("Block ID: %s, Action ID: %s, Value: %v, Type: %v", blockID, actionID, blockAction.Value, blockAction.Type)
 			}
 		}
 	}
