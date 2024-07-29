@@ -228,7 +228,7 @@ func formatListRoles(items []string) string {
 	for _, role := range items {
 		roles = append(roles, roleMap[role])
 	}
-	return "- " + strings.Join(roles, "\n")
+	return "- " + strings.Join(roles, "\n- ")
 }
 
 func formatListStacks(items []string) string {
@@ -246,5 +246,5 @@ func formatListMembers(items []string) string {
 	if len(items) == 0 {
 		return "None"
 	}
-	return "@" + strings.Join(items, "\t")
+	return "@" + strings.Join(items, "\t@")
 }
