@@ -194,12 +194,12 @@ func getUsernameAndEmail(api *slack.Client, userID string) (string, error) {
 	}
 
 	// Convert user object to JSON for detailed logging
-	userJSON, err := json.MarshalIndent(user, "", "  ")
-	if err != nil {
-		log.Printf("Failed to marshal user object: %v", err)
-	} else {
-		log.Printf("User details: %s", userJSON)
-	}
+	// userJSON, err := json.MarshalIndent(user, "", "  ")
+	// if err != nil {
+	// 	log.Printf("Failed to marshal user object: %v", err)
+	// } else {
+	// 	log.Printf("User details: %s", userJSON)
+	// }
 
 	return user.RealName, nil
 }
@@ -209,13 +209,13 @@ func constructMessageText(message FormMessage) (string, error) {
 		return "", errors.New("TeamRoles is nil")
 	}
 	return "New recruitment form submitted:\n" +
-		"!팀 소개!:* \n" + message.TeamIntro + "\n" +
+		"*!팀 소개!:* \n" + message.TeamIntro + "\n" +
 		"!팀 이름!: \n" + message.TeamName + "\n" +
 		"!팀장!: @" + message.TeamLeader + "\n" +
-		"모집하는 직군: \n" + formatListRoles(message.TeamRoles) + "\t" +
-		"사용되는 기술: \n" + formatListStacks(message.TechStacks) + "\t" +
-		"현 멤버들: \n" + "@" + formatListMembers(message.Members) + "\t" +
-		"추가 모집 인원: " + message.NumNewMembers + "\n" +
+		"모집하는 직군: \n" + formatListRoles(message.TeamRoles) + "\n" +
+		"사용되는 기술: \n" + formatListStacks(message.TechStacks) + "\n" +
+		"현 멤버들: \n" + formatListMembers(message.Members) + "\n" +
+		"추가 모집 인원: " + message.NumNewMembers + "명\n" +
 		"팀/프로젝트 설명: \n" + message.Description + "\n" +
 		"그 외 추가적인 정보: \n" + message.Etc, nil
 }
@@ -228,7 +228,7 @@ func formatListRoles(items []string) string {
 	for _, role := range items {
 		roles = append(roles, roleMap[role])
 	}
-	return "- " + strings.Join(roles, "\n- ")
+	return "- " + strings.Join(roles, "\n")
 }
 
 func formatListStacks(items []string) string {
@@ -239,12 +239,12 @@ func formatListStacks(items []string) string {
 	for _, stack := range items {
 		stacks = append(stacks, stackMap[stack])
 	}
-	return "- " + strings.Join(stacks, "\n- ")
+	return strings.Join(stacks, "\t")
 }
 
 func formatListMembers(items []string) string {
 	if len(items) == 0 {
 		return "None"
 	}
-	return "- " + strings.Join(items, "\n- ")
+	return "@" + strings.Join(items, "\t")
 }
