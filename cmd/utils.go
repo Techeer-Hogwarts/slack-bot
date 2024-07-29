@@ -123,10 +123,10 @@ func TriggerEvent(w http.ResponseWriter, r *http.Request) {
 	log.Println("Trigger event processed successfully")
 }
 
-func getUsernameAndEmail(api *slack.Client, userID string) (string, string, error) {
+func getUsernameAndEmail(api *slack.Client, userID string) (string, error) {
 	user, err := api.GetUserInfo(userID)
 	if err != nil {
-		return "", "", err
+		return "", err
 	}
 
 	// Convert user object to JSON for detailed logging
@@ -137,7 +137,7 @@ func getUsernameAndEmail(api *slack.Client, userID string) (string, string, erro
 		log.Printf("User details: %s", userJSON)
 	}
 
-	return user.Name, user.Profile.Email, nil
+	return user.RealName, nil
 }
 
 func constructMessageText(message FormMessage) (string, error) {
