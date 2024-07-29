@@ -208,10 +208,10 @@ func constructMessageText(message FormMessage) (string, error) {
 	if len(message.TeamRoles) == 0 || message.NumNewMembers == "" {
 		return "", errors.New("TeamRoles is nil")
 	}
-	return "New recruitment form submitted:\n" +
-		"*!팀 소개!:* \n" + message.TeamIntro + "\n" +
-		"!팀 이름!: \n" + message.TeamName + "\n" +
-		"!팀장!: @" + message.TeamLeader + "\n" +
+	return "_새로운 프로젝트/스터디 팀이 등록 되었습니다:_\n" +
+		"*팀 소개:* \n >" + message.TeamIntro + "\n" +
+		"팀 이름: \n *" + message.TeamName + "*\n" +
+		"팀장: @<" + message.TeamLeader + ">\n" +
 		"모집하는 직군: \n" + formatListRoles(message.TeamRoles) + "\n" +
 		"사용되는 기술: \n" + formatListStacks(message.TechStacks) + "\n" +
 		"현 멤버들: \n" + formatListMembers(message.Members) + ">\n" +
@@ -246,5 +246,5 @@ func formatListMembers(items []string) string {
 	if len(items) == 0 {
 		return "None"
 	}
-	return "<@" + strings.Join(items, ">\t<@")
+	return "<@" + strings.Join(items, "> <@")
 }
