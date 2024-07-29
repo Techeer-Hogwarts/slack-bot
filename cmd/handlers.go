@@ -127,6 +127,7 @@ func HandleSlashCommand(w http.ResponseWriter, r *http.Request) {
 		openRecruitmentModal(w, triggerID)
 	case "/지원":
 		// Fetch recruitment messages from "bot-testing" channel
+		log.Println("checkpoint 0")
 		recruitmentMessages, err := getChannelMessages(api, "bot-testing")
 		if err != nil {
 			http.Error(w, "Failed to retrieve recruitment messages", http.StatusInternalServerError)
