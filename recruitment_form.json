@@ -8,15 +8,14 @@
 	"blocks": [
 		{
 			"type": "input",
-            "block_id": "title_block",
-			"element": {
-				"type": "rich_text_input",
-				"action_id": "rich_text_input-action"
-			},
+			"block_id": "team_intro_block",
 			"label": {
 				"type": "plain_text",
-				"text": "소개",
-				"emoji": true
+				"text": "소개"
+			},
+			"element": {
+				"type": "plain_text_input",
+				"action_id": "team_intro"
 			}
 		},
 		{
@@ -33,9 +32,9 @@
 		},
 		{
 			"type": "input",
-            "block_id": "team_role_block",
+			"block_id": "team_role_block",
 			"element": {
-				"type": "checkboxes",
+				"type": "multi_static_select",
 				"options": [
 					{
 						"text": {
@@ -94,7 +93,7 @@
 						"value": "etc"
 					}
 				],
-				"action_id": "checkboxes-action"
+				"action_id": "multi_static_select-action"
 			},
 			"label": {
 				"type": "plain_text",
@@ -104,7 +103,7 @@
 		},
 		{
 			"type": "input",
-            "block_id": "tech_stack_block",
+			"block_id": "tech_stack_block",
 			"element": {
 				"type": "multi_static_select",
 				"placeholder": {
@@ -532,7 +531,7 @@
 		},
 		{
 			"type": "input",
-            "block_id": "current_members_block",
+			"block_id": "current_members_block",
 			"element": {
 				"type": "multi_users_select",
 				"placeholder": {
@@ -562,10 +561,11 @@
 		},
 		{
 			"type": "input",
-            "block_id": "team_description_block",
+			"block_id": "team_desc_block",
 			"element": {
-				"type": "rich_text_input",
-				"action_id": "rich_text_input-action"
+				"type": "plain_text_input",
+				"multiline": true,
+				"action_id": "plain_text_input-action"
 			},
 			"label": {
 				"type": "plain_text",
@@ -575,10 +575,11 @@
 		},
 		{
 			"type": "input",
-            "block_id": "etc_block",
+			"block_id": "team_etc_block",
 			"element": {
-				"type": "rich_text_input",
-				"action_id": "rich_text_input-action"
+				"type": "plain_text_input",
+				"multiline": true,
+				"action_id": "plain_text_input-action"
 			},
 			"label": {
 				"type": "plain_text",
