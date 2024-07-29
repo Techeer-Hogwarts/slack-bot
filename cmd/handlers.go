@@ -14,6 +14,12 @@ type RichTextElement struct {
 	Text     string            `json:"text,omitempty"`
 }
 
+type CheckboxesBlockAction struct {
+	ActionID        string   `json:"action_id"`
+	SelectedOptions []Option `json:"selected_options"`
+	Type            string   `json:"type"`
+}
+
 type RichTextInputValue struct {
 	Type     string            `json:"type"`
 	Elements []RichTextElement `json:"elements"`
@@ -79,10 +85,23 @@ func handleBlockActions(payload slack.InteractionCallback) {
 					log.Printf("Selected user ID: %s", user)
 				}
 			}
+			if actionID == "checkboxes-action" {
+				var checkboxesValue CheckboxesBlockAction
+				if err := json.Unmarshal([]byte(blockAction.Value), &checkboxesValue); err != nil {
+					log.Printf("Failed to parse checkboxes input: %v", err)
+					continue
+				}
+				log.Printf("Block ID: %s, Action ID: %s, Checkboxes Value: %+v, Type: %s", blockID, actionID, checkboxesValue, blockAction.Type)
+				for _, option := range checkboxesValue.SelectedOptions {
+					log.Printf("Selected checkbox value: %s", option.Value)
 
+				}
+			}
 			if actionID == "rich_text_input-action" {
 				log.Println("Received rich text block action")
 				var richTextValue RichTextInputValue
+				log.Println(blockAction.Text.Type)
+				log.Println(blockAction.Text.Text)
 				if err := json.Unmarshal([]byte(blockAction.Value), &richTextValue); err != nil {
 					log.Printf("Failed to parse rich text input: %v", err)
 					continue
