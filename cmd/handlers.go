@@ -83,6 +83,8 @@ func handleBlockActions(payload slack.InteractionCallback) {
 			if actionID == "rich_text_input-action" {
 				log.Println("Received rich text block action")
 				var richTextValue RichTextInputValue
+				log.Println(blockAction.Text.Type)
+				log.Println(blockAction.Text.Text)
 				if err := json.Unmarshal([]byte(blockAction.Value), &richTextValue); err != nil {
 					log.Printf("Failed to parse rich text input: %v", err)
 					continue
