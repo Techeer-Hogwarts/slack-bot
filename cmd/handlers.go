@@ -45,9 +45,10 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
-	handleBlockActions(payload)
+	jsonVal := handleBlockActions(payload)
+	log.Println(jsonVal)
 }
-func handleBlockActions(payload slack.InteractionCallback) {
+func handleBlockActions(payload slack.InteractionCallback) FormMessage {
 	log.Println(payload)
 	returnMessage := FormMessage{FormID: "test"}
 	log.Println("Received block actions")
@@ -97,6 +98,7 @@ func handleBlockActions(payload slack.InteractionCallback) {
 			}
 		}
 	}
+	return returnMessage
 }
 
 func HandleSlashCommand(w http.ResponseWriter, r *http.Request) {
