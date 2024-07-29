@@ -209,15 +209,15 @@ func constructMessageText(message FormMessage) (string, error) {
 		return "", errors.New("TeamRoles is nil")
 	}
 	return "New recruitment form submitted:\n" +
-		"Team Introduction: " + message.TeamIntro + "\n" +
-		"Team Name: " + message.TeamName + "\n" +
-		"Team Leader: " + message.TeamLeader + "\n" +
-		"Roles Needed: " + formatListRoles(message.TeamRoles) + "\n" +
-		"Tech Stacks: " + formatListStacks(message.TechStacks) + "\n" +
-		"Members: " + formatListMembers(message.Members) + "\n" +
-		"Number of New Members: " + message.NumNewMembers + "\n" +
-		"Description: " + message.Description + "\n" +
-		"Other Details: " + message.Etc, nil
+		"!팀 소개!:* \n" + message.TeamIntro + "\n" +
+		"!팀 이름!: \n" + message.TeamName + "\n" +
+		"!팀장!: @" + message.TeamLeader + "\n" +
+		"모집하는 직군: \n" + formatListRoles(message.TeamRoles) + "\t" +
+		"사용되는 기술: \n" + formatListStacks(message.TechStacks) + "\t" +
+		"현 멤버들: \n" + "@" + formatListMembers(message.Members) + "\t" +
+		"추가 모집 인원: " + message.NumNewMembers + "\n" +
+		"팀/프로젝트 설명: \n" + message.Description + "\n" +
+		"그 외 추가적인 정보: \n" + message.Etc, nil
 }
 
 func formatListRoles(items []string) string {
