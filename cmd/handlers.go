@@ -8,6 +8,29 @@ import (
 	"github.com/slack-go/slack"
 )
 
+type RichTextElement struct {
+	Type     string            `json:"type"`
+	Elements []RichTextElement `json:"elements,omitempty"`
+	Text     string            `json:"text,omitempty"`
+}
+
+type RichTextInputValue struct {
+	Type     string            `json:"type"`
+	Elements []RichTextElement `json:"elements"`
+}
+
+type BlockAction struct {
+	ActionID        string          `json:"action_id"`
+	SelectedOptions []Option        `json:"selected_options,omitempty"`
+	SelectedUsers   []string        `json:"selected_users,omitempty"`
+	Value           json.RawMessage `json:"value"` // RawMessage to handle both plain and rich text
+	Type            string          `json:"type"`
+}
+
+type Option struct {
+	Value string `json:"value"`
+}
+
 func SendHelloWorld(w http.ResponseWriter, r *http.Request) {
 	log.Println("Received a request to the root path")
 	w.Write([]byte("Hello, World!"))
@@ -40,37 +63,6 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleBlockActions(payload slack.InteractionCallback) {
-	log.Println(payload.View)
-	// for _, action := range payload.ActionCallback.BlockActions {
-	// 	log.Printf("Received action ID: %s", action.ActionID)
-	// 	// Handle different block types
-	// 	switch action.Type {
-	// 	case "input":
-	// 		// Assuming you have a form submission action
-	// 		// For input blocks, you might have to check the parent view's state
-	// 		// Note: Slack does not include input block data directly in block actions
-	// 		// You might need to refer to `payload.View.State.Values` for input data
-	// 		// See below for handling values in `payload.View.State.Values`
-
-	// 	case "static_select":
-	// 		// Handle static select (dropdown)
-	// 		log.Printf("Selected option value: %s", action.SelectedOption.Value)
-
-	// 	case "multi_static_select":
-	// 		// Handle multi-static select
-	// 		if action.SelectedOptions != nil {
-	// 			for _, option := range action.SelectedOptions {
-	// 				log.Printf("Selected option value: %s", option.Value)
-	// 			}
-	// 		}
-
-	// 	default:
-	// 		// Log any unhandled block types
-	// 		log.Printf("Unhandled block type: %s", action.Type)
-	// 	}
-	// }
-
-	// Handle values from input blocks in the view's state
 	for blockID, actionValues := range payload.View.State.Values {
 		for actionID, blockAction := range actionValues {
 			if blockID == "tech_stack_block" {
@@ -85,10 +77,35 @@ func handleBlockActions(payload slack.InteractionCallback) {
 					log.Printf("Selected user ID: %s", user)
 				}
 			}
-			if actionID == "rich_text_input-action" {
-				log.Printf("Block ID: %s, Action ID: %s, Value: %v, Type: %v", blockID, actionID, blockAction.Value, blockAction.Type)
+
+			if blockID == "rich_text_block" && actionID == "rich_text_input-action" {
+				var richTextValue RichTextInputValue
+				if err := json.Unmarshal([]byte(blockAction.Value), &richTextValue); err != nil {
+					log.Printf("Failed to parse rich text input: %v", err)
+					continue
+				}
+				log.Printf("Block ID: %s, Action ID: %s, Rich Text Value: %+v, Type: %s", blockID, actionID, richTextValue, blockAction.Type)
+				for _, element := range richTextValue.Elements {
+					processRichTextElement(element)
+				}
 			} else {
-				log.Printf("Block ID: %s, Action ID: %s, Value: %v, Type: %v", blockID, actionID, blockAction.Value, blockAction.Type)
+				var plainTextValue string
+				if err := json.Unmarshal([]byte(blockAction.Value), &plainTextValue); err == nil {
+					log.Printf("Block ID: %s, Action ID: %s, Plain Text Value: %s, Type: %s", blockID, actionID, plainTextValue, blockAction.Type)
+				} else {
+					log.Printf("Block ID: %s, Action ID: %s, Value: %v, Type: %v", blockID, actionID, blockAction.Value, blockAction.Type)
+				}
+			}
+		}
+	}
+}
+
+// Function to process rich text elements
+func processRichTextElement(element RichTextElement) {
+	if element.Type == "rich_text_section" {
+		for _, subElement := range element.Elements {
+			if subElement.Type == "text" {
+				log.Printf("Rich text content: %s", subElement.Text)
 			}
 		}
 	}
