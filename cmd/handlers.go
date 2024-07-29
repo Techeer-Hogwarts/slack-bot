@@ -66,19 +66,22 @@ func handleBlockActions(payload slack.InteractionCallback) {
 	for blockID, actionValues := range payload.View.State.Values {
 		for actionID, blockAction := range actionValues {
 			if blockID == "tech_stack_block" {
+				log.Println("Received tech stack block action")
 				log.Printf("Block ID: %s, Action ID: %s, Value: %v, Type: %v", blockID, actionID, blockAction.SelectedOptions, blockAction.Type)
 				for _, option := range blockAction.SelectedOptions {
 					log.Printf("Selected option value: %s", option.Value)
 				}
 			}
 			if blockID == "current_members_block" {
+				log.Println("Received current members block action")
 				log.Printf("Block ID: %s, Action ID: %s, Value: %v, Type: %v", blockID, actionID, blockAction.SelectedUsers, blockAction.Type)
 				for _, user := range blockAction.SelectedUsers {
 					log.Printf("Selected user ID: %s", user)
 				}
 			}
 
-			if blockID == "rich_text_block" && actionID == "rich_text_input-action" {
+			if actionID == "rich_text_input-action" {
+				log.Println("Received rich text block action")
 				var richTextValue RichTextInputValue
 				if err := json.Unmarshal([]byte(blockAction.Value), &richTextValue); err != nil {
 					log.Printf("Failed to parse rich text input: %v", err)
@@ -89,23 +92,13 @@ func handleBlockActions(payload slack.InteractionCallback) {
 					processRichTextElement(element)
 				}
 			} else {
+				log.Println("Received plain text block action")
 				var plainTextValue string
 				if err := json.Unmarshal([]byte(blockAction.Value), &plainTextValue); err == nil {
 					log.Printf("Block ID: %s, Action ID: %s, Plain Text Value: %s, Type: %s", blockID, actionID, plainTextValue, blockAction.Type)
 				} else {
 					log.Printf("Block ID: %s, Action ID: %s, Value: %v, Type: %v", blockID, actionID, blockAction.Value, blockAction.Type)
 				}
-			}
-		}
-	}
-}
-
-// Function to process rich text elements
-func processRichTextElement(element RichTextElement) {
-	if element.Type == "rich_text_section" {
-		for _, subElement := range element.Elements {
-			if subElement.Type == "text" {
-				log.Printf("Rich text content: %s", subElement.Text)
 			}
 		}
 	}
