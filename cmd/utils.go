@@ -256,3 +256,37 @@ func getAllUsers(api *slack.Client) error {
 
 	return nil
 }
+
+func openApplyModal(triggerID string) error {
+	api := slack.New(botToken)
+	modalRequest := slack.ModalViewRequest{
+		Type:   slack.VTModal,
+		Title:  slack.NewTextBlockObject("plain_text", "Apply to Team", false, false),
+		Close:  slack.NewTextBlockObject("plain_text", "Cancel", false, false),
+		Submit: slack.NewTextBlockObject("plain_text", "Submit", false, false),
+		Blocks: slack.Blocks{
+			BlockSet: []slack.Block{
+				slack.NewInputBlock(
+					"team_select",
+					slack.NewTextBlockObject("plain_text", "Select a Team", false, false),
+					slack.NewTextBlockObject("plain_text", "Select a team", false, false),
+					slack.NewOptionsSelectBlockElement(
+						slack.OptTypeStatic,
+						slack.NewTextBlockObject("plain_text", "Select a team", false, false),
+						"selected_team",
+						slack.NewOptionBlockObject("team1", slack.NewTextBlockObject("plain_text", "Team 1", false, false), nil),
+						slack.NewOptionBlockObject("team2", slack.NewTextBlockObject("plain_text", "Team 2", false, false), nil),
+					),
+				),
+				slack.NewInputBlock(
+					"resume_input",
+					slack.NewTextBlockObject("plain_text", "Upload Resume", false, false),
+					slack.NewTextBlockObject("plain_text", "Paste your resume link", false, false),
+					slack.NewPlainTextInputBlockElement(slack.NewTextBlockObject("plain_text", "Paste your resume link", false, false), "resume_link"),
+				),
+			},
+		},
+	}
+	_, err := api.OpenView(triggerID, modalRequest)
+	return err
+}

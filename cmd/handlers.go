@@ -54,13 +54,27 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
-	jsonVal := handleBlockActions(payload)
-	log.Println(jsonVal)
-	if err := postMessageToChannel(channelID, jsonVal); err != nil {
-		log.Printf("Failed to post message to channel: %v", err)
-		http.Error(w, "Failed to post message to channel", http.StatusInternalServerError)
-		return
+	if payload.Type == slack.InteractionTypeBlockActions {
+		for _, action := range payload.ActionCallback.BlockActions {
+			if action.ActionID == "apply_button" {
+				// Open the modal
+				err := openApplyModal(payload.TriggerID)
+				if err != nil {
+					log.Printf("Failed to open modal: %v", err)
+				}
+				return
+			}
+		}
+	} else {
+		jsonVal := handleBlockActions(payload)
+		log.Println(jsonVal)
+		if err := postMessageToChannel(channelID, jsonVal); err != nil {
+			log.Printf("Failed to post message to channel: %v", err)
+			http.Error(w, "Failed to post message to channel", http.StatusInternalServerError)
+			return
+		}
 	}
+	w.WriteHeader(http.StatusOK)
 }
 
 func postMessageToChannel(channelID string, message FormMessage) error {
@@ -69,7 +83,7 @@ func postMessageToChannel(channelID string, message FormMessage) error {
 	if err != nil {
 		return err
 	}
-	applyButton := slack.NewButtonBlockElement("apply_button", "apply", slack.NewTextBlockObject("plain_text", "Apply", false, false))
+	applyButton := slack.NewButtonBlockElement("apply_button", "apply", slack.NewTextBlockObject("plain_text", "지원", false, false))
 	actionBlock := slack.NewActionBlock("", applyButton)
 	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", messageText, false, false), nil, nil)
 	messageBlocks := slack.MsgOptionBlocks(section, actionBlock)
