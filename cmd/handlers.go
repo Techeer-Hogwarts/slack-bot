@@ -16,6 +16,13 @@ type FormMessage struct {
 	TeamRoles     []string `json:"roles"`
 	TechStacks    []string `json:"tech"`
 	Members       []string `json:"members"`
+	UxMembers     string   `json:"ux_members"`
+	FrontMembers  string   `json:"front_members"`
+	BackMembers   string   `json:"back_members"`
+	DataMembers   string   `json:"data_members"`
+	OpsMembers    string   `json:"ops_members"`
+	StudyMembers  string   `json:"study_members"`
+	EtcMembers    string   `json:"etc_members"`
 	NumNewMembers string   `json:"num_members"`
 	Description   string   `json:"description"`
 	Etc           string   `json:"etc"`
@@ -55,11 +62,6 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if payload.Type == slack.InteractionTypeBlockActions {
-		log.Println(payload.User)
-		log.Println(payload.Type)
-		log.Println(payload.ActionID)
-		log.Println(payload.Message)
-		log.Println(payload.Name)
 		log.Println("Received block actions 지원하기")
 		for _, action := range payload.ActionCallback.BlockActions {
 			if action.ActionID == "apply_button" {
@@ -72,22 +74,20 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		}
 		w.WriteHeader(http.StatusOK)
 	} else if payload.Type == slack.InteractionTypeViewSubmission {
-		log.Println(payload.Type)
 		log.Println(payload.User)
-		log.Println(payload.View.CallbackID)
-		log.Println(payload.View.PrivateMetadata)
-		log.Println(payload.View.Title.Text)
-		log.Println(payload.Message)
-		log.Println(payload.Name)
-		log.Println(payload.CallbackID)
-		jsonVal := handleBlockActions(payload)
-		log.Println(jsonVal)
-		if err := postMessageToChannel(channelID, jsonVal); err != nil {
-			log.Printf("Failed to post message to channel: %v", err)
-			http.Error(w, "Failed to post message to channel", http.StatusInternalServerError)
-			return
+		log.Println(payload.View.CallbackID) // this is the key to distinguish different modals
+		if payload.View.CallbackID == "recruitment_form" {
+			jsonVal := handleBlockActions(payload)
+			if err := postMessageToChannel(channelID, jsonVal); err != nil {
+				log.Printf("Failed to post message to channel: %v", err)
+				http.Error(w, "Failed to post message to channel", http.StatusInternalServerError)
+				return
+			}
+			w.WriteHeader(http.StatusOK)
+		} else if payload.View.CallbackID == "apply_form" {
+			log.Println("Received view submission 지원하기")
+			w.WriteHeader(http.StatusOK)
 		}
-		w.WriteHeader(http.StatusOK)
 	}
 }
 
@@ -131,8 +131,20 @@ func handleBlockActions(payload slack.InteractionCallback) FormMessage {
 				returnMessage.TeamName = blockAction.Value
 			case "multi_users_select-action":
 				returnMessage.Members = append(returnMessage.Members, blockAction.SelectedUsers...)
-			case "num_members":
-				returnMessage.NumNewMembers = blockAction.Value
+			case "num_ux_members":
+				returnMessage.UxMembers = blockAction.Value
+			case "num_front_members":
+				returnMessage.FrontMembers = blockAction.Value
+			case "num_back_members":
+				returnMessage.BackMembers = blockAction.Value
+			case "num_data_members":
+				returnMessage.DataMembers = blockAction.Value
+			case "num_sre_members":
+				returnMessage.OpsMembers = blockAction.Value
+			case "num_study_members":
+				returnMessage.StudyMembers = blockAction.Value
+			case "num_etc_members":
+				returnMessage.EtcMembers = blockAction.Value
 			case "plain_text_input-action":
 				if blockID == "team_desc_block" {
 					returnMessage.Description = blockAction.Value

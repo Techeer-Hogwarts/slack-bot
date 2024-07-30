@@ -51,38 +51,38 @@ func readModalJSON(filename string) (slack.ModalViewRequest, error) {
 	return modal, nil
 }
 
-func createModal(teams []string) slack.ModalViewRequest {
-	options := []*slack.OptionBlockObject{}
-	for _, team := range teams {
-		option := slack.NewOptionBlockObject(team, slack.NewTextBlockObject("plain_text", team, false, false), nil)
-		options = append(options, option)
-	}
+// func createModal(teams []string) slack.ModalViewRequest {
+// 	options := []*slack.OptionBlockObject{}
+// 	for _, team := range teams {
+// 		option := slack.NewOptionBlockObject(team, slack.NewTextBlockObject("plain_text", team, false, false), nil)
+// 		options = append(options, option)
+// 	}
 
-	selectBlockElement := slack.NewOptionsSelectBlockElement(
-		slack.OptTypeStatic,
-		slack.NewTextBlockObject("plain_text", "Select a team", false, false),
-		"team_select",
-		options...,
-	)
+// 	selectBlockElement := slack.NewOptionsSelectBlockElement(
+// 		slack.OptTypeStatic,
+// 		slack.NewTextBlockObject("plain_text", "Select a team", false, false),
+// 		"team_select",
+// 		options...,
+// 	)
 
-	selectBlock := slack.NewInputBlock(
-		"team_select",
-		slack.NewTextBlockObject("plain_text", "Select a team", false, false),
-		nil,
-		selectBlockElement,
-	)
+// 	selectBlock := slack.NewInputBlock(
+// 		"team_select",
+// 		slack.NewTextBlockObject("plain_text", "Select a team", false, false),
+// 		nil,
+// 		selectBlockElement,
+// 	)
 
-	blocks := slack.Blocks{
-		BlockSet: []slack.Block{
-			slack.NewSectionBlock(slack.NewTextBlockObject("plain_text", "Apply to a Team", false, false), nil, nil),
-			selectBlock,
-		},
-	}
+// 	blocks := slack.Blocks{
+// 		BlockSet: []slack.Block{
+// 			slack.NewSectionBlock(slack.NewTextBlockObject("plain_text", "Apply to a Team", false, false), nil, nil),
+// 			selectBlock,
+// 		},
+// 	}
 
-	return slack.ModalViewRequest{
-		Type:       slack.VTModal,
-		Title:      slack.NewTextBlockObject("plain_text", "Team Application", false, false),
-		Blocks:     blocks,
-		CallbackID: "team_application_modal",
-	}
-}
+// 	return slack.ModalViewRequest{
+// 		Type:       slack.VTModal,
+// 		Title:      slack.NewTextBlockObject("plain_text", "Team Application", false, false),
+// 		Blocks:     blocks,
+// 		CallbackID: "recruitment_form",
+// 	}
+// }

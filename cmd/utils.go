@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/slack-go/slack"
@@ -179,14 +180,14 @@ func TriggerEvent(w http.ResponseWriter, r *http.Request) {
 	log.Println("Trigger event processed successfully")
 }
 
-func getUsernameAndEmail(api *slack.Client, userID string) (string, error) {
-	user, err := api.GetUserInfo(userID)
-	if err != nil {
-		return "", err
-	}
+// func getUsernameAndEmail(api *slack.Client, userID string) (string, error) {
+// 	user, err := api.GetUserInfo(userID)
+// 	if err != nil {
+// 		return "", err
+// 	}
 
-	return user.RealName, nil
-}
+// 	return user.RealName, nil
+// }
 
 func constructMessageText(message FormMessage) (string, error) {
 	if len(message.TeamRoles) == 0 || message.NumNewMembers == "" {
@@ -197,18 +198,74 @@ func constructMessageText(message FormMessage) (string, error) {
 		"> " + emoji_star + "*팀장* <<@" + message.TeamLeader + ">>\n\n\n\n" +
 		"> " + emoji_notebook + "*팀/프로젝트 설명*\n" + message.Description + "\n\n\n\n" +
 		"> " + emoji_stack + "*사용되는 기술*\n" + formatListStacks(message.TechStacks) + "\n\n\n\n" +
-		"> " + emoji_dart + "*모집하는 직군 & 인원*\n" + formatListRoles(message.TeamRoles, message.NumNewMembers) + "\n\n\n\n" +
+		"> " + emoji_dart + "*모집하는 직군 & 인원*\n" + formatListRoles(message) + "\n\n\n\n" +
 		"> " + "*그 외 추가적인 정보* \n" + message.Etc + "\n\n자세한 문의사항은" + "<@" + message.TeamLeader + ">" + "에게 DM으로 문의 주세요!", nil
 }
 
-func formatListRoles(items []string, numPeople string) string {
-	if len(items) == 0 {
-		return "None"
-	}
+func formatListRoles(message FormMessage) string {
 	var roles []string
-	for _, role := range items {
-		role_text := " • " + roleMap[role] + " (" + numPeople + "명)\n"
-		roles = append(roles, role_text)
+	uxNum, err := strconv.Atoi(message.UxMembers)
+	if err != nil {
+		uxNum = 0
+	}
+	if uxNum == 0 {
+		log.Println("No UX/UI members")
+	} else {
+		roles = append(roles, " • "+roleMap["uxui"]+" ("+message.UxMembers+"명)\n")
+	}
+	frontNum, err := strconv.Atoi(message.FrontMembers)
+	if err != nil {
+		frontNum = 0
+	}
+	if frontNum == 0 {
+		log.Println("No Frontend members")
+	} else {
+		roles = append(roles, " • "+roleMap["frontend"]+" ("+message.FrontMembers+"명)\n")
+	}
+	backNum, err := strconv.Atoi(message.BackMembers)
+	if err != nil {
+		backNum = 0
+	}
+	if backNum == 0 {
+		log.Println("No Backend members")
+	} else {
+		roles = append(roles, " • "+roleMap["backend"]+" ("+message.BackMembers+"명)\n")
+	}
+	dataNum, err := strconv.Atoi(message.DataMembers)
+	if err != nil {
+		dataNum = 0
+	}
+	if dataNum == 0 {
+		log.Println("No Data members")
+	} else {
+		roles = append(roles, " • "+roleMap["data"]+" ("+message.DataMembers+"명)\n")
+	}
+	opsNum, err := strconv.Atoi(message.OpsMembers)
+	if err != nil {
+		opsNum = 0
+	}
+	if opsNum == 0 {
+		log.Println("No OPS/SRE members")
+	} else {
+		roles = append(roles, " • "+roleMap["devops"]+" ("+message.OpsMembers+"명)\n")
+	}
+	studyNum, err := strconv.Atoi(message.StudyMembers)
+	if err != nil {
+		studyNum = 0
+	}
+	if studyNum == 0 {
+		log.Println("No Study members")
+	} else {
+		roles = append(roles, " • "+roleMap["study"]+" ("+message.StudyMembers+"명)\n")
+	}
+	etcNum, err := strconv.Atoi(message.EtcMembers)
+	if err != nil {
+		etcNum = 0
+	}
+	if etcNum == 0 {
+		log.Println("No Etc members")
+	} else {
+		roles = append(roles, " • "+roleMap["etc"]+" ("+message.EtcMembers+"명)\n")
 	}
 	return strings.Join(roles, "")
 }
@@ -261,7 +318,7 @@ func openApplyModal(triggerID string) error {
 	api := slack.New(botToken)
 	modalRequest := slack.ModalViewRequest{
 		Type:       slack.VTModal,
-		CallbackID: "apply_modal",
+		CallbackID: "apply_form",
 		Title:      slack.NewTextBlockObject("plain_text", "Apply to Team", false, false),
 		Close:      slack.NewTextBlockObject("plain_text", "Cancel", false, false),
 		Submit:     slack.NewTextBlockObject("plain_text", "Submit", false, false),
@@ -275,7 +332,7 @@ func openApplyModal(triggerID string) error {
 						slack.OptTypeStatic,
 						slack.NewTextBlockObject("plain_text", "내부", false, false),
 						"selected_team",
-						slack.NewOptionBlockObject("team1", slack.NewTextBlockObject("plain_text", "Team 1", false, false), nil),
+						slack.NewOptionBlockObject("내부 키", slack.NewTextBlockObject("plain_text", "Team 1", false, false), nil),
 						slack.NewOptionBlockObject("team2", slack.NewTextBlockObject("plain_text", "Team 2", false, false), nil),
 					),
 				),

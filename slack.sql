@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS teams (
     num_members INT DEFAULT 0,
     team_etc TEXT,
     message_ts VARCHAR(100),
+    is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
