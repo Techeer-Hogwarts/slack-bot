@@ -190,8 +190,8 @@ func TriggerEvent(w http.ResponseWriter, r *http.Request) {
 // }
 
 func constructMessageText(message FormMessage) (string, error) {
-	if len(message.Members) == 0 || message.Description == "" || message.TeamName == "" || message.TeamLeader == "" || message.TechStacks == nil {
-		return "", errors.New("TeamRoles is nil")
+	if len(message.Members) == 0 || message.Description == "" || message.TeamName == "" || message.TechStacks == nil {
+		return "", errors.New("missing required fields except team leader")
 	}
 	return "[" + emoji_people + message.TeamIntro + emoji_people + "]\n" +
 		"> " + emoji_golf + "*팀 이름* \n " + message.TeamName + "\n\n\n\n" +
