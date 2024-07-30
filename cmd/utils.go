@@ -193,12 +193,12 @@ func constructMessageText(message FormMessage) (string, error) {
 		return "", errors.New("TeamRoles is nil")
 	}
 	return "[" + emoji_people + message.TeamIntro + emoji_people + "]\n" +
-		"> " + emoji_golf + "* 팀 이름* \n " + message.TeamName + "\n\n" +
-		"> " + emoji_star + "* 팀장*: <<@" + message.TeamLeader + ">>\n\n" +
-		"> " + emoji_notebook + "* 팀/프로젝트 설명*: \n" + message.Description + "\n" +
-		"> " + emoji_stack + "사용되는 기술: \n" + formatListStacks(message.TechStacks) + "\n" +
-		"> " + emoji_dart + "모집하는 직군 & 인원: \n" + formatListRoles(message.TeamRoles, message.NumNewMembers) + "\n" +
-		"> " + "그 외 추가적인 정보: \n" + message.Etc + "자세한 문의사항은" + "<@" + message.TeamLeader + ">" + "에게 DM으로 문의 주세요!", nil
+		"> " + emoji_golf + "* 팀 이름 * \n " + message.TeamName + "\n\n\n\n" +
+		"> " + emoji_star + "* 팀장 * <<@" + message.TeamLeader + ">>\n\n\n\n" +
+		"> " + emoji_notebook + "* 팀/프로젝트 설명 *\n" + message.Description + "\n\n\n\n" +
+		"> " + emoji_stack + "* 사용되는 기술 *\n" + formatListStacks(message.TechStacks) + "\n\n\n\n" +
+		"> " + emoji_dart + "* 모집하는 직군 & 인원 *\n" + formatListRoles(message.TeamRoles, message.NumNewMembers) + "\n\n\n\n" +
+		"> " + "* 그 외 추가적인 정보 * \n" + message.Etc + "자세한 문의사항은" + "<@" + message.TeamLeader + ">" + "에게 DM으로 문의 주세요!", nil
 }
 
 func formatListRoles(items []string, numPeople string) string {
@@ -207,10 +207,10 @@ func formatListRoles(items []string, numPeople string) string {
 	}
 	var roles []string
 	for _, role := range items {
-		roles = append(roles, roleMap[role])
+		role_text := " • " + roleMap[role] + " (" + numPeople + "명)\n"
+		roles = append(roles, role_text)
 	}
-	divider := "(" + numPeople + "명)" + "\n - "
-	return " - " + strings.Join(roles, divider)
+	return strings.Join(roles, "")
 }
 
 func formatListStacks(items []string) string {
@@ -219,9 +219,10 @@ func formatListStacks(items []string) string {
 	}
 	var stacks []string
 	for _, stack := range items {
-		stacks = append(stacks, stackMap[stack])
+		stack_text := "`" + stackMap[stack] + "`, "
+		stacks = append(stacks, stack_text)
 	}
-	return "`" + strings.Join(stacks, "` ")
+	return strings.Join(stacks, "")
 }
 
 // func formatListMembers(items []string) string {
