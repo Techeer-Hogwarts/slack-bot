@@ -67,11 +67,11 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		}
 		w.WriteHeader(http.StatusOK)
 	} else {
-		log.Println(payload.Type)
-		log.Panicln(payload.ActionID)
-		log.Panicln(payload.Message)
-		log.Panicln(payload.User)
-		log.Panicln(payload.Name)
+		// log.Println(payload.Type)
+		// log.Panicln(payload.ActionID)
+		// log.Panicln(payload.Message)
+		// log.Panicln(payload.User)
+		// log.Panicln(payload.Name)
 		jsonVal := handleBlockActions(payload)
 		log.Println(jsonVal)
 		if err := postMessageToChannel(channelID, jsonVal); err != nil {
