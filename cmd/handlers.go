@@ -74,7 +74,9 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 	} else if payload.Type == slack.InteractionTypeViewSubmission {
 		log.Println(payload.Type)
 		log.Println(payload.User)
-		log.Println(payload.ActionID)
+		log.Println(payload.View.CallbackID)
+		log.Println(payload.View.PrivateMetadata)
+		log.Println(payload.View.Title.Text)
 		log.Println(payload.Message)
 		log.Println(payload.Name)
 		log.Println(payload.CallbackID)
