@@ -20,6 +20,15 @@ var (
 	stackMap   map[string]string
 )
 
+const (
+	emoji_people   = ":people_holding_hands::skin-tone-2-3:"
+	emoji_golf     = ":golf:"
+	emoji_star     = ":star2:"
+	emoji_notebook = ":notebook:"
+	emoji_stack    = ":hammer_and_pick:"
+	emoji_dart     = ":dart:"
+)
+
 func init() {
 	LoadEnv()
 	signingKey = GetEnv("SLACK_SIGNING_SECRET", "")
@@ -183,19 +192,16 @@ func constructMessageText(message FormMessage) (string, error) {
 	if len(message.TeamRoles) == 0 || message.NumNewMembers == "" {
 		return "", errors.New("TeamRoles is nil")
 	}
-	return "_새로운 프로젝트/스터디 팀이 등록 되었습니다:_\n" +
-		"*팀 소개:* \n >" + message.TeamIntro + "\n" +
-		"팀 이름: \n *" + message.TeamName + "*\n" +
-		"팀장: @<" + message.TeamLeader + ">\n" +
-		"모집하는 직군: \n" + formatListRoles(message.TeamRoles) + "\n" +
-		"사용되는 기술: \n" + formatListStacks(message.TechStacks) + "\n" +
-		"현 멤버들: \n" + formatListMembers(message.Members) + ">\n" +
-		"추가 모집 인원: " + message.NumNewMembers + "명\n" +
-		"팀/프로젝트 설명: \n" + message.Description + "\n" +
-		"그 외 추가적인 정보: \n" + message.Etc, nil
+	return "[" + emoji_people + message.TeamIntro + emoji_people + "]\n" +
+		"> " + emoji_golf + "* 팀 이름* \n " + message.TeamName + "\n\n" +
+		"> " + emoji_star + "* 팀장*: <<@" + message.TeamLeader + ">>\n\n" +
+		"> " + emoji_notebook + "* 팀/프로젝트 설명*: \n" + message.Description + "\n" +
+		"> " + emoji_stack + "사용되는 기술: \n" + formatListStacks(message.TechStacks) + "\n" +
+		"> " + emoji_dart + "모집하는 직군 & 인원: \n" + formatListRoles(message.TeamRoles, message.NumNewMembers) + "\n" +
+		"> " + "그 외 추가적인 정보: \n" + message.Etc + "자세한 문의사항은" + "<@" + message.TeamLeader + ">" + "에게 DM으로 문의 주세요!", nil
 }
 
-func formatListRoles(items []string) string {
+func formatListRoles(items []string, numPeople string) string {
 	if len(items) == 0 {
 		return "None"
 	}
@@ -203,7 +209,8 @@ func formatListRoles(items []string) string {
 	for _, role := range items {
 		roles = append(roles, roleMap[role])
 	}
-	return "- " + strings.Join(roles, "\n- ")
+	divider := "(" + numPeople + "명)" + "\n - "
+	return " - " + strings.Join(roles, divider)
 }
 
 func formatListStacks(items []string) string {
@@ -214,15 +221,15 @@ func formatListStacks(items []string) string {
 	for _, stack := range items {
 		stacks = append(stacks, stackMap[stack])
 	}
-	return strings.Join(stacks, "\t")
+	return "`" + strings.Join(stacks, "` ")
 }
 
-func formatListMembers(items []string) string {
-	if len(items) == 0 {
-		return "None"
-	}
-	return "<@" + strings.Join(items, "> <@")
-}
+// func formatListMembers(items []string) string {
+// 	if len(items) == 0 {
+// 		return "None"
+// 	}
+// 	return "<@" + strings.Join(items, "> <@")
+// }
 
 func getAllUsers(api *slack.Client) error {
 
