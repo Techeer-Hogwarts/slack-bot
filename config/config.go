@@ -1,13 +1,11 @@
 package config
 
 import (
-	"os"
-
-	"github.com/thomas-and-friends/slack-bot/cmd"
+	"github.com/thomas-and-friends/slack-bot/cmd" // Add this import statement
 )
 
 func PostgresDBConfig() string {
 	cmd.LoadEnv()
-	dbURL := os.Getenv("DATABASE_URL")
+	dbURL := cmd.GetEnv("DATABASE_URL", "")
 	return dbURL
 }

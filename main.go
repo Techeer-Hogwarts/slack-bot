@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/thomas-and-friends/slack-bot/cmd"
@@ -13,7 +12,7 @@ import (
 var err error
 
 func main() {
-	port := os.Getenv("PORT")
+	port := cmd.GetEnv("PORT", "")
 	http.HandleFunc("/slack/commands", cmd.HandleSlashCommand)
 	http.HandleFunc("/trigger_event", cmd.TriggerEvent)
 	http.HandleFunc("/slack/interactions", cmd.HandleInteraction)
