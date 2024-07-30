@@ -15,6 +15,11 @@
 			},
 			"element": {
 				"type": "plain_text_input",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "ex. 무슨무슨팀에서 누구누구 구합니다",
+					"emoji": true
+				},
 				"action_id": "team_intro"
 			}
 		},
@@ -27,6 +32,11 @@
 			},
 			"element": {
 				"type": "plain_text_input",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "팀 이름",
+					"emoji": true
+				},
 				"action_id": "team_name"
 			}
 		},
@@ -41,81 +51,10 @@
 				"type": "users_select",
 				"placeholder": {
 					"type": "plain_text",
-					"text": "Select a user",
+					"text": "유저 선택",
 					"emoji": true
 				},
 				"action_id": "users_select-action"
-			}
-		},
-		{
-			"type": "input",
-			"block_id": "team_role_block",
-			"element": {
-				"type": "multi_static_select",
-				"options": [
-					{
-						"text": {
-							"type": "plain_text",
-							"text": "UX/UI Designer",
-							"emoji": true
-						},
-						"value": "uxui"
-					},
-					{
-						"text": {
-							"type": "plain_text",
-							"text": "Frontend Developer",
-							"emoji": true
-						},
-						"value": "frontend"
-					},
-					{
-						"text": {
-							"type": "plain_text",
-							"text": "Backend Developer",
-							"emoji": true
-						},
-						"value": "backend"
-					},
-					{
-						"text": {
-							"type": "plain_text",
-							"text": "Data Engineer",
-							"emoji": true
-						},
-						"value": "data"
-					},
-					{
-						"text": {
-							"type": "plain_text",
-							"text": "OPS/SRE",
-							"emoji": true
-						},
-						"value": "devops"
-					},
-					{
-						"text": {
-							"type": "plain_text",
-							"text": "스터디",
-							"emoji": true
-						},
-						"value": "study"
-					},
-					{
-						"text": {
-							"type": "plain_text",
-							"text": "기타",
-							"emoji": true
-						},
-						"value": "etc"
-					}
-				],
-				"action_id": "multi_static_select-action"
-			},
-			"label": {
-				"type": "plain_text",
-				"text": "구하는 직군",
-				"emoji": true
 			}
 		},
 		{
@@ -125,7 +64,7 @@
 				"type": "multi_static_select",
 				"placeholder": {
 					"type": "plain_text",
-					"text": "Select options",
+					"text": "스택 추가하기",
 					"emoji": true
 				},
 				"options": [
@@ -255,7 +194,7 @@
 							"text": "Kubernetes",
 							"emoji": true
 						},
-						"value": "kube"
+						"value": "kubernetes"
 					},
 					{
 						"text": {
@@ -447,7 +386,7 @@
 							"text": "Grafana",
 							"emoji": true
 						},
-						"value": "grafana"
+						"value": "Grafana"
 					},
 					{
 						"text": {
@@ -511,7 +450,7 @@
 							"text": "PostgreSQL",
 							"emoji": true
 						},
-						"value": "postgre"
+						"value": "Postgre"
 					},
 					{
 						"text": {
@@ -553,7 +492,7 @@
 				"type": "multi_users_select",
 				"placeholder": {
 					"type": "plain_text",
-					"text": "Select users",
+					"text": "팀장 포함 멤버 추가하기",
 					"emoji": true
 				},
 				"action_id": "multi_users_select-action"
@@ -562,18 +501,109 @@
 				"type": "plain_text",
 				"text": "팀 멤버",
 				"emoji": true
+			},
+			"hint": {
+				"type": "plain_text",
+				"text": "팀장도 추가 해주세요",
+				"emoji": false
 			}
 		},
 		{
 			"type": "input",
-			"block_id": "num_members_block",
+			"block_id": "num_members_ux_block",
 			"label": {
 				"type": "plain_text",
-				"text": "구하는 멤버 수"
+				"text": "구하는 UX/UI Designer 인원수"
 			},
 			"element": {
-				"type": "plain_text_input",
-				"action_id": "num_members"
+				"type": "number_input",
+				"is_decimal_allowed": false,
+				"initial_value": "0",
+				"action_id": "num_ux_members"
+			}
+		},
+		{
+			"type": "input",
+			"block_id": "num_members_front_block",
+			"label": {
+				"type": "plain_text",
+				"text": "구하는 Frontend Developer 인원수"
+			},
+			"element": {
+				"type": "number_input",
+				"is_decimal_allowed": false,
+				"initial_value": "0",
+				"action_id": "num_front_members"
+			}
+		},
+		{
+			"type": "input",
+			"block_id": "num_members_back_block",
+			"label": {
+				"type": "plain_text",
+				"text": "구하는 Backend Developer 인원수"
+			},
+			"element": {
+				"type": "number_input",
+				"is_decimal_allowed": false,
+				"initial_value": "0",
+				"action_id": "num_back_members"
+			}
+		},
+		{
+			"type": "input",
+			"block_id": "num_members_data_block",
+			"label": {
+				"type": "plain_text",
+				"text": "구하는 Data Engineer 인원수"
+			},
+			"element": {
+				"type": "number_input",
+				"is_decimal_allowed": false,
+				"initial_value": "0",
+				"action_id": "num_data_members"
+			}
+		},
+		{
+			"type": "input",
+			"block_id": "num_members_sre_block",
+			"label": {
+				"type": "plain_text",
+				"text": "구하는 Ops/SRE 인원수"
+			},
+			"element": {
+				"type": "number_input",
+				"is_decimal_allowed": false,
+				"initial_value": "0",
+				"action_id": "num_sre_members"
+			}
+		},
+		{
+			"type": "input",
+			"block_id": "num_members_study_block",
+			"label": {
+				"type": "plain_text",
+				"text": "구하는 스터디 인원수"
+			},
+			"element": {
+				"type": "number_input",
+				"is_decimal_allowed": false,
+				"initial_value": "0",
+				"action_id": "num_study_members"
+			}
+		},
+		{
+			"type": "input",
+			"block_id": "num_members_etc_block",
+			"label": {
+				"type": "plain_text",
+				"text": "구하는 기타 인원수 (기타 내용에 직군 추가 해주세요)"
+			},
+			"element": {
+				"type": "number_input",
+				"is_decimal_allowed": false,
+				"initial_value": "0",
+				"action_id": "num_etc_members"
 			}
 		},
 		{
@@ -581,6 +611,11 @@
 			"block_id": "team_desc_block",
 			"element": {
 				"type": "plain_text_input",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "팀 설명 내용 추가 (마크다운)",
+					"emoji": true
+				},
 				"multiline": true,
 				"action_id": "plain_text_input-action"
 			},
@@ -595,6 +630,11 @@
 			"block_id": "team_etc_block",
 			"element": {
 				"type": "plain_text_input",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "기타 내용 추가 (마크다운)",
+					"emoji": true
+				},
 				"multiline": true,
 				"action_id": "plain_text_input-action"
 			},
