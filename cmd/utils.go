@@ -112,23 +112,6 @@ func VerifySlackRequest(req *http.Request) error {
 	return nil
 }
 
-// func getChannelMessages(api *slack.Client, channelID string) ([]string, error) {
-// 	var messageTexts []string
-// 	historyParams := slack.GetConversationHistoryParameters{
-// 		ChannelID: channelID,
-// 		Limit:     100,
-// 	}
-
-// 	history, err := api.GetConversationHistory(&historyParams)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-//		for _, message := range history.Messages {
-//			messageTexts = append(messageTexts, message.Text)
-//		}
-//		return messageTexts, nil
-//	}
 func getChannelMessages(api *slack.Client, channelID string) (*slack.GetConversationHistoryResponse, error) {
 	historyParams := slack.GetConversationHistoryParameters{
 		ChannelID: channelID,

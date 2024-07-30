@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
 -- Table for storing team information
 CREATE TABLE IF NOT EXISTS teams (
     team_id SERIAL PRIMARY KEY,
+    team_type VARCHAR(50) NOT NULL,
     team_intro TEXT,
     team_name VARCHAR(100) NOT NULL,
     team_leader INT REFERENCES users(user_id) ON DELETE CASCADE,

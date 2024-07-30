@@ -69,7 +69,12 @@ func postMessageToChannel(channelID string, message FormMessage) error {
 	if err != nil {
 		return err
 	}
-	_, _, err = api.PostMessage(channelID, slack.MsgOptionText(messageText, false))
+	applyButton := slack.NewButtonBlockElement("apply_button", "apply", slack.NewTextBlockObject("plain_text", "Apply", false, false))
+	actionBlock := slack.NewActionBlock("", applyButton)
+	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", messageText, false, false), nil, nil)
+	messageBlocks := slack.MsgOptionBlocks(section, actionBlock)
+
+	_, _, err = api.PostMessage(channelID, messageBlocks)
 	return err
 }
 
