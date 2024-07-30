@@ -55,6 +55,11 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if payload.Type == slack.InteractionTypeBlockActions {
+		log.Println(payload.User)
+		log.Println(payload.Type)
+		log.Println(payload.ActionID)
+		log.Println(payload.Message)
+		log.Println(payload.Name)
 		log.Println("Received block actions 지원하기")
 		for _, action := range payload.ActionCallback.BlockActions {
 			if action.ActionID == "apply_button" {
@@ -67,11 +72,11 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		}
 		w.WriteHeader(http.StatusOK)
 	} else {
-		// log.Println(payload.Type)
-		// log.Panicln(payload.ActionID)
-		// log.Panicln(payload.Message)
-		// log.Panicln(payload.User)
-		// log.Panicln(payload.Name)
+		log.Println(payload.Type)
+		log.Println(payload.User)
+		log.Println(payload.ActionID)
+		log.Println(payload.Message)
+		log.Println(payload.Name)
 		jsonVal := handleBlockActions(payload)
 		log.Println(jsonVal)
 		if err := postMessageToChannel(channelID, jsonVal); err != nil {
