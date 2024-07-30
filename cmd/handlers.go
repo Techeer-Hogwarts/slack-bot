@@ -13,7 +13,6 @@ type FormMessage struct {
 	TeamLeader    string   `json:"leader"`
 	TeamIntro     string   `json:"intro"`
 	TeamName      string   `json:"name"`
-	TeamRoles     []string `json:"roles"`
 	TechStacks    []string `json:"tech"`
 	Members       []string `json:"members"`
 	UxMembers     string   `json:"ux_members"`
@@ -116,9 +115,6 @@ func handleBlockActions(payload slack.InteractionCallback) FormMessage {
 				static_actions := []string{}
 				for _, action := range blockAction.SelectedOptions {
 					static_actions = append(static_actions, action.Value)
-				}
-				if blockID == "team_role_block" {
-					returnMessage.TeamRoles = static_actions
 				}
 				if blockID == "tech_stack_block" {
 					returnMessage.TechStacks = static_actions

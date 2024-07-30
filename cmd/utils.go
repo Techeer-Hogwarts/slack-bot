@@ -190,7 +190,7 @@ func TriggerEvent(w http.ResponseWriter, r *http.Request) {
 // }
 
 func constructMessageText(message FormMessage) (string, error) {
-	if len(message.TeamRoles) == 0 || message.NumNewMembers == "" {
+	if len(message.Members) == 0 || message.Description == "" || message.TeamName == "" || message.TeamLeader == "" || message.TechStacks == nil {
 		return "", errors.New("TeamRoles is nil")
 	}
 	return "[" + emoji_people + message.TeamIntro + emoji_people + "]\n" +
