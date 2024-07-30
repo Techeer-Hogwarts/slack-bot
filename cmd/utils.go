@@ -20,6 +20,15 @@ var (
 	stackMap   map[string]string
 )
 
+const (
+	emoji_people   = ":people_holding_hands::skin-tone-2-3:"
+	emoji_golf     = ":golf:"
+	emoji_star     = ":star2:"
+	emoji_notebook = ":notebook:"
+	emoji_stack    = ":hammer_and_pick:"
+	emoji_dart     = ":dart:"
+)
+
 func init() {
 	LoadEnv()
 	signingKey = GetEnv("SLACK_SIGNING_SECRET", "")
@@ -112,23 +121,6 @@ func VerifySlackRequest(req *http.Request) error {
 	return nil
 }
 
-// func getChannelMessages(api *slack.Client, channelID string) ([]string, error) {
-// 	var messageTexts []string
-// 	historyParams := slack.GetConversationHistoryParameters{
-// 		ChannelID: channelID,
-// 		Limit:     100,
-// 	}
-
-// 	history, err := api.GetConversationHistory(&historyParams)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-//		for _, message := range history.Messages {
-//			messageTexts = append(messageTexts, message.Text)
-//		}
-//		return messageTexts, nil
-//	}
 func getChannelMessages(api *slack.Client, channelID string) (*slack.GetConversationHistoryResponse, error) {
 	historyParams := slack.GetConversationHistoryParameters{
 		ChannelID: channelID,
@@ -193,14 +185,6 @@ func getUsernameAndEmail(api *slack.Client, userID string) (string, error) {
 		return "", err
 	}
 
-	// Convert user object to JSON for detailed logging
-	// userJSON, err := json.MarshalIndent(user, "", "  ")
-	// if err != nil {
-	// 	log.Printf("Failed to marshal user object: %v", err)
-	// } else {
-	// 	log.Printf("User details: %s", userJSON)
-	// }
-
 	return user.RealName, nil
 }
 
@@ -208,19 +192,16 @@ func constructMessageText(message FormMessage) (string, error) {
 	if len(message.TeamRoles) == 0 || message.NumNewMembers == "" {
 		return "", errors.New("TeamRoles is nil")
 	}
-	return "_새로운 프로젝트/스터디 팀이 등록 되었습니다:_\n" +
-		"*팀 소개:* \n >" + message.TeamIntro + "\n" +
-		"팀 이름: \n *" + message.TeamName + "*\n" +
-		"팀장: @<" + message.TeamLeader + ">\n" +
-		"모집하는 직군: \n" + formatListRoles(message.TeamRoles) + "\n" +
-		"사용되는 기술: \n" + formatListStacks(message.TechStacks) + "\n" +
-		"현 멤버들: \n" + formatListMembers(message.Members) + ">\n" +
-		"추가 모집 인원: " + message.NumNewMembers + "명\n" +
-		"팀/프로젝트 설명: \n" + message.Description + "\n" +
-		"그 외 추가적인 정보: \n" + message.Etc, nil
+	return "[" + emoji_people + message.TeamIntro + emoji_people + "]\n" +
+		"> " + emoji_golf + "* 팀 이름* \n " + message.TeamName + "\n\n" +
+		"> " + emoji_star + "* 팀장*: <<@" + message.TeamLeader + ">>\n\n" +
+		"> " + emoji_notebook + "* 팀/프로젝트 설명*: \n" + message.Description + "\n" +
+		"> " + emoji_stack + "사용되는 기술: \n" + formatListStacks(message.TechStacks) + "\n" +
+		"> " + emoji_dart + "모집하는 직군 & 인원: \n" + formatListRoles(message.TeamRoles, message.NumNewMembers) + "\n" +
+		"> " + "그 외 추가적인 정보: \n" + message.Etc + "자세한 문의사항은" + "<@" + message.TeamLeader + ">" + "에게 DM으로 문의 주세요!", nil
 }
 
-func formatListRoles(items []string) string {
+func formatListRoles(items []string, numPeople string) string {
 	if len(items) == 0 {
 		return "None"
 	}
@@ -228,7 +209,8 @@ func formatListRoles(items []string) string {
 	for _, role := range items {
 		roles = append(roles, roleMap[role])
 	}
-	return "- " + strings.Join(roles, "\n- ")
+	divider := "(" + numPeople + "명)" + "\n - "
+	return " - " + strings.Join(roles, divider)
 }
 
 func formatListStacks(items []string) string {
@@ -239,12 +221,37 @@ func formatListStacks(items []string) string {
 	for _, stack := range items {
 		stacks = append(stacks, stackMap[stack])
 	}
-	return strings.Join(stacks, "\t")
+	return "`" + strings.Join(stacks, "` ")
 }
 
-func formatListMembers(items []string) string {
-	if len(items) == 0 {
-		return "None"
+// func formatListMembers(items []string) string {
+// 	if len(items) == 0 {
+// 		return "None"
+// 	}
+// 	return "<@" + strings.Join(items, "> <@")
+// }
+
+func getAllUsers(api *slack.Client) error {
+
+	users, err := api.GetUsers()
+	if err != nil {
+		return err
 	}
-	return "<@" + strings.Join(items, "> <@")
+	counter := 0
+	for _, user := range users {
+		username := user.Profile.DisplayNameNormalized
+		if username == "" {
+			username = user.Profile.RealNameNormalized
+		}
+		if !user.IsBot && !user.Deleted && !user.IsAppUser && !user.IsOwner && user.ID != "USLACKBOT" {
+			log.Printf("User ID: %v | User Name: %v ", user.ID, username)
+			counter++
+		}
+	}
+	log.Printf("Total number of users: %v", counter)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

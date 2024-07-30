@@ -9,9 +9,7 @@ import (
 	"github.com/slack-go/slack"
 )
 
-func openRecruitmentModal(w http.ResponseWriter, triggerID string) {
-	api := slack.New(botToken)
-
+func openRecruitmentModal(w http.ResponseWriter, triggerID string, api *slack.Client) {
 	// Read the modal JSON from a file
 	modal, err := readModalJSON("recruitment_form.json")
 	if err != nil {
@@ -28,6 +26,14 @@ func openRecruitmentModal(w http.ResponseWriter, triggerID string) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+func openApplicationModal(w http.ResponseWriter, triggerID string, api *slack.Client) {
+	log.Print("Opening application modal")
+}
+
+func openEditModal(w http.ResponseWriter, triggerID string, api *slack.Client) {
+	log.Print("Opening edit modal")
 }
 
 // Read modal JSON from a file

@@ -26,6 +26,15 @@ func SendHelloWorld(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Hello, World!"))
 }
 
+func TestEvent(w http.ResponseWriter, r *http.Request) {
+	api := slack.New(botToken)
+	err := getAllUsers(api)
+	if err != nil {
+		log.Println(err)
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
 func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
 		log.Printf("Failed to parse form data: %v", err)
@@ -56,24 +65,16 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 
 func postMessageToChannel(channelID string, message FormMessage) error {
 	api := slack.New(botToken)
-
-	// Convert user IDs to usernames and emails
-	// for i, userID := range message.Members {
-	// 	username, err := getUsernameAndEmail(api, userID)
-	// 	if err != nil {
-	// 		log.Printf("Failed to get user info for userID %s: %v", userID, err)
-	// 		continue
-	// 	}
-	// 	message.Members[i] = username
-	// }
-	// message.TeamLeader, _ = getUsernameAndEmail(api, message.TeamLeader)
-
-	// Construct the message text
 	messageText, err := constructMessageText(message)
 	if err != nil {
 		return err
 	}
-	_, _, err = api.PostMessage(channelID, slack.MsgOptionText(messageText, false))
+	applyButton := slack.NewButtonBlockElement("apply_button", "apply", slack.NewTextBlockObject("plain_text", "Apply", false, false))
+	actionBlock := slack.NewActionBlock("", applyButton)
+	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", messageText, false, false), nil, nil)
+	messageBlocks := slack.MsgOptionBlocks(section, actionBlock)
+
+	_, _, err = api.PostMessage(channelID, messageBlocks)
 	return err
 }
 
@@ -139,35 +140,13 @@ func HandleSlashCommand(w http.ResponseWriter, r *http.Request) {
 
 	switch command {
 	case "/구인":
-		openRecruitmentModal(w, triggerID)
-	case "/지원":
-		// Fetch recruitment messages from "bot-testing" channel
-		log.Println("checkpoint 0")
-		recruitmentMessages, err := getChannelMessages(api, channelID)
-		if err != nil {
-			log.Printf("Failed to retrieve recruitment messages: %v", err)
-			http.Error(w, "Failed to retrieve recruitment messages", http.StatusInternalServerError)
-			return
-		}
-		log.Println("checkpoint 1")
-
-		// Extract team names from recruitment messages (assuming each message has a unique team name)
-		var teams []string
-		for _, msg := range recruitmentMessages.Messages {
-			teams = append(teams, msg.Text) // Modify as per your message structure to extract team names
-		}
-		log.Println("checkpoint 2")
-
-		// Create a selection form or modal for the user to choose a team
-		modalRequest := createModal(teams)
-		log.Println("checkpoint 3")
-		// Open the modal
-		_, err = api.OpenView(triggerID, modalRequest)
-		if err != nil {
-			http.Error(w, "Failed to open modal", http.StatusInternalServerError)
-			return
-		}
+		openRecruitmentModal(w, triggerID, api)
 		w.WriteHeader(http.StatusOK)
+	case "/지원":
+		openApplicationModal(w, triggerID, api)
+		w.WriteHeader(http.StatusOK)
+	case "/수정":
+		openEditModal(w, triggerID, api)
 	default:
 		w.WriteHeader(http.StatusOK)
 	}
