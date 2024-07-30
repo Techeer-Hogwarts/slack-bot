@@ -193,12 +193,12 @@ func constructMessageText(message FormMessage) (string, error) {
 		return "", errors.New("TeamRoles is nil")
 	}
 	return "[" + emoji_people + message.TeamIntro + emoji_people + "]\n" +
-		"> " + emoji_golf + "* 팀 이름* \n " + message.TeamName + "\n\n" +
-		"> " + emoji_star + "* 팀장*: <<@" + message.TeamLeader + ">>\n\n" +
-		"> " + emoji_notebook + "* 팀/프로젝트 설명*: \n" + message.Description + "\n" +
-		"> " + emoji_stack + "사용되는 기술: \n" + formatListStacks(message.TechStacks) + "\n" +
-		"> " + emoji_dart + "모집하는 직군 & 인원: \n" + formatListRoles(message.TeamRoles, message.NumNewMembers) + "\n" +
-		"> " + "그 외 추가적인 정보: \n" + message.Etc + "자세한 문의사항은" + "<@" + message.TeamLeader + ">" + "에게 DM으로 문의 주세요!", nil
+		"> " + emoji_golf + "* 팀 이름 * \n " + message.TeamName + "\n\n\n\n" +
+		"> " + emoji_star + "* 팀장 * <<@" + message.TeamLeader + ">>\n\n\n\n" +
+		"> " + emoji_notebook + "* 팀/프로젝트 설명 *\n" + message.Description + "\n\n\n\n" +
+		"> " + emoji_stack + "* 사용되는 기술 *\n" + formatListStacks(message.TechStacks) + "\n\n\n\n" +
+		"> " + emoji_dart + "* 모집하는 직군 & 인원 *\n" + formatListRoles(message.TeamRoles, message.NumNewMembers) + "\n\n\n\n" +
+		"> " + "* 그 외 추가적인 정보 * \n" + message.Etc + "자세한 문의사항은" + "<@" + message.TeamLeader + ">" + "에게 DM으로 문의 주세요!", nil
 }
 
 func formatListRoles(items []string, numPeople string) string {
@@ -207,10 +207,10 @@ func formatListRoles(items []string, numPeople string) string {
 	}
 	var roles []string
 	for _, role := range items {
-		roles = append(roles, roleMap[role])
+		role_text := " • " + roleMap[role] + " (" + numPeople + "명)\n"
+		roles = append(roles, role_text)
 	}
-	divider := "(" + numPeople + "명)" + "\n - "
-	return " - " + strings.Join(roles, divider)
+	return strings.Join(roles, "")
 }
 
 func formatListStacks(items []string) string {
@@ -219,9 +219,10 @@ func formatListStacks(items []string) string {
 	}
 	var stacks []string
 	for _, stack := range items {
-		stacks = append(stacks, stackMap[stack])
+		stack_text := "`" + stackMap[stack] + "`, "
+		stacks = append(stacks, stack_text)
 	}
-	return "`" + strings.Join(stacks, "` ")
+	return strings.Join(stacks, "")
 }
 
 // func formatListMembers(items []string) string {
@@ -254,4 +255,38 @@ func getAllUsers(api *slack.Client) error {
 	}
 
 	return nil
+}
+
+func openApplyModal(triggerID string) error {
+	api := slack.New(botToken)
+	modalRequest := slack.ModalViewRequest{
+		Type:   slack.VTModal,
+		Title:  slack.NewTextBlockObject("plain_text", "Apply to Team", false, false),
+		Close:  slack.NewTextBlockObject("plain_text", "Cancel", false, false),
+		Submit: slack.NewTextBlockObject("plain_text", "Submit", false, false),
+		Blocks: slack.Blocks{
+			BlockSet: []slack.Block{
+				slack.NewInputBlock(
+					"team_select",
+					slack.NewTextBlockObject("plain_text", "Select a Team", false, false),
+					slack.NewTextBlockObject("plain_text", "Select a team", false, false),
+					slack.NewOptionsSelectBlockElement(
+						slack.OptTypeStatic,
+						slack.NewTextBlockObject("plain_text", "Select a team", false, false),
+						"selected_team",
+						slack.NewOptionBlockObject("team1", slack.NewTextBlockObject("plain_text", "Team 1", false, false), nil),
+						slack.NewOptionBlockObject("team2", slack.NewTextBlockObject("plain_text", "Team 2", false, false), nil),
+					),
+				),
+				slack.NewInputBlock(
+					"resume_input",
+					slack.NewTextBlockObject("plain_text", "Upload Resume", false, false),
+					slack.NewTextBlockObject("plain_text", "Paste your resume link", false, false),
+					slack.NewPlainTextInputBlockElement(slack.NewTextBlockObject("plain_text", "Paste your resume link", false, false), "resume_link"),
+				),
+			},
+		},
+	}
+	_, err := api.OpenView(triggerID, modalRequest)
+	return err
 }
