@@ -71,12 +71,13 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		w.WriteHeader(http.StatusOK)
-	} else {
+	} else if payload.Type == slack.InteractionTypeViewSubmission {
 		log.Println(payload.Type)
 		log.Println(payload.User)
 		log.Println(payload.ActionID)
 		log.Println(payload.Message)
 		log.Println(payload.Name)
+		log.Println(payload.CallbackID)
 		jsonVal := handleBlockActions(payload)
 		log.Println(jsonVal)
 		if err := postMessageToChannel(channelID, jsonVal); err != nil {
