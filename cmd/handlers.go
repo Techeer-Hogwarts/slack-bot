@@ -65,7 +65,13 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		}
+		w.WriteHeader(http.StatusOK)
 	} else {
+		log.Println(payload.Type)
+		log.Panicln(payload.ActionID)
+		log.Panicln(payload.Message)
+		log.Panicln(payload.User)
+		log.Panicln(payload.Name)
 		jsonVal := handleBlockActions(payload)
 		log.Println(jsonVal)
 		if err := postMessageToChannel(channelID, jsonVal); err != nil {
@@ -73,8 +79,8 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Failed to post message to channel", http.StatusInternalServerError)
 			return
 		}
+		w.WriteHeader(http.StatusOK)
 	}
-	w.WriteHeader(http.StatusOK)
 }
 
 func postMessageToChannel(channelID string, message FormMessage) error {
@@ -96,6 +102,7 @@ func handleBlockActions(payload slack.InteractionCallback) FormMessage {
 	returnMessage := FormMessage{FormID: "test"}
 	for blockID, actionValues := range payload.View.State.Values {
 		for actionID, blockAction := range actionValues {
+
 			switch actionID {
 			case "multi_static_select-action":
 				static_actions := []string{}
