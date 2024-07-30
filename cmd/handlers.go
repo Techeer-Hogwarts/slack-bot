@@ -55,9 +55,9 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if payload.Type == slack.InteractionTypeBlockActions {
+		log.Println("Received block actions 지원하기")
 		for _, action := range payload.ActionCallback.BlockActions {
 			if action.ActionID == "apply_button" {
-				// Open the modal
 				err := openApplyModal(payload.TriggerID)
 				if err != nil {
 					log.Printf("Failed to open modal: %v", err)
@@ -83,7 +83,7 @@ func postMessageToChannel(channelID string, message FormMessage) error {
 	if err != nil {
 		return err
 	}
-	applyButton := slack.NewButtonBlockElement("apply_button", "apply", slack.NewTextBlockObject("plain_text", "지원", false, false))
+	applyButton := slack.NewButtonBlockElement("apply_button", "apply", slack.NewTextBlockObject("plain_text", "지원하기!", false, false))
 	actionBlock := slack.NewActionBlock("", applyButton)
 	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", messageText, false, false), nil, nil)
 	messageBlocks := slack.MsgOptionBlocks(section, actionBlock)
