@@ -193,14 +193,6 @@ func getUsernameAndEmail(api *slack.Client, userID string) (string, error) {
 		return "", err
 	}
 
-	// Convert user object to JSON for detailed logging
-	// userJSON, err := json.MarshalIndent(user, "", "  ")
-	// if err != nil {
-	// 	log.Printf("Failed to marshal user object: %v", err)
-	// } else {
-	// 	log.Printf("User details: %s", userJSON)
-	// }
-
 	return user.RealName, nil
 }
 
@@ -247,4 +239,29 @@ func formatListMembers(items []string) string {
 		return "None"
 	}
 	return "<@" + strings.Join(items, "> <@")
+}
+
+func getAllUsers(api *slack.Client) error {
+
+	users, err := api.GetUsers()
+	if err != nil {
+		return err
+	}
+	counter := 0
+	for _, user := range users {
+		username := user.Profile.DisplayNameNormalized
+		if username == "" {
+			username = user.Profile.RealNameNormalized
+		}
+		if !user.IsBot && !user.Deleted && !user.IsAppUser && !user.IsOwner && user.ID != "USLACKBOT" {
+			log.Printf("User ID: %v | User Name: %v ", user.ID, username)
+			counter++
+		}
+	}
+	log.Printf("Total number of users: %v", counter)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
