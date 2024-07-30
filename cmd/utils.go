@@ -260,10 +260,11 @@ func getAllUsers(api *slack.Client) error {
 func openApplyModal(triggerID string) error {
 	api := slack.New(botToken)
 	modalRequest := slack.ModalViewRequest{
-		Type:   slack.VTModal,
-		Title:  slack.NewTextBlockObject("plain_text", "Apply to Team", false, false),
-		Close:  slack.NewTextBlockObject("plain_text", "Cancel", false, false),
-		Submit: slack.NewTextBlockObject("plain_text", "Submit", false, false),
+		Type:       slack.VTModal,
+		CallbackID: "apply_modal",
+		Title:      slack.NewTextBlockObject("plain_text", "Apply to Team", false, false),
+		Close:      slack.NewTextBlockObject("plain_text", "Cancel", false, false),
+		Submit:     slack.NewTextBlockObject("plain_text", "Submit", false, false),
 		Blocks: slack.Blocks{
 			BlockSet: []slack.Block{
 				slack.NewInputBlock(
