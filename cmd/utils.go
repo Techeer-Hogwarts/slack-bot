@@ -363,9 +363,6 @@ func getAllUsers(api *slack.Client) error {
 
 func addAllTags(api *slack.Client, stacks []db.Stack) error {
 	for _, value := range stacks {
-		jsonBytes, _ := json.Marshal(value)
-		log.Println(string(jsonBytes))
-
 		ms, _, _, err := db.GetTag(value.Key)
 		if ms == "na" {
 			err := db.AddTag(value.Key, value.Name, value.Type)
