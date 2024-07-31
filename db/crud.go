@@ -24,8 +24,8 @@ type Stack struct {
 	Type string `json:"type"`
 }
 
-func AddUser(userCode string, userName string) error {
-	_, err := DBMain.Exec("INSERT INTO users (user_code, user_name) VALUES ($1, $2)", userCode, userName)
+func AddUser(userCode string, userName string, email string) error {
+	_, err := DBMain.Exec("INSERT INTO users (user_code, user_name, user_email) VALUES ($1, $2, $3)", userCode, userName, email)
 	if err != nil {
 		return fmt.Errorf("failed to insert new user: %s", err.Error())
 	}
@@ -135,19 +135,19 @@ func GetTag(key string) (string, string, int, error) {
 	return tagName, tagType, tagID, nil
 }
 
-func AddTagsToTeam(teamID int, tag int) error {
-	_, err := DBMain.Exec("INSERT INTO team_tags (team_id, tag_id) VALUES ($1, $2)", teamID, tag)
-	if err != nil {
-		return fmt.Errorf("failed to insert new tag to team: %s", err.Error())
-	}
-	return nil
-}
-
 func AddTag(key string, value string, tagType string) error {
 	_, err := DBMain.Exec("INSERT INTO tags (tag_name, tag_long_name, tag_type) VALUES ($1, $2, $3)", key, value, tagType)
 	if err != nil {
 		return fmt.Errorf("failed to insert new tag: %s", err.Error())
 	}
 	log.Printf("Tag %s added to the database", key)
+	return nil
+}
+
+func AddTagsToTeam(teamID int, tag int) error {
+	_, err := DBMain.Exec("INSERT INTO team_tags (team_id, tag_id) VALUES ($1, $2)", teamID, tag)
+	if err != nil {
+		return fmt.Errorf("failed to insert new tag to team: %s", err.Error())
+	}
 	return nil
 }
