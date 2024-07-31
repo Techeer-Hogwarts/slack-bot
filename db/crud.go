@@ -6,6 +6,18 @@ import (
 	"log"
 )
 
+type Team struct {
+	TeamID     string
+	TeamType   string
+	TeamIntro  string
+	TeamName   string
+	TeamLeader string
+	TeamDesc   string
+	NumMembers int
+	TeamEtc    string
+	TeamTs     string
+}
+
 func AddUser(userCode string, userName string) error {
 	_, err := DBMain.Exec("INSERT INTO users (user_code, user_name) VALUES ($1, $2)", userCode, userName)
 	if err != nil {
@@ -36,8 +48,14 @@ func DeleteTeam() {
 	// Delete a team from the database
 }
 
-func GetTeams() {
-	// Get all teams from the database
+func GetTeam(ts string) (Team, error) {
+	// Get a team from the database
+	teamObj := Team{}
+	err := DBMain.QueryRow("SELECT * FROM teams WHERE team_ts = $1", ts).Scan(&teamObj.TeamID, &teamObj.TeamType, &teamObj.TeamIntro, &teamObj.TeamName, &teamObj.TeamLeader, &teamObj.TeamDesc, &teamObj.NumMembers, &teamObj.TeamEtc, &teamObj.TeamTs)
+	if err == sql.ErrNoRows {
+		return Team{}, fmt.Errorf("team not found")
+	}
+	return teamObj, nil
 }
 
 func AddUserToTeam() {
@@ -52,7 +70,7 @@ func GetTeamPost() {
 	// Get a team post
 }
 
-func GetTags(key string) (string, error) {
+func GetTag(key string) (string, error) {
 	var tag string
 	err := DBMain.QueryRow("SELECT tag_long_name FROM tags WHERE tag_name = $1", key).Scan(&tag)
 	if err == sql.ErrNoRows {
@@ -68,7 +86,7 @@ func AddTagsToTeam() {
 	// Add tags to a team post
 }
 
-func AddTags(key string, value string) error {
+func AddTag(key string, value string) error {
 	_, err := DBMain.Exec("INSERT INTO tags (tag_name, tag_long_name) VALUES ($1, $2)", key, value)
 	if err != nil {
 		return fmt.Errorf("failed to insert new tag: %s", err.Error())

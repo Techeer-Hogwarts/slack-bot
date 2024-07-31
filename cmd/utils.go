@@ -358,9 +358,9 @@ func getAllUsers(api *slack.Client) error {
 
 func addAllTags(api *slack.Client) error {
 	for key, value := range stackMap {
-		ms, err := db.GetTags(key)
+		ms, err := db.GetTag(key)
 		if ms == "na" {
-			err := db.AddTags(key, value)
+			err := db.AddTag(key, value)
 			if err != nil {
 				return err
 			}
@@ -373,32 +373,22 @@ func addAllTags(api *slack.Client) error {
 	}
 	return nil
 }
-func openDeleteModal(triggerID string) error {
-	// api := slack.New(botToken)
-	// modalRequest := slack.ModalViewRequest{
-	// 	Type:       slack.VTModal,
-	// 	CallbackID: "delete_form",
-	// 	Title:      slack.NewTextBlockObject("plain_text", "Delete Team", false, false),
-	// 	Close:      slack.NewTextBlockObject("plain_text", "Cancel", false, false),
-	// 	Submit:     slack.NewTextBlockObject("plain_text", "Submit", false, false),
-	// 	Blocks: slack.Blocks{
-	// 		BlockSet: []slack.Block{
-	// 			slack.NewInputBlock(
-	// 				"team_select",
-	// 				slack.NewTextBlockObject("plain_text", "Select a Team", false, false),
-	// 				slack.NewTextBlockObject("plain_text", "Select a team", false, false),
-	// 				slack.NewOptionsSelectBlockElement(
-	// 					slack.OptTypeStatic,
-	// 					slack.NewTextBlockObject("plain_text", "내부", false, false),
-	// 					"selected_team",
-	// 					slack.NewOptionBlockObject("내부 키", slack.NewTextBlockObject("plain_text", "Team 1", false, false), nil),
-	// 					slack.NewOptionBlockObject("team2", slack.NewTextBlockObject("plain_text", "Team 2", false, false), nil),
-	// 				),
-	// 			),
-	// 		},
-	// 	},
+func deleteMessage(payload slack.InteractionCallback) error {
+	api := slack.New(botToken)
+	actionUserID := payload.User.ID
+	actionMessageTimestamp := payload.Message.Timestamp
+	actionContainerTimestamp := payload.Container.MessageTs
+	log.Printf("User ID: %v | Message Timestamp: %v | Container Timestamp: %v", actionUserID, actionMessageTimestamp, actionContainerTimestamp)
+	teamObj, _ := db.GetTeam(actionMessageTimestamp)
+	// if err != nil {
+	// 	return err
 	// }
-	// _, err := api.OpenView(triggerID, modalRequest)
+	teamTs := teamObj.TeamTs
+	log.Println("Team Timestamp: ", teamTs)
+	err := sendSuccessMessage(api, payload.Channel.ID, payload.User.ID, "Message deleted successfully")
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -434,5 +424,16 @@ func openApplyModal(triggerID string) error {
 		},
 	}
 	_, err := api.OpenView(triggerID, modalRequest)
+	return err
+}
+
+func sendSuccessMessage(api *slack.Client, channelID string, userID string, messageText string) error {
+	_, err := api.PostEphemeral(channelID, userID, slack.MsgOptionText(messageText, false))
+	return err
+}
+
+func sendFailMessage(api *slack.Client, channelID string, userID string, messageText string) error {
+	log.Println(userID)
+	_, err := api.PostEphemeral(channelID, userID, slack.MsgOptionText(messageText, false))
 	return err
 }
