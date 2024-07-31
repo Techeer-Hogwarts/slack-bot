@@ -3,7 +3,10 @@ package db
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/thomas-and-friends/slack-bot/config"
@@ -41,4 +44,26 @@ func NewSQLDB(dbDriver string) (*DB, error) {
 	}
 	log.Println("Connected to SQL Database")
 	return &DB{db}, nil
+}
+
+func ExecuteSQLFile(filePath string) error {
+	sqlContent, err := os.ReadFile(filePath)
+	if err != nil {
+		return fmt.Errorf("failed to read SQL file: %v", err)
+	}
+	commands := strings.Split(string(sqlContent), ";")
+
+	for _, command := range commands {
+		command = strings.TrimSpace(command)
+		if command == "" {
+			continue
+		}
+
+		_, err := DBMain.Exec(command)
+		if err != nil {
+			return fmt.Errorf("failed to execute SQL command: %v", err)
+		}
+	}
+
+	return nil
 }

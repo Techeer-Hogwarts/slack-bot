@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -11,6 +12,8 @@ import (
 	"strings"
 
 	"github.com/slack-go/slack"
+	"github.com/thomas-and-friends/slack-bot/config"
+	"github.com/thomas-and-friends/slack-bot/db"
 )
 
 var (
@@ -31,10 +34,10 @@ const (
 )
 
 func init() {
-	LoadEnv()
-	signingKey = GetEnv("SLACK_SIGNING_SECRET", "")
-	botToken = GetEnv("SLACK_BOT_TOKEN", "")
-	channelID = GetEnv("CHANNEL_ID", "")
+	config.LoadEnv()
+	signingKey = config.GetEnv("SLACK_SIGNING_SECRET", "")
+	botToken = config.GetEnv("SLACK_BOT_TOKEN", "")
+	channelID = config.GetEnv("CHANNEL_ID", "")
 	roleMap = map[string]string{
 		"frontend":  "Frontend Developer",
 		"backend":   "Backend Developer",
@@ -194,11 +197,11 @@ func constructMessageText(message FormMessage) (string, error) {
 		return "", errors.New("missing required fields except team leader")
 	}
 	return "[" + emoji_people + message.TeamIntro + emoji_people + "]\n" +
-		"> " + emoji_golf + "*팀 이름* \n " + message.TeamName + "\n\n\n\n" +
-		"> " + emoji_star + "*팀장* <<@" + message.TeamLeader + ">>\n\n\n\n" +
-		"> " + emoji_notebook + "*팀/프로젝트 설명*\n" + message.Description + "\n\n\n\n" +
-		"> " + emoji_stack + "*사용되는 기술*\n" + formatListStacks(message.TechStacks) + "\n\n\n\n" +
-		"> " + emoji_dart + "*모집하는 직군 & 인원*\n" + formatListRoles(message) + "\n\n\n\n" +
+		"> " + emoji_golf + " *팀 이름* \n " + message.TeamName + "\n\n\n\n" +
+		"> " + emoji_star + " *팀장* <<@" + message.TeamLeader + ">>\n\n\n\n" +
+		"> " + emoji_notebook + " *팀/프로젝트 설명*\n" + message.Description + "\n\n\n\n" +
+		"> " + emoji_stack + " *사용되는 기술*\n" + formatListStacks(message.TechStacks) + "\n\n\n\n" +
+		"> " + emoji_dart + " *모집하는 직군 & 인원*\n" + formatListRoles(message) + "\n\n\n\n" +
 		"> " + "*그 외 추가적인 정보* \n" + message.Etc + "\n\n자세한 문의사항은" + "<@" + message.TeamLeader + ">" + "에게 DM으로 문의 주세요!", nil
 }
 
@@ -276,18 +279,49 @@ func formatListStacks(items []string) string {
 	}
 	var stacks []string
 	for _, stack := range items {
-		stack_text := "`" + stackMap[stack] + "`, "
+		stack_text := "`" + stackMap[stack] + "`"
 		stacks = append(stacks, stack_text)
 	}
-	return strings.Join(stacks, "")
+	return strings.Join(stacks, ", ")
 }
 
-// func formatListMembers(items []string) string {
-// 	if len(items) == 0 {
-// 		return "None"
-// 	}
-// 	return "<@" + strings.Join(items, "> <@")
-// }
+func InitialData() {
+	api := slack.New(botToken)
+	err := addAllUsers(api)
+	if err != nil {
+		log.Printf("Failed to add all users: %v", err)
+	}
+}
+
+func addAllUsers(api *slack.Client) error {
+	users, err := api.GetUsers()
+	if err != nil {
+		return err
+	}
+	for _, user := range users {
+		username := user.Profile.DisplayNameNormalized
+		if username == "" {
+			username = user.Profile.RealNameNormalized
+		}
+		if !user.IsBot && !user.Deleted && !user.IsAppUser && !user.IsOwner && user.ID != "USLACKBOT" {
+			ms, err := db.GetUser(user.ID)
+			if ms == "na" {
+				err = db.AddUser(user.ID, username)
+				if err != nil {
+					return err
+				}
+			}
+			if err != nil {
+				return fmt.Errorf("failed to get user: %s", err.Error())
+			}
+		}
+	}
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
 
 func getAllUsers(api *slack.Client) error {
 

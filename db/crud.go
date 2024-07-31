@@ -1,22 +1,30 @@
 package db
 
-import "fmt"
+import (
+	"database/sql"
+	"fmt"
+	"log"
+)
 
-func AddUser(userID string, userName string) error {
-	_, err := DBMain.Exec("INSERT INTO users (user_code, user_name) VALUES ($1, $2)", userID, userName)
+func AddUser(userCode string, userName string) error {
+	_, err := DBMain.Exec("INSERT INTO users (user_code, user_name) VALUES ($1, $2)", userCode, userName)
 	if err != nil {
 		return fmt.Errorf("failed to insert new user: %s", err.Error())
 	}
+	log.Printf("User %s added to the database", userName)
 	return nil
-
 }
 
-func GetUser(userID string) (string, error) {
+func GetUser(userCode string) (string, error) {
 	var userName string
-	err := DBMain.QueryRow("SELECT user_name FROM users WHERE user_code = $1", userID).Scan(&userName)
-	if err != nil {
-		return "", fmt.Errorf("failed to get user: %s", err.Error())
+	err := DBMain.QueryRow("SELECT user_name FROM users WHERE user_code = $1", userCode).Scan(&userName)
+	if err == sql.ErrNoRows {
+		return "na", fmt.Errorf("user not found")
 	}
+	if err != nil {
+		return "", fmt.Errorf("some other sql error: %s", err.Error())
+	}
+	log.Printf("User %s found in the database", userName)
 	return userName, nil
 }
 
