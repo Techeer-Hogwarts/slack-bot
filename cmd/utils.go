@@ -392,6 +392,24 @@ func deleteMessage(payload slack.InteractionCallback) error {
 	return nil
 }
 
+func addTeamToDB(message FormMessage, ts string) error {
+	teamObj := db.Team{
+		TeamType:   message.TeamType,
+		TeamIntro:  message.TeamIntro,
+		TeamName:   message.TeamName,
+		TeamLeader: message.TeamLeader,
+		TeamDesc:   message.Description,
+		NumMembers: message.NumCurrentMembers,
+		TeamEtc:    message.Etc,
+		TeamTs:     ts,
+	}
+	err := db.AddTeam(teamObj)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func openApplyModal(triggerID string) error {
 	api := slack.New(botToken)
 	modalRequest := slack.ModalViewRequest{

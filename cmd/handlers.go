@@ -4,27 +4,28 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/slack-go/slack"
 )
 
 type FormMessage struct {
-	FormID        string   `json:"form_id"`
-	TeamLeader    string   `json:"leader"`
-	TeamIntro     string   `json:"intro"`
-	TeamName      string   `json:"name"`
-	TechStacks    []string `json:"tech"`
-	Members       []string `json:"members"`
-	UxMembers     string   `json:"ux_members"`
-	FrontMembers  string   `json:"front_members"`
-	BackMembers   string   `json:"back_members"`
-	DataMembers   string   `json:"data_members"`
-	OpsMembers    string   `json:"ops_members"`
-	StudyMembers  string   `json:"study_members"`
-	EtcMembers    string   `json:"etc_members"`
-	NumNewMembers string   `json:"num_members"`
-	Description   string   `json:"description"`
-	Etc           string   `json:"etc"`
+	TeamType          string   `json:"type"`
+	TeamLeader        string   `json:"leader"`
+	TeamIntro         string   `json:"intro"`
+	TeamName          string   `json:"name"`
+	TechStacks        []string `json:"tech"`
+	Members           []string `json:"members"`
+	NumCurrentMembers int      `json:"current"`
+	UxMembers         string   `json:"ux_members"`
+	FrontMembers      string   `json:"front_members"`
+	BackMembers       string   `json:"back_members"`
+	DataMembers       string   `json:"data_members"`
+	OpsMembers        string   `json:"ops_members"`
+	StudyMembers      string   `json:"study_members"`
+	EtcMembers        string   `json:"etc_members"`
+	Description       string   `json:"description"`
+	Etc               string   `json:"etc"`
 }
 
 func SendHelloWorld(w http.ResponseWriter, r *http.Request) {
@@ -112,12 +113,17 @@ func postMessageToChannel(channelID string, message FormMessage) error {
 	messageBlocks := slack.MsgOptionBlocks(section, actionBlock, actionBlock2)
 
 	_, timestamp, err := api.PostMessage(channelID, messageBlocks)
+	if err != nil {
+		log.Printf("Failed to send message to channel %s: %v", channelID, err)
+		return err
+	}
 	log.Printf("Message successfully sent to channel %s at %s", channelID, timestamp)
+	err = addTeamToDB(message, timestamp)
 	return err
 }
 
 func handleBlockActions(payload slack.InteractionCallback) FormMessage {
-	returnMessage := FormMessage{FormID: "test"}
+	returnMessage := FormMessage{}
 	for blockID, actionValues := range payload.View.State.Values {
 		for actionID, blockAction := range actionValues {
 
@@ -159,6 +165,22 @@ func handleBlockActions(payload slack.InteractionCallback) FormMessage {
 				if blockID == "team_etc_block" {
 					returnMessage.Etc = blockAction.Value
 				}
+			}
+			numStudy, err := strconv.Atoi(returnMessage.StudyMembers)
+			if err != nil {
+				log.Printf("Failed to convert numStudy to int: %v", err)
+			}
+			numEtc, err := strconv.Atoi(returnMessage.EtcMembers)
+			if err != nil {
+				log.Printf("Failed to convert numEtc to int: %v", err)
+			}
+			returnMessage.NumCurrentMembers = len(returnMessage.Members)
+			if numStudy > 0 {
+				returnMessage.TeamType = "study"
+			} else if numEtc > 0 {
+				returnMessage.TeamType = "etc"
+			} else {
+				returnMessage.TeamType = "project"
 			}
 		}
 	}
