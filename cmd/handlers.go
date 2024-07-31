@@ -106,7 +106,9 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 			log.Println(payload.BlockID)
 			log.Println(payload.Value)
 			log.Println("Response URL: ", payload.ResponseURL)
-			log.Println(payload.RawState)
+			log.Println(payload)
+			jsonBytes, _ := json.Marshal(payload)
+			log.Println(string(jsonBytes))
 			log.Println("Received view submission 지원하기")
 			w.WriteHeader(http.StatusOK)
 		} else if payload.View.CallbackID == "delete_form" {
