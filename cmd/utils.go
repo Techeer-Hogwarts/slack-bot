@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -21,7 +22,7 @@ var (
 	botToken   string
 	channelID  string
 	roleMap    map[string]string
-	stackMap   map[string]string
+	// stackMap   map[string]string
 )
 
 const (
@@ -48,58 +49,58 @@ func init() {
 		"study":     "스터디",
 		"etc":       "기타",
 	}
-	stackMap = map[string]string{
-		"none":          "없음",
-		"react":         "React.js",
-		"vue":           "Vue.js",
-		"next":          "Next.js",
-		"svelte":        "SvelteKit",
-		"angular":       "Angular",
-		"django":        "Django",
-		"flask":         "Flask",
-		"rails":         "Ruby on Rails",
-		"spring":        "Spring Boot",
-		"express":       "Express.js",
-		"laravel":       "Laravel",
-		"s3":            "S3/Cloud Storage",
-		"go":            "Go Lang",
-		"ai":            "AI/ML (Tensorflow, PyTorch)",
-		"kube":          "Kubernetes",
-		"jenkins":       "Jenkins CI",
-		"actions":       "Github Actions",
-		"spin":          "Spinnaker",
-		"graphite":      "Graphite",
-		"kafka":         "Kafka",
-		"docker":        "Docker",
-		"ansible":       "Ansible",
-		"terraform":     "Terraform",
-		"fastapi":       "FastAPI",
-		"redis":         "Redis",
-		"msa":           "MSA",
-		"java":          "Java",
-		"python":        "Python",
-		"jsts":          "JavaScript/TypeScript",
-		"cpp":           "C/C++",
-		"csharp":        "C#",
-		"ruby":          "Ruby",
-		"aws":           "AWS",
-		"gcp":           "GCP",
-		"ELK":           "ELK Stack",
-		"elasticsearch": "Elasticsearch",
-		"prom":          "Prometheus",
-		"grafana":       "Grafana",
-		"celery":        "Celery",
-		"nginx":         "Nginx",
-		"cdn":           "CDN (CloudFront)",
-		"nestjs":        "Nest.JS",
-		"zustand":       "Zustand",
-		"tailwind":      "Tailwind CSS",
-		"bootstrap":     "Bootstrap",
-		"postgre":       "PostgreSQL",
-		"mysql":         "MySQL",
-		"mongo":         "MongoDB",
-		"node":          "Node.js",
-	}
+	// stackMap = map[string]string{
+	// 	"none":          "없음",
+	// 	"react":         "React.js",
+	// 	"vue":           "Vue.js",
+	// 	"next":          "Next.js",
+	// 	"svelte":        "SvelteKit",
+	// 	"angular":       "Angular",
+	// 	"django":        "Django",
+	// 	"flask":         "Flask",
+	// 	"rails":         "Ruby on Rails",
+	// 	"spring":        "Spring Boot",
+	// 	"express":       "Express.js",
+	// 	"laravel":       "Laravel",
+	// 	"s3":            "S3/Cloud Storage",
+	// 	"go":            "Go Lang",
+	// 	"ai":            "AI/ML (Tensorflow, PyTorch)",
+	// 	"kube":          "Kubernetes",
+	// 	"jenkins":       "Jenkins CI",
+	// 	"actions":       "Github Actions",
+	// 	"spin":          "Spinnaker",
+	// 	"graphite":      "Graphite",
+	// 	"kafka":         "Kafka",
+	// 	"docker":        "Docker",
+	// 	"ansible":       "Ansible",
+	// 	"terraform":     "Terraform",
+	// 	"fastapi":       "FastAPI",
+	// 	"redis":         "Redis",
+	// 	"msa":           "MSA",
+	// 	"java":          "Java",
+	// 	"python":        "Python",
+	// 	"jsts":          "JavaScript/TypeScript",
+	// 	"cpp":           "C/C++",
+	// 	"csharp":        "C#",
+	// 	"ruby":          "Ruby",
+	// 	"aws":           "AWS",
+	// 	"gcp":           "GCP",
+	// 	"ELK":           "ELK Stack",
+	// 	"elasticsearch": "Elasticsearch",
+	// 	"prom":          "Prometheus",
+	// 	"grafana":       "Grafana",
+	// 	"celery":        "Celery",
+	// 	"nginx":         "Nginx",
+	// 	"cdn":           "CDN (CloudFront)",
+	// 	"nestjs":        "Nest.JS",
+	// 	"zustand":       "Zustand",
+	// 	"tailwind":      "Tailwind CSS",
+	// 	"bootstrap":     "Bootstrap",
+	// 	"postgre":       "PostgreSQL",
+	// 	"mysql":         "MySQL",
+	// 	"mongo":         "MongoDB",
+	// 	"node":          "Node.js",
+	// }
 }
 
 func VerifySlackRequest(req *http.Request) error {
@@ -138,27 +139,6 @@ func getChannelMessages(api *slack.Client, channelID string) (*slack.GetConversa
 
 	return history, nil
 }
-
-// func TriggerEvent(w http.ResponseWriter, r *http.Request) {
-// 	log.Println("Received a trigger event request")
-
-// 	api := slack.New(botToken)
-// 	messages, err := getChannelMessages(api, channelID)
-// 	log.Printf("channelID: %v", channelID)
-// 	if err != nil {
-// 		log.Printf("Failed to retrieve messages: %v", err)
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-// 	w.Header().Set("Content-Type", "application/json")
-// 	if err := json.NewEncoder(w).Encode(messages); err != nil {
-// 		log.Printf("Failed to encode messages: %v", err)
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-
-// 	log.Println("Trigger event processed successfully")
-// }
 
 func TriggerEvent(w http.ResponseWriter, r *http.Request) {
 	log.Println("Received a trigger event request")
@@ -274,15 +254,35 @@ func formatListRoles(message FormMessage) string {
 }
 
 func formatListStacks(items []string) string {
+	var backendStacks []string
+	var frontendStacks []string
+	var devopsStacks []string
+	var otherStacks []string
 	if len(items) == 0 {
 		return "None"
 	}
-	var stacks []string
+
 	for _, stack := range items {
-		stack_text := "`" + stackMap[stack] + "`"
-		stacks = append(stacks, stack_text)
+		tagName, tagType, _, err := db.GetTag(stack)
+		if err != nil {
+			log.Printf("Failed to get tag: %v", err)
+		}
+		stack_text := "`" + tagName + "`"
+		if tagType == "backend" {
+			backendStacks = append(backendStacks, stack_text)
+		} else if tagType == "frontend" {
+			frontendStacks = append(frontendStacks, stack_text)
+		} else if tagType == "devops" {
+			devopsStacks = append(devopsStacks, stack_text)
+		} else {
+			otherStacks = append(otherStacks, stack_text)
+		}
 	}
-	return strings.Join(stacks, ", ")
+	joinedBackStacks := "*백엔드 기술:* " + strings.Join(backendStacks, ", ") + "\n"
+	joinedFrontStacks := "*프런트엔드 기술:* " + strings.Join(frontendStacks, ", ") + "\n"
+	joinedDevopsStacks := "*데브옵스 기술:* " + strings.Join(devopsStacks, ", ") + "\n"
+	joinedOtherStacks := "*그 외 기술:* " + strings.Join(otherStacks, ", ") + "\n"
+	return joinedBackStacks + joinedFrontStacks + joinedDevopsStacks + joinedOtherStacks
 }
 
 func InitialDataUsers() {
@@ -295,7 +295,11 @@ func InitialDataUsers() {
 
 func InitialDataTags() {
 	api := slack.New(botToken)
-	err := addAllTags(api)
+	stacks, err := loadStacksFromFile("stacks.json")
+	if err != nil {
+		log.Printf("Failed to load stacks from file: %v", err)
+	}
+	err = addAllTags(api, stacks)
 	if err != nil {
 		log.Printf("Failed to add all tags: %v", err)
 	}
@@ -308,13 +312,14 @@ func addAllUsers(api *slack.Client) error {
 	}
 	for _, user := range users {
 		username := user.Profile.DisplayNameNormalized
+		email := user.Profile.Email
 		if username == "" {
 			username = user.Profile.RealNameNormalized
 		}
 		if !user.IsBot && !user.Deleted && !user.IsAppUser && !user.IsOwner && user.ID != "USLACKBOT" {
 			ms, _, err := db.GetUser(user.ID)
 			if ms == "na" {
-				err = db.AddUser(user.ID, username)
+				err = db.AddUser(user.ID, username, email)
 				if err != nil {
 					return err
 				}
@@ -356,11 +361,11 @@ func getAllUsers(api *slack.Client) error {
 	return nil
 }
 
-func addAllTags(api *slack.Client) error {
-	for key, value := range stackMap {
-		ms, err := db.GetTag(key)
+func addAllTags(api *slack.Client, stacks []db.Stack) error {
+	for _, value := range stacks {
+		ms, _, _, err := db.GetTag(value.Key)
 		if ms == "na" {
-			err := db.AddTag(key, value)
+			err := db.AddTag(value.Key, value.Name, value.Type)
 			if err != nil {
 				return err
 			}
@@ -373,21 +378,50 @@ func addAllTags(api *slack.Client) error {
 	}
 	return nil
 }
+
+func loadStacksFromFile(filename string) ([]db.Stack, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	bytes, err := io.ReadAll(file)
+	if err != nil {
+		return nil, err
+	}
+
+	var stacks []db.Stack
+	if err := json.Unmarshal(bytes, &stacks); err != nil {
+		return nil, err
+	}
+
+	return stacks, nil
+}
 func deleteMessage(payload slack.InteractionCallback) error {
 	api := slack.New(botToken)
 	actionUserID := payload.User.ID
 	actionMessageTimestamp := payload.Message.Timestamp
 	actionContainerTimestamp := payload.Container.MessageTs
 	log.Printf("User ID: %v | Message Timestamp: %v | Container Timestamp: %v", actionUserID, actionMessageTimestamp, actionContainerTimestamp)
-	teamObj, _ := db.GetTeam(actionMessageTimestamp)
-	// if err != nil {
-	// 	return err
-	// }
-	teamTs := teamObj.TeamTs
-	log.Println("Team Timestamp: ", teamTs)
-	err := sendSuccessMessage(api, payload.Channel.ID, payload.User.ID, "Message deleted successfully")
+	teamObj, err := db.GetTeam(actionMessageTimestamp)
 	if err != nil {
 		return err
+	}
+	if teamObj.TeamLeader != actionUserID {
+		err = db.DeleteTeam(actionMessageTimestamp)
+		if err != nil {
+			return err
+		}
+		err = sendSuccessMessage(api, payload.Channel.ID, payload.User.ID, "메시지가 삭제되었습니다.")
+		if err != nil {
+			return err
+		}
+	} else {
+		err = sendFailMessage(api, payload.Channel.ID, payload.User.ID, "팀 리더가 아닙니다. 삭제 권한이 없습니다.")
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -405,9 +439,29 @@ func addTeamToDB(message FormMessage, ts string) error {
 		TeamEtc:    message.Etc,
 		TeamTs:     ts,
 	}
-	err := db.AddTeam(teamObj)
+	teamID, err := db.AddTeam(teamObj)
 	if err != nil {
 		return err
+	}
+	for _, stack := range message.TechStacks {
+		_, _, stack_id, err := db.GetTag(stack)
+		if err != nil {
+			return err
+		}
+		err = db.AddTagsToTeam(teamID, stack_id)
+		if err != nil {
+			return err
+		}
+	}
+	for _, user := range message.Members {
+		_, user_id, err := db.GetUser(user)
+		if err != nil {
+			return err
+		}
+		err = db.AddUserToTeam(teamID, user_id)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
