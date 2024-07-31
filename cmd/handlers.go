@@ -61,10 +61,16 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if payload.Type == slack.InteractionTypeBlockActions {
-		log.Println("Received block actions 지원하기")
+		log.Println("Received block actions 지원하기/삭제하기")
 		for _, action := range payload.ActionCallback.BlockActions {
 			if action.ActionID == "apply_button" {
 				err := openApplyModal(payload.TriggerID)
+				if err != nil {
+					log.Printf("Failed to open modal: %v", err)
+				}
+				return
+			} else if action.ActionID == "delete_button" {
+				err := openDeleteModal(payload.TriggerID)
 				if err != nil {
 					log.Printf("Failed to open modal: %v", err)
 				}
@@ -90,12 +96,17 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		} else if payload.View.CallbackID == "apply_form" {
 			log.Printf("Trigger_id: %s", payload.TriggerID)
+			log.Printf("TS: %s", payload.ActionTs)
 			log.Printf("Message: %s", payload.Message.ClientMsgID)
 			log.Printf("Message1: %s", payload.Message.Text)
 			log.Printf("Message2: %s", payload.Message.Timestamp)
 			log.Printf("Original Message: %s", payload.OriginalMessage.ClientMsgID)
 			log.Printf("Original Message1: %s", payload.OriginalMessage.Text)
 			log.Printf("Original Message2: %s", payload.OriginalMessage.Timestamp)
+			log.Println(payload.BlockID)
+			log.Println(payload.Value)
+			log.Println("Response URL: ", payload.ResponseURL)
+			log.Println(payload.RawState)
 			log.Println("Received view submission 지원하기")
 			w.WriteHeader(http.StatusOK)
 		} else if payload.View.CallbackID == "delete_form" {
