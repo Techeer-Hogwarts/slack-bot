@@ -41,7 +41,7 @@ func GetUser(userCode string) (string, error) {
 }
 
 func AddTeam(teamobj Team) error {
-	_, err := DBMain.Exec("INSERT INTO teams (team_type, team_intro, team_name, team_leader, team_desc, num_members, team_etc, team_ts) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", teamobj.TeamType, teamobj.TeamIntro, teamobj.TeamName, teamobj.TeamLeader, teamobj.TeamDesc, teamobj.NumMembers, teamobj.TeamEtc, teamobj.TeamTs)
+	_, err := DBMain.Exec("INSERT INTO teams (team_type, team_intro, team_name, team_leader, team_description, num_members, team_etc, team_ts) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", teamobj.TeamType, teamobj.TeamIntro, teamobj.TeamName, teamobj.TeamLeader, teamobj.TeamDesc, teamobj.NumMembers, teamobj.TeamEtc, teamobj.TeamTs)
 	if err != nil {
 		return fmt.Errorf("failed to insert new team: %s", err.Error())
 	}
