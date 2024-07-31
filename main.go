@@ -28,7 +28,8 @@ func main() {
 		log.Fatal(err)
 	}
 	db.ExecuteSQLFile("slack.sql")
-	cmd.InitialData()
+	cmd.InitialDataUsers()
+	cmd.InitialDataTags()
 	defer func() {
 		if err = db.DBMain.Close(); err != nil {
 			panic(err)

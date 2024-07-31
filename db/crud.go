@@ -32,6 +32,10 @@ func AddTeam() {
 	// Add a team to the database
 }
 
+func DeleteTeam() {
+	// Delete a team from the database
+}
+
 func GetTeams() {
 	// Get all teams from the database
 }
@@ -46,4 +50,29 @@ func GetUsersByTeam() {
 
 func GetTeamPost() {
 	// Get a team post
+}
+
+func GetTags(key string) (string, error) {
+	var tag string
+	err := DBMain.QueryRow("SELECT tag_long_name FROM tags WHERE tag_name = $1", key).Scan(&tag)
+	if err == sql.ErrNoRows {
+		return "na", fmt.Errorf("tag not found")
+	} else if err != nil {
+		return "", fmt.Errorf("failed to get tag: %s", err.Error())
+	}
+	log.Printf("Tag %s found in the database", tag)
+	return tag, nil
+}
+
+func AddTagsToTeam() {
+	// Add tags to a team post
+}
+
+func AddTags(key string, value string) error {
+	_, err := DBMain.Exec("INSERT INTO tags (tag_name, tag_long_name) VALUES ($1, $2)", key, value)
+	if err != nil {
+		return fmt.Errorf("failed to insert new tag: %s", err.Error())
+	}
+	log.Printf("Tag %s added to the database", key)
+	return nil
 }

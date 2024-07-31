@@ -285,11 +285,19 @@ func formatListStacks(items []string) string {
 	return strings.Join(stacks, ", ")
 }
 
-func InitialData() {
+func InitialDataUsers() {
 	api := slack.New(botToken)
 	err := addAllUsers(api)
 	if err != nil {
 		log.Printf("Failed to add all users: %v", err)
+	}
+}
+
+func InitialDataTags() {
+	api := slack.New(botToken)
+	err := addAllTags(api)
+	if err != nil {
+		log.Printf("Failed to add all tags: %v", err)
 	}
 }
 
@@ -345,6 +353,24 @@ func getAllUsers(api *slack.Client) error {
 		return err
 	}
 
+	return nil
+}
+
+func addAllTags(api *slack.Client) error {
+	for key, value := range stackMap {
+		ms, err := db.GetTags(key)
+		if ms == "na" {
+			err := db.AddTags(key, value)
+			if err != nil {
+				return err
+			}
+		}
+		if err != nil {
+			if err != nil {
+				return fmt.Errorf("failed to get tag: %s", err.Error())
+			}
+		}
+	}
 	return nil
 }
 

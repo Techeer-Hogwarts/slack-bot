@@ -28,13 +28,13 @@ func openRecruitmentModal(w http.ResponseWriter, triggerID string, api *slack.Cl
 	w.WriteHeader(http.StatusOK)
 }
 
-func openApplicationModal(w http.ResponseWriter, triggerID string, api *slack.Client) {
-	log.Print("Opening application modal")
-}
+// func openApplicationModal(w http.ResponseWriter, triggerID string, api *slack.Client) {
+// 	log.Print("Opening application modal")
+// }
 
-func openEditModal(w http.ResponseWriter, triggerID string, api *slack.Client) {
-	log.Print("Opening edit modal")
-}
+// func openEditModal(w http.ResponseWriter, triggerID string, api *slack.Client) {
+// 	log.Print("Opening edit modal")
+// }
 
 // Read modal JSON from a file
 func readModalJSON(filename string) (slack.ModalViewRequest, error) {
