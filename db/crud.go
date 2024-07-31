@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 )
@@ -90,16 +91,19 @@ func GetTeam(ts string) (Team, error) {
 	teamObj := Team{}
 	var teamLeaderID int
 	err := DBMain.QueryRow("SELECT * FROM teams WHERE message_ts = $1", ts).Scan(&teamObj.TeamID, &teamObj.TeamType, &teamObj.TeamIntro, &teamObj.TeamName, &teamLeaderID, &teamObj.TeamDesc, &teamObj.NumMembers, &teamObj.TeamEtc, &teamObj.TeamTs)
+	jsonValue, _ := json.Marshal(teamObj)
+	log.Println(jsonValue)
 	if err == sql.ErrNoRows {
 		return Team{}, fmt.Errorf("team not found")
 	}
 	_, teamLeaderCode, err := GetUserWithID(teamLeaderID)
 	if err == sql.ErrNoRows {
-		return Team{}, fmt.Errorf("team not found")
+		return Team{}, fmt.Errorf("leader not found")
 	}
 	if err != nil {
-		return Team{}, fmt.Errorf("failed to get team: %s", err.Error())
+		return Team{}, fmt.Errorf("failed to get leader for team: %s", err.Error())
 	}
+	log.Printf("Team %s found in the database", teamObj.TeamName)
 	teamObj.TeamLeader = teamLeaderCode
 	return teamObj, nil
 }
