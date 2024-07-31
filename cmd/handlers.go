@@ -73,8 +73,11 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		}
 		w.WriteHeader(http.StatusOK)
 	} else if payload.Type == slack.InteractionTypeViewSubmission {
+		log.Printf("Trigger_id: %s", payload.TriggerID)
 		log.Println(payload.User)
 		log.Println(payload.View.CallbackID) // this is the key to distinguish different modals
+		log.Println(payload.View.PrivateMetadata)
+		log.Printf("Action ID: %v", payload.ActionID)
 		if payload.View.CallbackID == "recruitment_form" {
 			jsonVal := handleBlockActions(payload)
 			if err := postMessageToChannel(channelID, jsonVal); err != nil {
@@ -84,7 +87,12 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 			}
 			w.WriteHeader(http.StatusOK)
 		} else if payload.View.CallbackID == "apply_form" {
+			log.Printf("Trigger_id: %s", payload.TriggerID)
 			log.Println("Received view submission 지원하기")
+			w.WriteHeader(http.StatusOK)
+		} else if payload.View.CallbackID == "delete_form" {
+			log.Printf("Trigger_id: %s", payload.TriggerID)
+			log.Println("Received view submission 삭제하기")
 			w.WriteHeader(http.StatusOK)
 		}
 	}
@@ -97,11 +105,14 @@ func postMessageToChannel(channelID string, message FormMessage) error {
 		return err
 	}
 	applyButton := slack.NewButtonBlockElement("apply_button", "apply", slack.NewTextBlockObject("plain_text", "지원하기!", false, false))
-	actionBlock := slack.NewActionBlock("", applyButton)
+	deleteButton := slack.NewButtonBlockElement("delete_button", "delete", slack.NewTextBlockObject("plain_text", "삭제하기!", false, false))
+	actionBlock := slack.NewActionBlock("apply_action", applyButton)
+	actionBlock2 := slack.NewActionBlock("delete_action", deleteButton)
 	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", messageText, false, false), nil, nil)
-	messageBlocks := slack.MsgOptionBlocks(section, actionBlock)
+	messageBlocks := slack.MsgOptionBlocks(section, actionBlock, actionBlock2)
 
-	_, _, err = api.PostMessage(channelID, messageBlocks)
+	_, timestamp, err := api.PostMessage(channelID, messageBlocks)
+	log.Printf("Message successfully sent to channel %s at %s", channelID, timestamp)
 	return err
 }
 
@@ -179,11 +190,6 @@ func HandleSlashCommand(w http.ResponseWriter, r *http.Request) {
 	case "/구인":
 		openRecruitmentModal(w, triggerID, api)
 		w.WriteHeader(http.StatusOK)
-	case "/지원":
-		openApplicationModal(w, triggerID, api)
-		w.WriteHeader(http.StatusOK)
-	case "/수정":
-		openEditModal(w, triggerID, api)
 	default:
 		w.WriteHeader(http.StatusOK)
 	}
