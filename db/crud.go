@@ -18,6 +18,12 @@ type Team struct {
 	TeamTs     string
 }
 
+type Stack struct {
+	Key  string `json:"key"`
+	Name string `json:"name"`
+	Type string `json:"type"`
+}
+
 func AddUser(userCode string, userName string) error {
 	_, err := DBMain.Exec("INSERT INTO users (user_code, user_name) VALUES ($1, $2)", userCode, userName)
 	if err != nil {
@@ -115,17 +121,18 @@ func GetTeamPost() {
 	// Get a team post
 }
 
-func GetTag(key string) (string, int, error) {
-	var tag string
+func GetTag(key string) (string, string, int, error) {
+	var tagName string
 	var tagID int
-	err := DBMain.QueryRow("SELECT tag_long_name, tag_id FROM tags WHERE tag_name = $1", key).Scan(&tag, &tagID)
+	var tagType string
+	err := DBMain.QueryRow("SELECT tag_long_name, tag_id, tag_type FROM, tags WHERE tag_name = $1", key).Scan(&tagName, &tagID, &tagType)
 	if err == sql.ErrNoRows {
-		return "na", 0, fmt.Errorf("tag not found")
+		return "na", "", 0, fmt.Errorf("tag not found")
 	} else if err != nil {
-		return "", 0, fmt.Errorf("failed to get tag: %s", err.Error())
+		return "", "", 0, fmt.Errorf("failed to get tag: %s", err.Error())
 	}
-	log.Printf("Tag %s found in the database", tag)
-	return tag, tagID, nil
+	log.Printf("Tag %s found in the database", tagName)
+	return tagName, tagType, tagID, nil
 }
 
 func AddTagsToTeam(teamID int, tag int) error {
@@ -136,8 +143,8 @@ func AddTagsToTeam(teamID int, tag int) error {
 	return nil
 }
 
-func AddTag(key string, value string) error {
-	_, err := DBMain.Exec("INSERT INTO tags (tag_name, tag_long_name) VALUES ($1, $2)", key, value)
+func AddTag(key string, value string, tagType string) error {
+	_, err := DBMain.Exec("INSERT INTO tags (tag_name, tag_long_name, tag_type) VALUES ($1, $2, $3)", key, value, tagType)
 	if err != nil {
 		return fmt.Errorf("failed to insert new tag: %s", err.Error())
 	}
