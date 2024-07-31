@@ -402,13 +402,11 @@ func deleteMessage(payload slack.InteractionCallback) error {
 	api := slack.New(botToken)
 	actionUserID := payload.User.ID
 	actionMessageTimestamp := payload.Message.Timestamp
-	actionContainerTimestamp := payload.Container.MessageTs
-	log.Printf("User ID: %v | Message Timestamp: %v | Container Timestamp: %v", actionUserID, actionMessageTimestamp, actionContainerTimestamp)
 	teamObj, err := db.GetTeam(actionMessageTimestamp)
 	if err != nil {
 		return err
 	}
-	if teamObj.TeamLeader != actionUserID {
+	if teamObj.TeamLeader == actionUserID {
 		err = db.DeleteTeam(actionMessageTimestamp)
 		if err != nil {
 			return err

@@ -103,7 +103,6 @@ func GetTeam(ts string) (Team, error) {
 		&teamObj.TeamEtc,
 		&teamObj.TeamTs,
 	)
-	log.Print(teamObj)
 	if err == sql.ErrNoRows {
 		return Team{}, fmt.Errorf("team not found")
 	}
