@@ -139,27 +139,6 @@ func getChannelMessages(api *slack.Client, channelID string) (*slack.GetConversa
 	return history, nil
 }
 
-// func TriggerEvent(w http.ResponseWriter, r *http.Request) {
-// 	log.Println("Received a trigger event request")
-
-// 	api := slack.New(botToken)
-// 	messages, err := getChannelMessages(api, channelID)
-// 	log.Printf("channelID: %v", channelID)
-// 	if err != nil {
-// 		log.Printf("Failed to retrieve messages: %v", err)
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-// 	w.Header().Set("Content-Type", "application/json")
-// 	if err := json.NewEncoder(w).Encode(messages); err != nil {
-// 		log.Printf("Failed to encode messages: %v", err)
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-
-// 	log.Println("Trigger event processed successfully")
-// }
-
 func TriggerEvent(w http.ResponseWriter, r *http.Request) {
 	log.Println("Received a trigger event request")
 

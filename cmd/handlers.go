@@ -166,19 +166,23 @@ func handleBlockActions(payload slack.InteractionCallback) FormMessage {
 					returnMessage.Etc = blockAction.Value
 				}
 			}
-			numStudy, err := strconv.Atoi(returnMessage.StudyMembers)
-			if err != nil {
-				log.Printf("Failed to convert numStudy to int: %v", err)
-			}
-			numEtc, err := strconv.Atoi(returnMessage.EtcMembers)
-			if err != nil {
-				log.Printf("Failed to convert numEtc to int: %v", err)
-			}
 			returnMessage.NumCurrentMembers = len(returnMessage.Members)
-			if numStudy > 0 {
-				returnMessage.TeamType = "study"
-			} else if numEtc > 0 {
-				returnMessage.TeamType = "etc"
+			if returnMessage.StudyMembers != "" {
+				numStudy, err := strconv.Atoi(returnMessage.StudyMembers)
+				if err != nil {
+					log.Printf("Failed to convert numStudy to int: %v", err)
+				}
+				if numStudy > 0 {
+					returnMessage.TeamType = "study"
+				}
+			} else if returnMessage.EtcMembers != "" {
+				numEtc, err := strconv.Atoi(returnMessage.EtcMembers)
+				if err != nil {
+					log.Printf("Failed to convert numEtc to int: %v", err)
+				}
+				if numEtc > 0 {
+					returnMessage.TeamType = "etc"
+				}
 			} else {
 				returnMessage.TeamType = "project"
 			}
