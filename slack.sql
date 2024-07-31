@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS tags (
     tag_id SERIAL PRIMARY KEY,
     tag_name VARCHAR(50) NOT NULL UNIQUE,
     tag_long_name VARCHAR(100) NOT NULL,
-    tag_type VARCHAR(50) NOT NULL,
+    tag_type VARCHAR(50) NOT NULL
 );
 
 -- Junction table to associate users with teams (many-to-many relationship)
