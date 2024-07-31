@@ -312,7 +312,7 @@ func addAllUsers(api *slack.Client) error {
 			username = user.Profile.RealNameNormalized
 		}
 		if !user.IsBot && !user.Deleted && !user.IsAppUser && !user.IsOwner && user.ID != "USLACKBOT" {
-			ms, err := db.GetUser(user.ID)
+			ms, _, err := db.GetUser(user.ID)
 			if ms == "na" {
 				err = db.AddUser(user.ID, username)
 				if err != nil {

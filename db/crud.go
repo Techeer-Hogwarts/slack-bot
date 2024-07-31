@@ -27,21 +27,23 @@ func AddUser(userCode string, userName string) error {
 	return nil
 }
 
-func GetUser(userCode string) (string, error) {
+func GetUser(userCode string) (string, int, error) {
 	var userName string
-	err := DBMain.QueryRow("SELECT user_name FROM users WHERE user_code = $1", userCode).Scan(&userName)
+	var userID int
+	err := DBMain.QueryRow("SELECT user_name, user_id FROM users WHERE user_code = $1", userCode).Scan(&userName, &userID)
 	if err == sql.ErrNoRows {
-		return "na", fmt.Errorf("user not found")
+		return "na", 0, fmt.Errorf("user not found")
 	}
 	if err != nil {
-		return "", fmt.Errorf("some other sql error: %s", err.Error())
+		return "", 0, fmt.Errorf("some other sql error: %s", err.Error())
 	}
 	log.Printf("User %s found in the database", userName)
-	return userName, nil
+	return userName, userID, nil
 }
 
 func AddTeam(teamobj Team) error {
-	_, err := DBMain.Exec("INSERT INTO teams (team_type, team_intro, team_name, team_leader, team_description, num_members, team_etc, message_ts) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", teamobj.TeamType, teamobj.TeamIntro, teamobj.TeamName, teamobj.TeamLeader, teamobj.TeamDesc, teamobj.NumMembers, teamobj.TeamEtc, teamobj.TeamTs)
+	_, leader_id, _ := GetUser(teamobj.TeamLeader)
+	_, err := DBMain.Exec("INSERT INTO teams (team_type, team_intro, team_name, team_leader, team_description, num_members, team_etc, message_ts) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", teamobj.TeamType, teamobj.TeamIntro, teamobj.TeamName, leader_id, teamobj.TeamDesc, teamobj.NumMembers, teamobj.TeamEtc, teamobj.TeamTs)
 	if err != nil {
 		return fmt.Errorf("failed to insert new team: %s", err.Error())
 	}
