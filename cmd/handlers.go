@@ -66,28 +66,23 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		log.Println(string(jsonBytes))
 		for _, action := range payload.ActionCallback.BlockActions {
 			if action.ActionID == "apply_button" {
+				log.Println("Apply button clicked")
 				err := openApplyModal(payload.TriggerID)
 				if err != nil {
 					log.Printf("Failed to open modal: %v", err)
 				}
 				return
 			} else if action.ActionID == "delete_button" {
-				err := openDeleteModal(payload.TriggerID)
+				log.Println("Delete button clicked")
+				err := deleteMessage(payload)
 				if err != nil {
-					log.Printf("Failed to open modal: %v", err)
+					log.Printf("Failed to delete message: %v", err)
 				}
 				return
 			}
 		}
 		w.WriteHeader(http.StatusOK)
 	} else if payload.Type == slack.InteractionTypeViewSubmission {
-		log.Printf("Trigger_id: %s", payload.TriggerID)
-		log.Println(payload.User)
-		log.Printf("Token: %s", payload.Token)
-		log.Printf("Message Time Stamp: %s", payload.MessageTs)
-		log.Println(payload.View.CallbackID) // this is the key to distinguish different modals
-		log.Println(payload.View.PrivateMetadata)
-		log.Printf("Action ID: %v", payload.ActionID)
 		if payload.View.CallbackID == "recruitment_form" {
 			jsonVal := handleBlockActions(payload)
 			if err := postMessageToChannel(channelID, jsonVal); err != nil {
@@ -97,31 +92,7 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 			}
 			w.WriteHeader(http.StatusOK)
 		} else if payload.View.CallbackID == "apply_form" {
-			log.Printf("Trigger_id: %s", payload.TriggerID)
-			log.Printf("TS: %s", payload.ActionTs)
-			log.Printf("Message: %s", payload.Message.ClientMsgID)
-			log.Printf("Message1: %s", payload.Message.Text)
-			log.Printf("Message2: %s", payload.Message.Timestamp)
-			log.Printf("Original Message: %s", payload.OriginalMessage.ClientMsgID)
-			log.Printf("Original Message1: %s", payload.OriginalMessage.Text)
-			log.Printf("Original Message2: %s", payload.OriginalMessage.Timestamp)
-			log.Println(payload.BlockID)
-			log.Println(payload.Value)
-			log.Println("Response URL: ", payload.ResponseURL)
-			log.Println(payload)
-			jsonBytes, _ := json.Marshal(payload)
-			log.Println(string(jsonBytes))
 			log.Println("Received view submission 지원하기")
-			w.WriteHeader(http.StatusOK)
-		} else if payload.View.CallbackID == "delete_form" {
-			log.Printf("Trigger_id: %s", payload.TriggerID)
-			log.Printf("Message: %s", payload.Message.ClientMsgID)
-			log.Printf("Message1: %s", payload.Message.Text)
-			log.Printf("Message2: %s", payload.Message.Timestamp)
-			log.Printf("Original Message: %s", payload.OriginalMessage.ClientMsgID)
-			log.Printf("Original Message1: %s", payload.OriginalMessage.Text)
-			log.Printf("Original Message2: %s", payload.OriginalMessage.Timestamp)
-			log.Println("Received view submission 삭제하기")
 			w.WriteHeader(http.StatusOK)
 		}
 	}
