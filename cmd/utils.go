@@ -373,6 +373,34 @@ func addAllTags(api *slack.Client) error {
 	}
 	return nil
 }
+func openDeleteModal(triggerID string) error {
+	// api := slack.New(botToken)
+	// modalRequest := slack.ModalViewRequest{
+	// 	Type:       slack.VTModal,
+	// 	CallbackID: "delete_form",
+	// 	Title:      slack.NewTextBlockObject("plain_text", "Delete Team", false, false),
+	// 	Close:      slack.NewTextBlockObject("plain_text", "Cancel", false, false),
+	// 	Submit:     slack.NewTextBlockObject("plain_text", "Submit", false, false),
+	// 	Blocks: slack.Blocks{
+	// 		BlockSet: []slack.Block{
+	// 			slack.NewInputBlock(
+	// 				"team_select",
+	// 				slack.NewTextBlockObject("plain_text", "Select a Team", false, false),
+	// 				slack.NewTextBlockObject("plain_text", "Select a team", false, false),
+	// 				slack.NewOptionsSelectBlockElement(
+	// 					slack.OptTypeStatic,
+	// 					slack.NewTextBlockObject("plain_text", "내부", false, false),
+	// 					"selected_team",
+	// 					slack.NewOptionBlockObject("내부 키", slack.NewTextBlockObject("plain_text", "Team 1", false, false), nil),
+	// 					slack.NewOptionBlockObject("team2", slack.NewTextBlockObject("plain_text", "Team 2", false, false), nil),
+	// 				),
+	// 			),
+	// 		},
+	// 	},
+	// }
+	// _, err := api.OpenView(triggerID, modalRequest)
+	return nil
+}
 
 func openApplyModal(triggerID string) error {
 	api := slack.New(botToken)
