@@ -75,6 +75,8 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 	} else if payload.Type == slack.InteractionTypeViewSubmission {
 		log.Printf("Trigger_id: %s", payload.TriggerID)
 		log.Println(payload.User)
+		log.Printf("Token: %s", payload.Token)
+		log.Printf("Message Time Stamp: %s", payload.MessageTs)
 		log.Println(payload.View.CallbackID) // this is the key to distinguish different modals
 		log.Println(payload.View.PrivateMetadata)
 		log.Printf("Action ID: %v", payload.ActionID)
@@ -88,10 +90,22 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		} else if payload.View.CallbackID == "apply_form" {
 			log.Printf("Trigger_id: %s", payload.TriggerID)
+			log.Printf("Message: %s", payload.Message.ClientMsgID)
+			log.Printf("Message1: %s", payload.Message.Text)
+			log.Printf("Message2: %s", payload.Message.Timestamp)
+			log.Printf("Original Message: %s", payload.OriginalMessage.ClientMsgID)
+			log.Printf("Original Message1: %s", payload.OriginalMessage.Text)
+			log.Printf("Original Message2: %s", payload.OriginalMessage.Timestamp)
 			log.Println("Received view submission 지원하기")
 			w.WriteHeader(http.StatusOK)
 		} else if payload.View.CallbackID == "delete_form" {
 			log.Printf("Trigger_id: %s", payload.TriggerID)
+			log.Printf("Message: %s", payload.Message.ClientMsgID)
+			log.Printf("Message1: %s", payload.Message.Text)
+			log.Printf("Message2: %s", payload.Message.Timestamp)
+			log.Printf("Original Message: %s", payload.OriginalMessage.ClientMsgID)
+			log.Printf("Original Message1: %s", payload.OriginalMessage.Text)
+			log.Printf("Original Message2: %s", payload.OriginalMessage.Timestamp)
 			log.Println("Received view submission 삭제하기")
 			w.WriteHeader(http.StatusOK)
 		}
