@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS users (
     user_id SERIAL PRIMARY KEY,
     user_name VARCHAR(50) NOT NULL,
     user_code VARCHAR(100) UNIQUE NOT NULL,
+    user_email VARCHAR(100) UNIQUE NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -25,7 +26,8 @@ CREATE TABLE IF NOT EXISTS teams (
 CREATE TABLE IF NOT EXISTS tags (
     tag_id SERIAL PRIMARY KEY,
     tag_name VARCHAR(50) NOT NULL UNIQUE,
-    tag_long_name VARCHAR(100) NOT NULL
+    tag_long_name VARCHAR(100) NOT NULL,
+    tag_type VARCHAR(50) NOT NULL,
 );
 
 -- Junction table to associate users with teams (many-to-many relationship)

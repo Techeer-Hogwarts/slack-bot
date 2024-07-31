@@ -337,7 +337,7 @@ func getAllUsers(api *slack.Client) error {
 
 func addAllTags(api *slack.Client) error {
 	for key, value := range stackMap {
-		ms, err := db.GetTag(key)
+		ms, _, err := db.GetTag(key)
 		if ms == "na" {
 			err := db.AddTag(key, value)
 			if err != nil {
@@ -358,15 +358,24 @@ func deleteMessage(payload slack.InteractionCallback) error {
 	actionMessageTimestamp := payload.Message.Timestamp
 	actionContainerTimestamp := payload.Container.MessageTs
 	log.Printf("User ID: %v | Message Timestamp: %v | Container Timestamp: %v", actionUserID, actionMessageTimestamp, actionContainerTimestamp)
-	teamObj, _ := db.GetTeam(actionMessageTimestamp)
-	// if err != nil {
-	// 	return err
-	// }
-	teamTs := teamObj.TeamTs
-	log.Println("Team Timestamp: ", teamTs)
-	err := sendSuccessMessage(api, payload.Channel.ID, payload.User.ID, "Message deleted successfully")
+	teamObj, err := db.GetTeam(actionMessageTimestamp)
 	if err != nil {
 		return err
+	}
+	if teamObj.TeamLeader != actionUserID {
+		err = db.DeleteTeam(actionMessageTimestamp)
+		if err != nil {
+			return err
+		}
+		err = sendSuccessMessage(api, payload.Channel.ID, payload.User.ID, "메시지가 삭제되었습니다.")
+		if err != nil {
+			return err
+		}
+	} else {
+		err = sendFailMessage(api, payload.Channel.ID, payload.User.ID, "팀 리더가 아닙니다. 삭제 권한이 없습니다.")
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -384,9 +393,26 @@ func addTeamToDB(message FormMessage, ts string) error {
 		TeamEtc:    message.Etc,
 		TeamTs:     ts,
 	}
-	err := db.AddTeam(teamObj)
+	teamID, err := db.AddTeam(teamObj)
 	if err != nil {
 		return err
+	}
+	for _, stack := range message.TechStacks {
+		_, stack_id, err := db.GetTag(stack)
+		err = db.AddTagsToTeam(teamID, stack_id)
+		if err != nil {
+			return err
+		}
+	}
+	for _, user := range message.Members {
+		_, user_id, err := db.GetUser(user)
+		if err != nil {
+			return err
+		}
+		err = db.AddUserToTeam(teamID, user_id)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
