@@ -2,7 +2,6 @@ package db
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"log"
 )
@@ -53,7 +52,7 @@ func GetUserWithID(userID int) (string, string, error) {
 	var userCode string
 	err := DBMain.QueryRow("SELECT user_name, user_code FROM users WHERE user_id = $1", userID).Scan(&userName, &userCode)
 	if err == sql.ErrNoRows {
-		return "na", "", fmt.Errorf("user not found")
+		return "na", "", fmt.Errorf("user not found. Error content: %v", err)
 	}
 	if err != nil {
 		return "", "", fmt.Errorf("some other sql error: %s", err.Error())
@@ -91,8 +90,7 @@ func GetTeam(ts string) (Team, error) {
 	teamObj := Team{}
 	var teamLeaderID int
 	err := DBMain.QueryRow("SELECT * FROM teams WHERE message_ts = $1", ts).Scan(&teamObj.TeamID, &teamObj.TeamType, &teamObj.TeamIntro, &teamObj.TeamName, &teamLeaderID, &teamObj.TeamDesc, &teamObj.NumMembers, &teamObj.TeamEtc, &teamObj.TeamTs)
-	jsonValue, _ := json.Marshal(teamObj)
-	log.Println(jsonValue)
+	log.Print(teamObj)
 	if err == sql.ErrNoRows {
 		return Team{}, fmt.Errorf("team not found")
 	}
