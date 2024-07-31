@@ -393,6 +393,8 @@ func deleteMessage(payload slack.InteractionCallback) error {
 }
 
 func addTeamToDB(message FormMessage, ts string) error {
+	jsonBytes, _ := json.Marshal(message)
+	log.Println(string(jsonBytes))
 	teamObj := db.Team{
 		TeamType:   message.TeamType,
 		TeamIntro:  message.TeamIntro,
