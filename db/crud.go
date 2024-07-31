@@ -89,7 +89,20 @@ func GetTeam(ts string) (Team, error) {
 	// Get a team from the database
 	teamObj := Team{}
 	var teamLeaderID int
-	err := DBMain.QueryRow("SELECT * FROM teams WHERE message_ts = $1", ts).Scan(&teamObj.TeamID, &teamObj.TeamType, &teamObj.TeamIntro, &teamObj.TeamName, &teamLeaderID, &teamObj.TeamDesc, &teamObj.NumMembers, &teamObj.TeamEtc, &teamObj.TeamTs)
+	err := DBMain.QueryRow(
+		"SELECT team_id, team_type, team_intro, team_name, team_leader, team_description, num_members, team_etc, message_ts FROM teams WHERE message_ts = $1 AND is_active = TRUE",
+		ts,
+	).Scan(
+		&teamObj.TeamID,
+		&teamObj.TeamType,
+		&teamObj.TeamIntro,
+		&teamObj.TeamName,
+		&teamLeaderID,
+		&teamObj.TeamDesc,
+		&teamObj.NumMembers,
+		&teamObj.TeamEtc,
+		&teamObj.TeamTs,
+	)
 	log.Print(teamObj)
 	if err == sql.ErrNoRows {
 		return Team{}, fmt.Errorf("team not found")
