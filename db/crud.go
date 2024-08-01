@@ -152,6 +152,15 @@ func GetTeamByID(teamID int) (Team, error) {
 	return teamObj, nil
 }
 
+func UpdateTeamMembers(teamID int, numMembers int) error {
+	_, err := DBMain.Exec("UPDATE teams SET num_members = $1 WHERE team_id = $2", numMembers, teamID)
+	if err != nil {
+		return fmt.Errorf("failed to update team members: %s", err.Error())
+	}
+	log.Printf("Team %d now has %d members", teamID, numMembers)
+	return nil
+}
+
 func AddUserToTeam(teamID int, userID int) error {
 	_, err := DBMain.Exec("INSERT INTO user_teams (team_id, user_id) VALUES ($1, $2)", teamID, userID)
 	if err != nil {
@@ -163,10 +172,6 @@ func AddUserToTeam(teamID int, userID int) error {
 
 func GetUsersInTeam() {
 	// Get all users in a team
-}
-
-func GetTeamPost() {
-	// Get a team post
 }
 
 func GetAllTeams() ([]Team, error) {

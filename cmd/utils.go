@@ -510,5 +510,10 @@ func enrollUser(value string, channelID string) error {
 	if err != nil {
 		return err
 	}
+
+	err = db.UpdateTeamMembers(teamID, teamObj.NumMembers+1)
+	if err != nil {
+		return err
+	}
 	return nil
 }
