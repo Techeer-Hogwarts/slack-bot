@@ -117,7 +117,7 @@ func openApplyModal(triggerID string) error {
 				slack.NewInputBlock(
 					"team_select",
 					slack.NewTextBlockObject("plain_text", "Select a Team", false, false),
-					slack.NewTextBlockObject("plain_text", "Select a team", false, false),
+					nil,
 					slack.NewOptionsSelectBlockElement(
 						slack.OptTypeStatic,
 						slack.NewTextBlockObject("plain_text", "팀을 골라주세요", false, false),
@@ -137,16 +137,16 @@ func openApplyModal(triggerID string) error {
 					slack.NewTextBlockObject("plain_text", "학년 입력", false, false),
 					slack.NewPlainTextInputBlockElement(slack.NewTextBlockObject("plain_text", "학년", false, false), "grade_action"),
 				),
-				slack.NewInputBlock(
-					"desc_input",
-					slack.NewTextBlockObject("plain_text", "지원동기/자기소개", false, false),
-					slack.NewTextBlockObject("plain_text", "pr", false, false),
-					&slack.PlainTextInputBlockElement{
-						ActionID:    "desc_action",
-						Placeholder: slack.NewTextBlockObject("plain_text", "지원 동기/자기소개", false, false),
-						Multiline:   true,
-					},
-				),
+				// slack.NewInputBlock(
+				// 	"desc_input",
+				// 	slack.NewTextBlockObject("plain_text", "지원동기/자기소개", false, false),
+				// 	slack.NewTextBlockObject("plain_text", "pr", false, false),
+				// 	&slack.PlainTextInputBlockElement{
+				// 		ActionID:    "desc_action",
+				// 		Placeholder: slack.NewTextBlockObject("plain_text", "지원 동기/자기소개", false, false),
+				// 		Multiline:   true,
+				// 	},
+				// ),
 				slack.NewInputBlock(
 					"role_input",
 					slack.NewTextBlockObject("plain_text", "희망하는 직군", false, false),
