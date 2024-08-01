@@ -140,36 +140,27 @@ func getChannelMessages(api *slack.Client, channelID string) (*slack.GetConversa
 	return history, nil
 }
 
-func TriggerEvent(w http.ResponseWriter, r *http.Request) {
-	log.Println("Received a trigger event request")
+// func TriggerEvent(w http.ResponseWriter, r *http.Request) {
+// 	log.Println("Received a trigger event request")
 
-	api := slack.New(botToken)
-	history, err := getChannelMessages(api, channelID)
-	if err != nil {
-		log.Printf("Failed to retrieve messages: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	log.Printf("channelID: %v", channelID)
-
-	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(history); err != nil {
-		log.Printf("Failed to encode response: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	log.Println("Trigger event processed successfully")
-}
-
-// func getUsernameAndEmail(api *slack.Client, userID string) (string, error) {
-// 	user, err := api.GetUserInfo(userID)
+// 	api := slack.New(botToken)
+// 	history, err := getChannelMessages(api, channelID)
 // 	if err != nil {
-// 		return "", err
+// 		log.Printf("Failed to retrieve messages: %v", err)
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
 // 	}
 
-// 	return user.RealName, nil
+// 	log.Printf("channelID: %v", channelID)
+
+// 	w.Header().Set("Content-Type", "application/json")
+// 	if err := json.NewEncoder(w).Encode(history); err != nil {
+// 		log.Printf("Failed to encode response: %v", err)
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
+
+// 	log.Println("Trigger event processed successfully")
 // }
 
 func constructMessageText(message FormMessage) (string, error) {
