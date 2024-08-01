@@ -176,16 +176,14 @@ func GetUsersInTeam() {
 
 func GetUserInTeam(userID int, teamID int) (bool, error) {
 	// Get a user in a team
-	rows, err := DBMain.Query("SELECT * FROM user_teams WHERE user_id = $1 AND team_id = $2", userID, teamID)
+	var rowID int
+	err := DBMain.QueryRow("SELECT ut_id FROM user_teams WHERE user_id = $1 AND team_id = $2", userID, teamID).Scan(&rowID)
+	if err == sql.ErrNoRows {
+		return false, nil
+	}
 	if err != nil {
-		return true, fmt.Errorf("failed to get user in team: %s", err.Error())
+		return true, fmt.Errorf("failed to get user in team: %s", err)
 	}
-	defer rows.Close()
-
-	if !rows.Next() {
-		return false, fmt.Errorf("user %d is not in team %d", userID, teamID)
-	}
-	log.Println("User is in team")
 	return true, nil
 }
 
