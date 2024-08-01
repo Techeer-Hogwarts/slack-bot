@@ -185,6 +185,7 @@ func GetUserInTeam(userID int, teamID int) (bool, error) {
 	if !rows.Next() {
 		return false, fmt.Errorf("user %d is not in team %d", userID, teamID)
 	}
+	log.Println("User is in team")
 	return true, nil
 }
 
