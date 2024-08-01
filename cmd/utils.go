@@ -404,12 +404,17 @@ func deleteMessage(payload slack.InteractionCallback) error {
 	actionMessageTimestamp := payload.Message.Timestamp
 	teamObj, err := db.GetTeam(actionMessageTimestamp)
 	if err != nil {
+		_ = sendFailMessage(api, payload.Channel.ID, payload.User.ID, "오류가 발생했습니다. 다시 시도해주시거나 개발자를 연락 하세요")
 		return err
 	}
 	if teamObj.TeamLeader == actionUserID {
 		err = db.DeleteTeam(actionMessageTimestamp)
 		if err != nil {
 			return err
+		}
+		_, _, err = api.DeleteMessage(payload.Channel.ID, actionMessageTimestamp)
+		if err != nil {
+			return fmt.Errorf("failed to delete message from Slack: %s", err.Error())
 		}
 		err = sendSuccessMessage(api, payload.Channel.ID, payload.User.ID, "메시지가 삭제되었습니다.")
 		if err != nil {
@@ -466,10 +471,29 @@ func addTeamToDB(message FormMessage, ts string) error {
 
 func openApplyModal(triggerID string) error {
 	api := slack.New(botToken)
+
+	// Fetch active teams
+	activeTeams, err := db.GetAllTeams()
+	if err != nil {
+		return fmt.Errorf("failed to get active teams: %w", err)
+	}
+
+	// Create options from active teams
+	var options []*slack.OptionBlockObject
+	for _, team := range activeTeams {
+		option := slack.NewOptionBlockObject(
+			team.TeamID, // Assuming TeamID is a unique identifier
+			slack.NewTextBlockObject("plain_text", "팀 이름: "+team.TeamName+" - 팀 리더: "+team.TeamLeader, false, false),
+			nil,
+		)
+		options = append(options, option)
+	}
+
+	// Create the modal view request
 	modalRequest := slack.ModalViewRequest{
 		Type:       slack.VTModal,
 		CallbackID: "apply_form",
-		Title:      slack.NewTextBlockObject("plain_text", "Apply to Team", false, false),
+		Title:      slack.NewTextBlockObject("plain_text", "팀에 지원하기", false, false),
 		Close:      slack.NewTextBlockObject("plain_text", "Cancel", false, false),
 		Submit:     slack.NewTextBlockObject("plain_text", "Submit", false, false),
 		Blocks: slack.Blocks{
@@ -480,23 +504,45 @@ func openApplyModal(triggerID string) error {
 					slack.NewTextBlockObject("plain_text", "Select a team", false, false),
 					slack.NewOptionsSelectBlockElement(
 						slack.OptTypeStatic,
-						slack.NewTextBlockObject("plain_text", "내부", false, false),
+						slack.NewTextBlockObject("plain_text", "팀을 골라주세요", false, false),
 						"selected_team",
-						slack.NewOptionBlockObject("내부 키", slack.NewTextBlockObject("plain_text", "Team 1", false, false), nil),
-						slack.NewOptionBlockObject("team2", slack.NewTextBlockObject("plain_text", "Team 2", false, false), nil),
+						options...,
 					),
 				),
 				slack.NewInputBlock(
-					"resume_input",
-					slack.NewTextBlockObject("plain_text", "Upload Resume", false, false),
-					slack.NewTextBlockObject("plain_text", "Paste your resume link", false, false),
-					slack.NewPlainTextInputBlockElement(slack.NewTextBlockObject("plain_text", "내부", false, false), "resume_link"),
+					"age_input",
+					slack.NewTextBlockObject("plain_text", "나이를 입력 해주세요", false, false),
+					slack.NewTextBlockObject("plain_text", "나이 입력", false, false),
+					slack.NewPlainTextInputBlockElement(slack.NewTextBlockObject("plain_text", "나이", false, false), "age_action"),
+				),
+				slack.NewInputBlock(
+					"grade_input",
+					slack.NewTextBlockObject("plain_text", "학년을 입력 해주세요 (졸업 하셨으면 졸업이라고 적어주세요)", false, false),
+					slack.NewTextBlockObject("plain_text", "학년 입력", false, false),
+					slack.NewPlainTextInputBlockElement(slack.NewTextBlockObject("plain_text", "학년", false, false), "grade_action"),
+				),
+				slack.NewInputBlock(
+					"desc_input",
+					slack.NewTextBlockObject("plain_text", "지원동기/자기소개", false, false),
+					slack.NewTextBlockObject("plain_text", "pr", false, false),
+					slack.NewPlainTextInputBlockElement(slack.NewTextBlockObject("plain_text", "지원 동기/자기소개", false, false), "desc_action"),
+				),
+				slack.NewInputBlock(
+					"role_input",
+					slack.NewTextBlockObject("plain_text", "희망하는 직군", false, false),
+					slack.NewTextBlockObject("plain_text", "role", false, false),
+					slack.NewPlainTextInputBlockElement(slack.NewTextBlockObject("plain_text", "ex. 프런트", false, false), "role_action"),
 				),
 			},
 		},
 	}
-	_, err := api.OpenView(triggerID, modalRequest)
-	return err
+
+	_, err = api.OpenView(triggerID, modalRequest)
+	if err != nil {
+		return fmt.Errorf("failed to open modal view: %w", err)
+	}
+
+	return nil
 }
 
 func sendSuccessMessage(api *slack.Client, channelID string, userID string, messageText string) error {
@@ -507,5 +553,12 @@ func sendSuccessMessage(api *slack.Client, channelID string, userID string, mess
 func sendFailMessage(api *slack.Client, channelID string, userID string, messageText string) error {
 	log.Println(userID)
 	_, err := api.PostEphemeral(channelID, userID, slack.MsgOptionText(messageText, false))
+	return err
+}
+
+func sendDMToLeader(leaderSlackID, applicantSlackID, resumeLink string) error {
+	api := slack.New(botToken)
+	messageText := fmt.Sprintf("You have a new application for your team!\n\nApplicant: <@%s>\nResume: %s", applicantSlackID, resumeLink)
+	_, _, err := api.PostMessage(leaderSlackID, slack.MsgOptionText(messageText, false))
 	return err
 }
