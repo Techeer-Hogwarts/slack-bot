@@ -194,7 +194,7 @@
 							"text": "Kubernetes",
 							"emoji": true
 						},
-						"value": "kubernetes"
+						"value": "kube"
 					},
 					{
 						"text": {
@@ -226,7 +226,7 @@
 							"text": "Graphite",
 							"emoji": true
 						},
-						"value": "grahpite"
+						"value": "graphite"
 					},
 					{
 						"text": {
@@ -386,7 +386,7 @@
 							"text": "Grafana",
 							"emoji": true
 						},
-						"value": "Grafana"
+						"value": "grafana"
 					},
 					{
 						"text": {
@@ -426,7 +426,7 @@
 							"text": "Zustand",
 							"emoji": true
 						},
-						"value": "Zustand"
+						"value": "zustand"
 					},
 					{
 						"text": {
@@ -450,7 +450,7 @@
 							"text": "PostgreSQL",
 							"emoji": true
 						},
-						"value": "Postgre"
+						"value": "postgre"
 					},
 					{
 						"text": {
