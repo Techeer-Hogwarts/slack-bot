@@ -90,6 +90,13 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 					log.Printf("Failed to delete message: %v", err)
 				}
 				return
+			} else if action.ActionID == "enroll_button" {
+				log.Println("Enroll button clicked")
+				// err := enrollUser(payload)
+				// if err != nil {
+				// 	log.Printf("Failed to enroll user: %v", err)
+				// }
+				return
 			}
 		}
 		w.WriteHeader(http.StatusOK)
