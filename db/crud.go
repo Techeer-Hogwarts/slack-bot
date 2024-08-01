@@ -7,15 +7,16 @@ import (
 )
 
 type Team struct {
-	TeamID     string
-	TeamType   string
-	TeamIntro  string
-	TeamName   string
-	TeamLeader string
-	TeamDesc   string
-	NumMembers int
-	TeamEtc    string
-	TeamTs     string
+	TeamID         string
+	TeamType       string
+	TeamIntro      string
+	TeamName       string
+	TeamLeader     string
+	TeamLeaderName string
+	TeamDesc       string
+	NumMembers     int
+	TeamEtc        string
+	TeamTs         string
 }
 
 type Stack struct {
@@ -92,6 +93,39 @@ func GetTeam(ts string) (Team, error) {
 	err := DBMain.QueryRow(
 		"SELECT team_id, team_type, team_intro, team_name, team_leader, team_description, num_members, team_etc, message_ts FROM teams WHERE message_ts = $1 AND is_active = TRUE",
 		ts,
+	).Scan(
+		&teamObj.TeamID,
+		&teamObj.TeamType,
+		&teamObj.TeamIntro,
+		&teamObj.TeamName,
+		&teamLeaderID,
+		&teamObj.TeamDesc,
+		&teamObj.NumMembers,
+		&teamObj.TeamEtc,
+		&teamObj.TeamTs,
+	)
+	if err == sql.ErrNoRows {
+		return Team{}, fmt.Errorf("team not found")
+	}
+	_, teamLeaderCode, err := GetUserWithID(teamLeaderID)
+	if err == sql.ErrNoRows {
+		return Team{}, fmt.Errorf("leader not found")
+	}
+	if err != nil {
+		return Team{}, fmt.Errorf("failed to get leader for team: %s", err.Error())
+	}
+	log.Printf("Team %s found in the database", teamObj.TeamName)
+	teamObj.TeamLeader = teamLeaderCode
+	return teamObj, nil
+}
+
+func GetTeamByID(teamID int) (Team, error) {
+	// Get a team from the database
+	teamObj := Team{}
+	var teamLeaderID int
+	err := DBMain.QueryRow(
+		"SELECT team_id, team_type, team_intro, team_name, team_leader, team_description, num_members, team_etc, message_ts FROM teams WHERE team_id = $1 AND is_active = TRUE",
+		teamID,
 	).Scan(
 		&teamObj.TeamID,
 		&teamObj.TeamType,
