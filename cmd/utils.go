@@ -479,3 +479,7 @@ func sendFailMessage(api *slack.Client, channelID string, userID string, message
 	_, err := api.PostEphemeral(channelID, userID, slack.MsgOptionText(messageText, false))
 	return err
 }
+
+func enrollUser(value string) error {
+	return nil
+}

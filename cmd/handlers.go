@@ -92,8 +92,7 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 				return
 			} else if action.ActionID == "enroll_button" {
 				log.Println("Enroll button clicked")
-				jsonVal, _ := json.Marshal(payload)
-				log.Printf("Received payload for 수락: %s", jsonVal)
+				log.Printf("Payload Message: %s", action.Value)
 				// err := enrollUser(payload)
 				// if err != nil {
 				// 	log.Printf("Failed to enroll user: %v", err)
