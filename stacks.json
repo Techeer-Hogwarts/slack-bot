@@ -41,7 +41,7 @@
     {"key": "celery", "name": "Celery", "type": "backend"},
     {"key": "nginx", "name": "Nginx", "type": "devops"},
     {"key": "cdn", "name": "CDN (CloudFront)", "type": "devops"},
-    {"key": "nestjs", "name": "Nest.JS", "type": "backend"},
+    {"key": "nest", "name": "Nest.JS", "type": "backend"},
     {"key": "zustand", "name": "Zustand", "type": "frontend"},
     {"key": "tailwind", "name": "Tailwind CSS", "type": "frontend"},
     {"key": "bootstrap", "name": "Bootstrap", "type": "frontend"},

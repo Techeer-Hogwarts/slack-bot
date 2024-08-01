@@ -2,11 +2,13 @@ package cmd
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/slack-go/slack"
+	"github.com/thomas-and-friends/slack-bot/db"
 )
 
 type FormMessage struct {
@@ -26,6 +28,16 @@ type FormMessage struct {
 	EtcMembers        string   `json:"etc_members"`
 	Description       string   `json:"description"`
 	Etc               string   `json:"etc"`
+}
+
+type ApplyMessage struct {
+	TeamID    string `json:"team_id"`
+	Leader    string `json:"leader"`
+	Applicant string `json:"applicant"`
+	Age       string `json:"age"`
+	Grade     string `json:"grade"`
+	Pr        string `json:"pr"`
+	Role      string `json:"role"`
 }
 
 func SendHelloWorld(w http.ResponseWriter, r *http.Request) {
@@ -94,8 +106,45 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 			log.Println("Received view submission 지원하기")
 			jsonVal, _ := json.Marshal(payload)
 			log.Printf("Received payload for 지원하기: %s", jsonVal)
-			// chosenTeam := payload.View.PrivateMetadata
-			// err := sendDMToLeader(payload., payload.User.ID, payload.User.Name)
+			applicant := payload.User.ID
+			selectedTeam := payload.View.State.Values["team_select"]["selected_team"].SelectedOption.Value
+			teamID, err := strconv.Atoi(selectedTeam)
+			if err != nil {
+				log.Printf("Failed to convert teamID to int: %v", err)
+				http.Error(w, "Failed to convert teamID to int", http.StatusInternalServerError)
+				return
+			}
+			teamObject, err := db.GetTeamByID(teamID)
+			leaderCode := teamObject.TeamLeader
+			if err != nil {
+				log.Printf("Failed to get team leader code: %v", err)
+				http.Error(w, "Failed to get team leader code", http.StatusInternalServerError)
+				return
+			}
+			api := slack.New(botToken)
+			appMsg := ApplyMessage{
+				TeamID:    selectedTeam,
+				Leader:    leaderCode,
+				Applicant: applicant,
+				Age:       payload.View.State.Values["age_input"]["age_action"].Value,
+				Grade:     payload.View.State.Values["grade_input"]["grade_action"].Value,
+				Pr:        payload.View.State.Values["desc_input"]["desc_action"].Value,
+				Role:      payload.View.State.Values["role_input"]["role_action"].Value,
+			}
+
+			err = sendDMToLeader(api, appMsg)
+			if err != nil {
+				log.Printf("Failed to send DM to leader: %v", err)
+				http.Error(w, "Failed to send DM to leader", http.StatusInternalServerError)
+				return
+			}
+			msg := fmt.Sprintf("%s 팀에 지원이 완료되었습니다! 팀 리더에게 DM을 보냈습니다.", teamObject.TeamName)
+			err = sendSuccessMessage(api, channelID, applicant, msg)
+			if err != nil {
+				log.Printf("Failed to send success message: %v", err)
+				http.Error(w, "Failed to send success message", http.StatusInternalServerError)
+				return
+			}
 			w.WriteHeader(http.StatusOK)
 		}
 	}
@@ -217,7 +266,6 @@ func HandleSlashCommand(w http.ResponseWriter, r *http.Request) {
 	switch command {
 	case "/구인":
 		openRecruitmentModal(w, triggerID, api)
-		w.WriteHeader(http.StatusOK)
 	default:
 		w.WriteHeader(http.StatusOK)
 	}
