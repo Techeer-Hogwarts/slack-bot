@@ -480,6 +480,35 @@ func sendFailMessage(api *slack.Client, channelID string, userID string, message
 	return err
 }
 
-func enrollUser(value string) error {
+func enrollUser(value string, channelID string) error {
+	api := slack.New(botToken)
+	values := strings.Split(value, "|")
+	applicantID := values[0]
+	teamID, err := strconv.Atoi(values[1])
+	if err != nil {
+		return err
+	}
+	_, applicantIDInt, err := db.GetUser(applicantID)
+	if err != nil {
+		return err
+	}
+	err = db.AddUserToTeam(teamID, applicantIDInt)
+	if err != nil {
+		return err
+	}
+	teamObj, err := db.GetTeamByID(teamID)
+	if err != nil {
+		return err
+	}
+	msgText := fmt.Sprintf("<@%s>님의 팀 가입 신청을 수락하셨습니다.", applicantID)
+	_, err = api.PostEphemeral(channelID, teamObj.TeamLeader, slack.MsgOptionText(msgText, false))
+	if err != nil {
+		return err
+	}
+	msgText = fmt.Sprintf("%v 팀 가입 신청이 수락되었습니다.", teamObj.TeamName)
+	_, err = api.PostEphemeral(channelID, applicantID, slack.MsgOptionText(msgText, false))
+	if err != nil {
+		return err
+	}
 	return nil
 }

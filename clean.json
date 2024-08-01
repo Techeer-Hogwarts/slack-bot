@@ -2,8 +2,8 @@
   "type": "block_actions",
   "token": "IlM4qha2ED82DpcUKIXT5BId",
   "callback_id": "",
-  "response_url": "https://hooks.slack.com/actions/T02AD1HSVSL/7510673902131/SSdBdX5I9GMo1jcA63iGzK3H",
-  "trigger_id": "7507887419141.2353051913904.677b8430a93a52b6ecdefda7caa89b17",
+  "response_url": "https://hooks.slack.com/actions/T02AD1HSVSL/7510825014530/4gQWAZDaBmynx8OH2Au1x6pf",
+  "trigger_id": "7523492699233.2353051913904.38acf4901c634b293d0e12e7b1cce097",
   "action_ts": "",
   "team": {
     "id": "T02AD1HSVSL",
@@ -108,8 +108,8 @@
   "message": {
     "type": "message",
     "user": "U07EFEATYGL",
-    "text": "{\"team_id\":\"8\",\"leader\":\"U02AES3BH17\",\"applicant\":\"U02AES3BH17\",\"age\":\"26\",\"grade\":\"3\",\"pr\":\"지원 동기 입니다\",\"role\":\"프런트\"} 수락 button",
-    "ts": "1722490684.526759",
+    "text": "{\"team_id\":\"8\",\"leader\":\"U02AES3BH17\",\"applicant\":\"U06GE2AJWK1\",\"age\":\"23\",\"grade\":\"4\",\"pr\":\"화이팅\",\"role\":\"백\"} 수락 button",
+    "ts": "1722491471.653339",
     "bot_id": "B07ERKNF8QH",
     "team": "T02AD1HSVSL",
     "replace_original": false,
@@ -123,13 +123,13 @@
         "type": "section",
         "text": {
           "type": "mrkdwn",
-          "text": "{\"team_id\":\"8\",\"leader\":\"U02AES3BH17\",\"applicant\":\"U02AES3BH17\",\"age\":\"26\",\"grade\":\"3\",\"pr\":\"지원 동기 입니다\",\"role\":\"프런트\"}"
+          "text": "{\"team_id\":\"8\",\"leader\":\"U02AES3BH17\",\"applicant\":\"U06GE2AJWK1\",\"age\":\"23\",\"grade\":\"4\",\"pr\":\"화이팅\",\"role\":\"백\"}"
         },
-        "block_id": "LTKjb"
+        "block_id": "HaJ7C"
       },
       {
         "type": "actions",
-        "block_id": "LVtEu",
+        "block_id": "SFKg6",
         "elements": [
           {
             "type": "button",
@@ -139,7 +139,7 @@
               "emoji": true
             },
             "action_id": "enroll_button",
-            "value": "U02AES3BH17|8"
+            "value": "U06GE2AJWK1|8"
           }
         ]
       }
@@ -152,16 +152,16 @@
   "actions": [
     {
       "action_id": "enroll_button",
-      "block_id": "LVtEu",
+      "block_id": "SFKg6",
       "type": "button",
       "text": {
         "type": "plain_text",
         "text": "수락",
         "emoji": true
       },
-      "value": "U02AES3BH17|8",
+      "value": "U06GE2AJWK1|8",
       "files": null,
-      "action_ts": "1722490877.771734",
+      "action_ts": "1722491676.030356",
       "selected_option": {
         "text": null,
         "value": ""
@@ -221,7 +221,7 @@
   "container": {
     "type": "message",
     "view_id": "",
-    "message_ts": "1722490684.526759",
+    "message_ts": "1722491471.653339",
     "attachment_id": 0,
     "channel_id": "D07ED07QAM8",
     "is_ephemeral": false,
