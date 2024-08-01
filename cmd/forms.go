@@ -106,6 +106,11 @@ func openApplyModal(triggerID string) error {
 	}
 
 	// Create the modal view request
+	descInput := slack.NewPlainTextInputBlockElement(
+		slack.NewTextBlockObject("plain_text", "지원 동기/자기소개", false, false),
+		"desc_action",
+	)
+	descInput.Multiline = true
 	modalRequest := slack.ModalViewRequest{
 		Type:       slack.VTModal,
 		CallbackID: "apply_form",
@@ -137,16 +142,12 @@ func openApplyModal(triggerID string) error {
 					slack.NewTextBlockObject("plain_text", "학년 입력", false, false),
 					slack.NewPlainTextInputBlockElement(slack.NewTextBlockObject("plain_text", "학년", false, false), "grade_action"),
 				),
-				// slack.NewInputBlock(
-				// 	"desc_input",
-				// 	slack.NewTextBlockObject("plain_text", "지원동기/자기소개", false, false),
-				// 	slack.NewTextBlockObject("plain_text", "pr", false, false),
-				// 	&slack.PlainTextInputBlockElement{
-				// 		ActionID:    "desc_action",
-				// 		Placeholder: slack.NewTextBlockObject("plain_text", "지원 동기/자기소개", false, false),
-				// 		Multiline:   true,
-				// 	},
-				// ),
+				slack.NewInputBlock(
+					"desc_input",
+					slack.NewTextBlockObject("plain_text", "지원동기/자기소개", false, false),
+					nil, // No hint text for this input block
+					descInput,
+				),
 				slack.NewInputBlock(
 					"role_input",
 					slack.NewTextBlockObject("plain_text", "희망하는 직군", false, false),
