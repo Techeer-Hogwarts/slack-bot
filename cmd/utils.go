@@ -488,15 +488,25 @@ func enrollUser(value string, channelID string) error {
 	if err != nil {
 		return err
 	}
+	teamObj, err := db.GetTeamByID(teamID)
+	if err != nil {
+		return err
+	}
 	_, applicantIDInt, err := db.GetUser(applicantID)
 	if err != nil {
 		return err
 	}
-	err = db.AddUserToTeam(teamID, applicantIDInt)
-	if err != nil {
+	flag, err := db.GetUserInTeam(teamID, applicantIDInt)
+	if flag {
+		if err == nil {
+			err = sendFailMessage(api, channelID, teamObj.TeamLeader, "이미 팀에 속해있습니다.")
+			if err != nil {
+				return err
+			}
+		}
 		return err
 	}
-	teamObj, err := db.GetTeamByID(teamID)
+	err = db.AddUserToTeam(teamID, applicantIDInt)
 	if err != nil {
 		return err
 	}

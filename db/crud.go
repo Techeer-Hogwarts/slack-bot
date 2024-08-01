@@ -174,6 +174,20 @@ func GetUsersInTeam() {
 	// Get all users in a team
 }
 
+func GetUserInTeam(userID int, teamID int) (bool, error) {
+	// Get a user in a team
+	rows, err := DBMain.Query("SELECT * FROM user_teams WHERE user_id = $1 AND team_id = $2", userID, teamID)
+	if err != nil {
+		return true, fmt.Errorf("failed to get user in team: %s", err.Error())
+	}
+	defer rows.Close()
+
+	if !rows.Next() {
+		return false, fmt.Errorf("user %d is not in team %d", userID, teamID)
+	}
+	return true, nil
+}
+
 func GetAllTeams() ([]Team, error) {
 	// Get all teams from the database
 	rows, err := DBMain.Query("SELECT team_id, team_type, team_intro, team_name, team_leader, team_description, num_members, team_etc, message_ts FROM teams WHERE is_active = TRUE")
