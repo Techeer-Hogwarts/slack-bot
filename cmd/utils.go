@@ -487,7 +487,7 @@ func enrollUser(value string, channelID string) error {
 	if err != nil {
 		return err
 	}
-	flag, _ := db.GetUserInTeam(teamID, applicantIDInt)
+	flag, _ := db.GetUserInTeam(applicantIDInt, teamID)
 	log.Println(flag)
 	if flag {
 		err = sendFailMessage(api, channelID, teamObj.TeamLeader, "이미 팀에 속해있습니다.")
