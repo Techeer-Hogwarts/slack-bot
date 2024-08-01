@@ -45,14 +45,14 @@ func SendHelloWorld(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Hello, World!"))
 }
 
-func TestEvent(w http.ResponseWriter, r *http.Request) {
-	api := slack.New(botToken)
-	err := getAllUsers(api)
-	if err != nil {
-		log.Println(err)
-	}
-	w.WriteHeader(http.StatusOK)
-}
+// func TestEvent(w http.ResponseWriter, r *http.Request) {
+// 	api := slack.New(botToken)
+// 	err := getAllUsers(api)
+// 	if err != nil {
+// 		log.Println(err)
+// 	}
+// 	w.WriteHeader(http.StatusOK)
+// }
 
 func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {

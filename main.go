@@ -15,10 +15,10 @@ var err error
 func main() {
 	port := config.GetEnv("PORT", "")
 	http.HandleFunc("/slack/commands", cmd.HandleSlashCommand)
-	http.HandleFunc("/trigger_event", cmd.TriggerEvent)
+	// http.HandleFunc("/trigger_event", cmd.TriggerEvent)
 	http.HandleFunc("/slack/interactions", cmd.HandleInteraction)
 	http.HandleFunc("/", cmd.SendHelloWorld)
-	http.HandleFunc("/test", cmd.TestEvent)
+	// http.HandleFunc("/test", cmd.TestEvent)
 	if port == "" {
 		port = "8080"
 	}
