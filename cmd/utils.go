@@ -466,7 +466,6 @@ func sendSuccessMessage(api *slack.Client, channelID string, userID string, mess
 }
 
 func sendFailMessage(api *slack.Client, channelID string, userID string, messageText string) error {
-	log.Println(userID)
 	_, err := api.PostEphemeral(channelID, userID, slack.MsgOptionText(messageText, false))
 	return err
 }
@@ -488,7 +487,6 @@ func enrollUser(value string, channelID string) error {
 		return err
 	}
 	flag, _ := db.GetUserInTeam(applicantIDInt, teamID)
-	log.Println(flag)
 	if flag {
 		err = sendFailMessage(api, channelID, teamObj.TeamLeader, "이미 팀에 속해있습니다.")
 		return err
