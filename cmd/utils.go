@@ -328,7 +328,6 @@ func addAllUsers(api *slack.Client) error {
 }
 
 func getAllUsers(api *slack.Client) error {
-
 	users, err := api.GetUsers()
 	if err != nil {
 		return err
@@ -393,6 +392,14 @@ func deleteMessage(payload slack.InteractionCallback) error {
 	api := slack.New(botToken)
 	actionUserID := payload.User.ID
 	actionMessageTimestamp := payload.Message.Timestamp
+	_, _, err := api.DeleteMessage(payload.Channel.ID, actionMessageTimestamp)
+	if err != nil {
+		return fmt.Errorf("failed to delete message from Slack: %s", err.Error())
+	}
+	err = sendSuccessMessage(api, payload.Channel.ID, payload.User.ID, "메시지가 삭제되었습니다.")
+	if err != nil {
+		return err
+	}
 	teamObj, err := db.GetTeam(actionMessageTimestamp)
 	if err != nil {
 		_ = sendFailMessage(api, payload.Channel.ID, payload.User.ID, "오류가 발생했습니다. 다시 시도해주시거나 개발자를 연락 하세요")
@@ -400,14 +407,6 @@ func deleteMessage(payload slack.InteractionCallback) error {
 	}
 	if teamObj.TeamLeader == actionUserID {
 		err = db.DeleteTeam(actionMessageTimestamp)
-		if err != nil {
-			return err
-		}
-		_, _, err = api.DeleteMessage(payload.Channel.ID, actionMessageTimestamp)
-		if err != nil {
-			return fmt.Errorf("failed to delete message from Slack: %s", err.Error())
-		}
-		err = sendSuccessMessage(api, payload.Channel.ID, payload.User.ID, "메시지가 삭제되었습니다.")
 		if err != nil {
 			return err
 		}
@@ -488,10 +487,15 @@ func enrollUser(value string, channelID string) error {
 	}
 	flag, _ := db.GetUserInTeam(applicantIDInt, teamID)
 	if flag {
+		log.Println("User already in team")
 		err = sendFailMessage(api, channelID, teamObj.TeamLeader, "이미 팀에 속해있습니다.")
 		return err
 	}
 	err = db.AddUserToTeam(teamID, applicantIDInt)
+	if err != nil {
+		return err
+	}
+	err = db.UpdateTeamMembers(teamID, teamObj.NumMembers+1)
 	if err != nil {
 		return err
 	}
@@ -501,12 +505,7 @@ func enrollUser(value string, channelID string) error {
 		return err
 	}
 	msgText = fmt.Sprintf("%v 팀 가입 신청이 수락되었습니다.", teamObj.TeamName)
-	_, err = api.PostEphemeral(channelID, applicantID, slack.MsgOptionText(msgText, false))
-	if err != nil {
-		return err
-	}
-
-	err = db.UpdateTeamMembers(teamID, teamObj.NumMembers+1)
+	err = sendDMSuccessMessage(api, applicantID, msgText)
 	if err != nil {
 		return err
 	}
