@@ -47,7 +47,7 @@ func readModalJSON(filename string) (slack.ModalViewRequest, error) {
 
 func sendDMToLeader(api *slack.Client, msg ApplyMessage) error {
 	// messageText := fmt.Sprintf("You have a new application for your team!\n\nApplicant: <@%s>\n", msg.Applicant)
-	//convert msg to string json
+
 	msgJson, err := json.Marshal(msg)
 	if err != nil {
 		return fmt.Errorf("failed to marshal message: %w", err)
