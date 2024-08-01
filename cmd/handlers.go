@@ -63,8 +63,6 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 	}
 	if payload.Type == slack.InteractionTypeBlockActions {
 		log.Println("Received block actions 지원하기/삭제하기")
-		jsonBytes, _ := json.Marshal(payload)
-		log.Println(string(jsonBytes))
 		for _, action := range payload.ActionCallback.BlockActions {
 			if action.ActionID == "apply_button" {
 				log.Println("Apply button clicked")
@@ -94,6 +92,10 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		} else if payload.View.CallbackID == "apply_form" {
 			log.Println("Received view submission 지원하기")
+			jsonVal, _ := json.Marshal(payload)
+			log.Printf("Received payload for 지원하기: %s", jsonVal)
+			// chosenTeam := payload.View.PrivateMetadata
+			// err := sendDMToLeader(payload., payload.User.ID, payload.User.Name)
 			w.WriteHeader(http.StatusOK)
 		}
 	}
