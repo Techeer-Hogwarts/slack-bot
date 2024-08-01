@@ -182,7 +182,7 @@ func formatListRoles(message FormMessage) string {
 	if err != nil {
 		uxNum = 0
 	}
-	if uxNum == 0 {
+	if uxNum <= 0 {
 		log.Println("No UX/UI members")
 	} else {
 		roles = append(roles, " • "+roleMap["uxui"]+" ("+message.UxMembers+"명)\n")
@@ -191,7 +191,7 @@ func formatListRoles(message FormMessage) string {
 	if err != nil {
 		frontNum = 0
 	}
-	if frontNum == 0 {
+	if frontNum <= 0 {
 		log.Println("No Frontend members")
 	} else {
 		roles = append(roles, " • "+roleMap["frontend"]+" ("+message.FrontMembers+"명)\n")
@@ -200,7 +200,7 @@ func formatListRoles(message FormMessage) string {
 	if err != nil {
 		backNum = 0
 	}
-	if backNum == 0 {
+	if backNum <= 0 {
 		log.Println("No Backend members")
 	} else {
 		roles = append(roles, " • "+roleMap["backend"]+" ("+message.BackMembers+"명)\n")
@@ -209,7 +209,7 @@ func formatListRoles(message FormMessage) string {
 	if err != nil {
 		dataNum = 0
 	}
-	if dataNum == 0 {
+	if dataNum <= 0 {
 		log.Println("No Data members")
 	} else {
 		roles = append(roles, " • "+roleMap["data"]+" ("+message.DataMembers+"명)\n")
@@ -218,7 +218,7 @@ func formatListRoles(message FormMessage) string {
 	if err != nil {
 		opsNum = 0
 	}
-	if opsNum == 0 {
+	if opsNum <= 0 {
 		log.Println("No OPS/SRE members")
 	} else {
 		roles = append(roles, " • "+roleMap["devops"]+" ("+message.OpsMembers+"명)\n")
@@ -227,7 +227,7 @@ func formatListRoles(message FormMessage) string {
 	if err != nil {
 		studyNum = 0
 	}
-	if studyNum == 0 {
+	if studyNum <= 0 {
 		log.Println("No Study members")
 	} else {
 		roles = append(roles, " • "+roleMap["study"]+" ("+message.StudyMembers+"명)\n")
@@ -236,7 +236,7 @@ func formatListRoles(message FormMessage) string {
 	if err != nil {
 		etcNum = 0
 	}
-	if etcNum == 0 {
+	if etcNum <= 0 {
 		log.Println("No Etc members")
 	} else {
 		roles = append(roles, " • "+roleMap["etc"]+" ("+message.EtcMembers+"명)\n")
