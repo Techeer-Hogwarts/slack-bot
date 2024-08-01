@@ -93,10 +93,10 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 			} else if action.ActionID == "enroll_button" {
 				log.Println("Enroll button clicked")
 				log.Printf("Payload Message: %s", action.Value)
-				// err := enrollUser(payload)
-				// if err != nil {
-				// 	log.Printf("Failed to enroll user: %v", err)
-				// }
+				err := enrollUser(action.Value, payload.Channel.ID)
+				if err != nil {
+					log.Printf("Failed to enroll user: %v", err)
+				}
 				return
 			}
 		}
