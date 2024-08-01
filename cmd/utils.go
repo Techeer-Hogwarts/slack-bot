@@ -488,10 +488,15 @@ func enrollUser(value string, channelID string) error {
 	}
 	flag, _ := db.GetUserInTeam(applicantIDInt, teamID)
 	if flag {
+		log.Println("User already in team")
 		err = sendFailMessage(api, channelID, teamObj.TeamLeader, "이미 팀에 속해있습니다.")
 		return err
 	}
 	err = db.AddUserToTeam(teamID, applicantIDInt)
+	if err != nil {
+		return err
+	}
+	err = db.UpdateTeamMembers(teamID, teamObj.NumMembers+1)
 	if err != nil {
 		return err
 	}
@@ -501,12 +506,7 @@ func enrollUser(value string, channelID string) error {
 		return err
 	}
 	msgText = fmt.Sprintf("%v 팀 가입 신청이 수락되었습니다.", teamObj.TeamName)
-	_, err = api.PostEphemeral(channelID, applicantID, slack.MsgOptionText(msgText, false))
-	if err != nil {
-		return err
-	}
-
-	err = db.UpdateTeamMembers(teamID, teamObj.NumMembers+1)
+	err = sendDMSuccessMessage(api, applicantID, msgText)
 	if err != nil {
 		return err
 	}

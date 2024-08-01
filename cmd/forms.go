@@ -65,6 +65,12 @@ func sendDMToLeader(api *slack.Client, msg ApplyMessage) error {
 	return err
 }
 
+func sendDMSuccessMessage(api *slack.Client, applicant, message string) error {
+	successMessage := slack.MsgOptionText(message, false)
+	_, _, err := api.PostMessage(applicant, successMessage)
+	return err
+}
+
 func openApplyModal(triggerID string) error {
 	api := slack.New(botToken)
 
