@@ -45,17 +45,6 @@ func readModalJSON(filename string) (slack.ModalViewRequest, error) {
 	return modal, nil
 }
 
-// func sendDMToLeader(api *slack.Client, msg ApplyMessage) error {
-// 	// messageText := fmt.Sprintf("You have a new application for your team!\n\nApplicant: <@%s>\n", msg.Applicant)
-
-//		msgJson, err := json.Marshal(msg)
-//		if err != nil {
-//			return fmt.Errorf("failed to marshal message: %w", err)
-//		}
-//		messageText := fmt.Sprintf("You have a new application for your team!\n\nApplicant: %s\n", string(msgJson))
-//		_, _, err = api.PostMessage(msg.Leader, slack.MsgOptionText(messageText, false))
-//		return err
-//	}
 func sendDMToLeader(api *slack.Client, msg ApplyMessage) error {
 	buttonValue := fmt.Sprintf("%s|%s", msg.Applicant, msg.TeamID)
 	enrollButton := slack.NewButtonBlockElement(
@@ -65,19 +54,14 @@ func sendDMToLeader(api *slack.Client, msg ApplyMessage) error {
 	)
 	actionBlock := slack.NewActionBlock("", enrollButton)
 
-	// messageText := fmt.Sprintf("You have a new application for your team!\n\nApplicant: <@%s>\n", msg.Applicant)
-	msgJson, err := json.Marshal(msg)
-	if err != nil {
-		return fmt.Errorf("failed to marshal message: %w", err)
-	}
-	messageText := string(msgJson)
+	messageText := fmt.Sprintf(":heavy_exclamation_mark: 새로운 지원자가 있습니다!\n\n*지원자:* <@%s>\n\n*나이:* %s\n\n*학년:* %s\n\n*자기소개:* %s\n\n*희망 직군:* %s\n\n", msg.Applicant, msg.Age, msg.Grade, msg.Pr, msg.Role)
 	sectionBlock := slack.NewSectionBlock(
 		slack.NewTextBlockObject("mrkdwn", messageText, false, false),
 		nil, nil,
 	)
 
 	messageOptions := slack.MsgOptionBlocks(sectionBlock, actionBlock)
-	_, _, err = api.PostMessage(msg.Leader, messageOptions)
+	_, _, err := api.PostMessage(msg.Leader, messageOptions)
 	return err
 }
 
