@@ -112,8 +112,6 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		} else if payload.View.CallbackID == "apply_form" {
 			log.Println("Received view submission 지원하기")
-			jsonVal, _ := json.Marshal(payload)
-			log.Printf("Received payload for 지원하기: %s", jsonVal)
 			applicant := payload.User.ID
 			selectedTeam := payload.View.State.Values["team_select"]["selected_team"].SelectedOption.Value
 			teamID, err := strconv.Atoi(selectedTeam)
