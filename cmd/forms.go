@@ -45,15 +45,39 @@ func readModalJSON(filename string) (slack.ModalViewRequest, error) {
 	return modal, nil
 }
 
-func sendDMToLeader(api *slack.Client, msg ApplyMessage) error {
-	// messageText := fmt.Sprintf("You have a new application for your team!\n\nApplicant: <@%s>\n", msg.Applicant)
+// func sendDMToLeader(api *slack.Client, msg ApplyMessage) error {
+// 	// messageText := fmt.Sprintf("You have a new application for your team!\n\nApplicant: <@%s>\n", msg.Applicant)
 
+//		msgJson, err := json.Marshal(msg)
+//		if err != nil {
+//			return fmt.Errorf("failed to marshal message: %w", err)
+//		}
+//		messageText := fmt.Sprintf("You have a new application for your team!\n\nApplicant: %s\n", string(msgJson))
+//		_, _, err = api.PostMessage(msg.Leader, slack.MsgOptionText(messageText, false))
+//		return err
+//	}
+func sendDMToLeader(api *slack.Client, msg ApplyMessage) error {
+	buttonValue := fmt.Sprintf("%s|%s", msg.Applicant, msg.TeamID)
+	enrollButton := slack.NewButtonBlockElement(
+		"enroll_button", // ActionID
+		buttonValue,     // Value
+		slack.NewTextBlockObject("plain_text", "수락", false, false),
+	)
+	actionBlock := slack.NewActionBlock("", enrollButton)
+
+	// messageText := fmt.Sprintf("You have a new application for your team!\n\nApplicant: <@%s>\n", msg.Applicant)
 	msgJson, err := json.Marshal(msg)
 	if err != nil {
 		return fmt.Errorf("failed to marshal message: %w", err)
 	}
-	messageText := fmt.Sprintf("You have a new application for your team!\n\nApplicant: %s\n", string(msgJson))
-	_, _, err = api.PostMessage(msg.Leader, slack.MsgOptionText(messageText, false))
+	messageText := string(msgJson)
+	sectionBlock := slack.NewSectionBlock(
+		slack.NewTextBlockObject("mrkdwn", messageText, false, false),
+		nil, nil,
+	)
+
+	messageOptions := slack.MsgOptionBlocks(sectionBlock, actionBlock)
+	_, _, err = api.PostMessage(msg.Leader, messageOptions)
 	return err
 }
 
