@@ -18,7 +18,8 @@
       "selected_options": null,
       "selected_user": "",
       "selected_users": [
-        "U02AES3BH17"
+        "U02AES3BH17",
+        "U05KVJ93Y6T"
       ],
       "selected_channel": "",
       "selected_channels": null,
@@ -47,7 +48,7 @@
         "type": "",
         "text": ""
       },
-      "value": "dwq",
+      "value": "ㅂㅇㅂ",
       "files": null,
       "action_ts": "",
       "selected_option": {
@@ -84,7 +85,7 @@
         "type": "",
         "text": ""
       },
-      "value": "dqwdqff",
+      "value": "ㅇㅂㄹㅂ",
       "files": null,
       "action_ts": "",
       "selected_option": {
@@ -269,7 +270,7 @@
         "type": "",
         "text": ""
       },
-      "value": "0",
+      "value": "1",
       "files": null,
       "action_ts": "",
       "selected_option": {
@@ -343,7 +344,7 @@
         "type": "",
         "text": ""
       },
-      "value": "0",
+      "value": "2",
       "files": null,
       "action_ts": "",
       "selected_option": {
@@ -380,7 +381,7 @@
         "type": "",
         "text": ""
       },
-      "value": "설명이요",
+      "value": "설명입니다",
       "files": null,
       "action_ts": "",
       "selected_option": {
@@ -417,7 +418,7 @@
         "type": "",
         "text": ""
       },
-      "value": "sofeqfqfe",
+      "value": "내용입니다",
       "files": null,
       "action_ts": "",
       "selected_option": {
@@ -454,7 +455,7 @@
         "type": "",
         "text": ""
       },
-      "value": "throfwefwef",
+      "value": "팀 소개 입니다",
       "files": null,
       "action_ts": "",
       "selected_option": {
@@ -528,7 +529,7 @@
         "type": "",
         "text": ""
       },
-      "value": "fqe팀이름",
+      "value": "팀 이름 입니다",
       "files": null,
       "action_ts": "",
       "selected_option": {
@@ -613,10 +614,10 @@
         {
           "text": {
             "type": "plain_text",
-            "text": "Vue.js",
+            "text": "Next.js",
             "emoji": true
           },
-          "value": "vue"
+          "value": "next"
         },
         {
           "text": {
@@ -625,14 +626,6 @@
             "emoji": true
           },
           "value": "django"
-        },
-        {
-          "text": {
-            "type": "plain_text",
-            "text": "SvelteKit",
-            "emoji": true
-          },
-          "value": "svelte"
         }
       ],
       "selected_user": "",

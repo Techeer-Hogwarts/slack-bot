@@ -1,150 +1,22 @@
 {
   "type": "view_submission",
-  "token": "IlM4qha2ED82DpcUKIXT5BId",
-  "callback_id": "",
-  "response_url": "",
-  "trigger_id": "7547893059280.2353051913904.73a31a8665276b26e9c842ac0c95ed32",
-  "action_ts": "",
   "team": {
     "id": "T02AD1HSVSL",
-    "name": "",
     "domain": "techeer-valley"
-  },
-  "channel": {
-    "id": "",
-    "created": 0,
-    "is_open": false,
-    "is_group": false,
-    "is_shared": false,
-    "is_im": false,
-    "is_ext_shared": false,
-    "is_org_shared": false,
-    "is_global_shared": false,
-    "is_pending_ext_shared": false,
-    "is_private": false,
-    "is_read_only": false,
-    "is_mpim": false,
-    "unlinked": 0,
-    "name_normalized": "",
-    "num_members": 0,
-    "priority": 0,
-    "user": "",
-    "name": "",
-    "creator": "",
-    "is_archived": false,
-    "members": null,
-    "topic": {
-      "value": "",
-      "creator": "",
-      "last_set": 0
-    },
-    "purpose": {
-      "value": "",
-      "creator": "",
-      "last_set": 0
-    },
-    "is_channel": false,
-    "is_general": false,
-    "is_member": false,
-    "locale": ""
   },
   "user": {
     "id": "U02AES3BH17",
-    "team_id": "T02AD1HSVSL",
+    "username": "leehahnwoong",
     "name": "leehahnwoong",
-    "deleted": false,
-    "color": "",
-    "real_name": "",
-    "tz_label": "",
-    "tz_offset": 0,
-    "profile": {
-      "real_name": "",
-      "real_name_normalized": "",
-      "display_name": "",
-      "display_name_normalized": "",
-      "avatar_hash": "",
-      "image_24": "",
-      "image_32": "",
-      "image_48": "",
-      "image_72": "",
-      "image_192": "",
-      "image_512": "",
-      "team": "",
-      "fields": []
-    },
-    "is_bot": false,
-    "is_admin": false,
-    "is_owner": false,
-    "is_primary_owner": false,
-    "is_restricted": false,
-    "is_ultra_restricted": false,
-    "is_stranger": false,
-    "is_app_user": false,
-    "is_invited_user": false,
-    "has_2fa": false,
-    "two_factor_type": null,
-    "has_files": false,
-    "presence": "",
-    "locale": "",
-    "updated": 0,
-    "enterprise_user": {
-      "id": "",
-      "enterprise_id": "",
-      "enterprise_name": "",
-      "is_admin": false,
-      "is_owner": false,
-      "teams": null
-    }
+    "team_id": "T02AD1HSVSL"
   },
-  "original_message": {
-    "replace_original": false,
-    "delete_original": false,
-    "metadata": {
-      "event_type": "",
-      "event_payload": null
-    },
-    "blocks": null
-  },
-  "message": {
-    "replace_original": false,
-    "delete_original": false,
-    "metadata": {
-      "event_type": "",
-      "event_payload": null
-    },
-    "blocks": null
-  },
-  "name": "",
-  "value": "",
-  "message_ts": "",
-  "attachment_id": "",
-  "actions": [],
+  "api_app_id": "A07E6ARSXN2",
+  "token": "IlM4qha2ED82DpcUKIXT5BId",
+  "trigger_id": "7525005644067.2353051913904.1e3ddb0a8ac113e840a4063f02939361",
   "view": {
-    "ok": false,
-    "error": "",
-    "response_metadata": {
-      "next_cursor": "",
-      "messages": null,
-      "warnings": null
-    },
-    "id": "V07FEV30R1R",
+    "id": "V07FC6ECM2R",
     "team_id": "T02AD1HSVSL",
     "type": "modal",
-    "title": {
-      "type": "plain_text",
-      "text": "Recruitment Form",
-      "emoji": true
-    },
-    "close": {
-      "type": "plain_text",
-      "text": "Cancel",
-      "emoji": true
-    },
-    "submit": {
-      "type": "plain_text",
-      "text": "Submit",
-      "emoji": true
-    },
     "blocks": [
       {
         "type": "input",
@@ -154,6 +26,8 @@
           "text": "소개",
           "emoji": true
         },
+        "optional": false,
+        "dispatch_action": false,
         "element": {
           "type": "plain_text_input",
           "action_id": "team_intro",
@@ -177,6 +51,8 @@
           "text": "팀 이름",
           "emoji": true
         },
+        "optional": false,
+        "dispatch_action": false,
         "element": {
           "type": "plain_text_input",
           "action_id": "team_name",
@@ -194,20 +70,20 @@
       },
       {
         "type": "section",
+        "block_id": "team_leader_block",
         "text": {
           "type": "plain_text",
           "text": "팀장",
           "emoji": true
         },
-        "block_id": "team_leader_block",
         "accessory": {
           "type": "users_select",
+          "action_id": "users_select-action",
           "placeholder": {
             "type": "plain_text",
             "text": "유저 선택",
             "emoji": true
-          },
-          "action_id": "users_select-action"
+          }
         }
       },
       {
@@ -218,14 +94,16 @@
           "text": "기술 스택/프레임워크",
           "emoji": true
         },
+        "optional": false,
+        "dispatch_action": false,
         "element": {
           "type": "multi_static_select",
+          "action_id": "multi_static_select-action",
           "placeholder": {
             "type": "plain_text",
             "text": "스택 추가하기",
             "emoji": true
           },
-          "action_id": "multi_static_select-action",
           "options": [
             {
               "text": {
@@ -646,19 +524,21 @@
           "text": "팀 멤버",
           "emoji": true
         },
-        "element": {
-          "type": "multi_users_select",
-          "placeholder": {
-            "type": "plain_text",
-            "text": "팀장 포함 멤버 추가하기",
-            "emoji": true
-          },
-          "action_id": "multi_users_select-action"
-        },
         "hint": {
           "type": "plain_text",
           "text": "팀장도 추가 해주세요",
           "emoji": true
+        },
+        "optional": false,
+        "dispatch_action": false,
+        "element": {
+          "type": "multi_users_select",
+          "action_id": "multi_users_select-action",
+          "placeholder": {
+            "type": "plain_text",
+            "text": "팀장 포함 멤버 추가하기",
+            "emoji": true
+          }
         }
       },
       {
@@ -669,12 +549,14 @@
           "text": "구하는 UX/UI Designer 인원수",
           "emoji": true
         },
+        "optional": false,
+        "dispatch_action": false,
         "element": {
           "type": "number_input",
-          "is_decimal_allowed": false,
           "action_id": "num_ux_members",
           "initial_value": "0",
-          "min_value": "0"
+          "min_value": "0",
+          "is_decimal_allowed": false
         }
       },
       {
@@ -685,12 +567,14 @@
           "text": "구하는 Frontend Developer 인원수",
           "emoji": true
         },
+        "optional": false,
+        "dispatch_action": false,
         "element": {
           "type": "number_input",
-          "is_decimal_allowed": false,
           "action_id": "num_front_members",
           "initial_value": "0",
-          "min_value": "0"
+          "min_value": "0",
+          "is_decimal_allowed": false
         }
       },
       {
@@ -701,12 +585,14 @@
           "text": "구하는 Backend Developer 인원수",
           "emoji": true
         },
+        "optional": false,
+        "dispatch_action": false,
         "element": {
           "type": "number_input",
-          "is_decimal_allowed": false,
           "action_id": "num_back_members",
           "initial_value": "0",
-          "min_value": "0"
+          "min_value": "0",
+          "is_decimal_allowed": false
         }
       },
       {
@@ -717,12 +603,14 @@
           "text": "구하는 Data Engineer 인원수",
           "emoji": true
         },
+        "optional": false,
+        "dispatch_action": false,
         "element": {
           "type": "number_input",
-          "is_decimal_allowed": false,
           "action_id": "num_data_members",
           "initial_value": "0",
-          "min_value": "0"
+          "min_value": "0",
+          "is_decimal_allowed": false
         }
       },
       {
@@ -733,12 +621,14 @@
           "text": "구하는 Ops/SRE 인원수",
           "emoji": true
         },
+        "optional": false,
+        "dispatch_action": false,
         "element": {
           "type": "number_input",
-          "is_decimal_allowed": false,
           "action_id": "num_sre_members",
           "initial_value": "0",
-          "min_value": "0"
+          "min_value": "0",
+          "is_decimal_allowed": false
         }
       },
       {
@@ -749,12 +639,14 @@
           "text": "구하는 스터디 인원수",
           "emoji": true
         },
+        "optional": false,
+        "dispatch_action": false,
         "element": {
           "type": "number_input",
-          "is_decimal_allowed": false,
           "action_id": "num_study_members",
           "initial_value": "0",
-          "min_value": "0"
+          "min_value": "0",
+          "is_decimal_allowed": false
         }
       },
       {
@@ -765,12 +657,14 @@
           "text": "구하는 기타 인원수 (기타 내용에 직군 추가 해주세요)",
           "emoji": true
         },
+        "optional": false,
+        "dispatch_action": false,
         "element": {
           "type": "number_input",
-          "is_decimal_allowed": false,
           "action_id": "num_etc_members",
           "initial_value": "0",
-          "min_value": "0"
+          "min_value": "0",
+          "is_decimal_allowed": false
         }
       },
       {
@@ -781,6 +675,8 @@
           "text": "팀/프로젝트 설명",
           "emoji": true
         },
+        "optional": false,
+        "dispatch_action": false,
         "element": {
           "type": "plain_text_input",
           "action_id": "plain_text_input-action",
@@ -805,6 +701,8 @@
           "text": "기타 내용",
           "emoji": true
         },
+        "optional": false,
+        "dispatch_action": false,
         "element": {
           "type": "plain_text_input",
           "action_id": "plain_text_input-action",
@@ -829,6 +727,8 @@
           "text": "Label",
           "emoji": true
         },
+        "optional": false,
+        "dispatch_action": true,
         "element": {
           "type": "plain_text_input",
           "action_id": "plain_text_input-action",
@@ -837,8 +737,7 @@
               "on_enter_pressed"
             ]
           }
-        },
-        "dispatch_action": true
+        }
       },
       {
         "type": "input",
@@ -848,6 +747,8 @@
           "text": "Label",
           "emoji": true
         },
+        "optional": false,
+        "dispatch_action": true,
         "element": {
           "type": "plain_text_input",
           "action_id": "plain_text_input-action",
@@ -856,8 +757,7 @@
               "on_character_entered"
             ]
           }
-        },
-        "dispatch_action": true
+        }
       },
       {
         "type": "input",
@@ -867,6 +767,8 @@
           "text": "Test Label",
           "emoji": true
         },
+        "optional": false,
+        "dispatch_action": false,
         "element": {
           "type": "rich_text_input",
           "action_id": "rich_text_input-action",
@@ -882,624 +784,35 @@
     "callback_id": "recruitment_form",
     "state": {
       "values": {
-        "current_members_block": {
-          "multi_users_select-action": {
-            "action_id": "",
-            "block_id": "",
-            "type": "multi_users_select",
-            "text": {
-              "type": "",
-              "text": ""
-            },
-            "value": "",
-            "files": null,
-            "action_ts": "",
-            "selected_option": {
-              "text": null,
-              "value": ""
-            },
-            "selected_options": null,
-            "selected_user": "",
-            "selected_users": [
-              "U02AES3BH17"
-            ],
-            "selected_channel": "",
-            "selected_channels": null,
-            "selected_conversation": "",
-            "selected_conversations": null,
-            "selected_date": "",
-            "selected_time": "",
-            "selected_date_time": 0,
-            "initial_option": {
-              "text": null,
-              "value": ""
-            },
-            "initial_user": "",
-            "initial_channel": "",
-            "initial_conversation": "",
-            "initial_date": "",
-            "initial_time": ""
-          }
-        },
-        "custom_tag1_block": {
-          "plain_text_input-action": {
-            "action_id": "",
-            "block_id": "",
-            "type": "plain_text_input",
-            "text": {
-              "type": "",
-              "text": ""
-            },
-            "value": "dwq",
-            "files": null,
-            "action_ts": "",
-            "selected_option": {
-              "text": null,
-              "value": ""
-            },
-            "selected_options": null,
-            "selected_user": "",
-            "selected_users": null,
-            "selected_channel": "",
-            "selected_channels": null,
-            "selected_conversation": "",
-            "selected_conversations": null,
-            "selected_date": "",
-            "selected_time": "",
-            "selected_date_time": 0,
-            "initial_option": {
-              "text": null,
-              "value": ""
-            },
-            "initial_user": "",
-            "initial_channel": "",
-            "initial_conversation": "",
-            "initial_date": "",
-            "initial_time": ""
-          }
-        },
-        "custom_tag2_block": {
-          "plain_text_input-action": {
-            "action_id": "",
-            "block_id": "",
-            "type": "plain_text_input",
-            "text": {
-              "type": "",
-              "text": ""
-            },
-            "value": "dqwdqff",
-            "files": null,
-            "action_ts": "",
-            "selected_option": {
-              "text": null,
-              "value": ""
-            },
-            "selected_options": null,
-            "selected_user": "",
-            "selected_users": null,
-            "selected_channel": "",
-            "selected_channels": null,
-            "selected_conversation": "",
-            "selected_conversations": null,
-            "selected_date": "",
-            "selected_time": "",
-            "selected_date_time": 0,
-            "initial_option": {
-              "text": null,
-              "value": ""
-            },
-            "initial_user": "",
-            "initial_channel": "",
-            "initial_conversation": "",
-            "initial_date": "",
-            "initial_time": ""
-          }
-        },
-        "num_members_back_block": {
-          "num_back_members": {
-            "action_id": "",
-            "block_id": "",
-            "type": "number_input",
-            "text": {
-              "type": "",
-              "text": ""
-            },
-            "value": "0",
-            "files": null,
-            "action_ts": "",
-            "selected_option": {
-              "text": null,
-              "value": ""
-            },
-            "selected_options": null,
-            "selected_user": "",
-            "selected_users": null,
-            "selected_channel": "",
-            "selected_channels": null,
-            "selected_conversation": "",
-            "selected_conversations": null,
-            "selected_date": "",
-            "selected_time": "",
-            "selected_date_time": 0,
-            "initial_option": {
-              "text": null,
-              "value": ""
-            },
-            "initial_user": "",
-            "initial_channel": "",
-            "initial_conversation": "",
-            "initial_date": "",
-            "initial_time": ""
-          }
-        },
-        "num_members_data_block": {
-          "num_data_members": {
-            "action_id": "",
-            "block_id": "",
-            "type": "number_input",
-            "text": {
-              "type": "",
-              "text": ""
-            },
-            "value": "0",
-            "files": null,
-            "action_ts": "",
-            "selected_option": {
-              "text": null,
-              "value": ""
-            },
-            "selected_options": null,
-            "selected_user": "",
-            "selected_users": null,
-            "selected_channel": "",
-            "selected_channels": null,
-            "selected_conversation": "",
-            "selected_conversations": null,
-            "selected_date": "",
-            "selected_time": "",
-            "selected_date_time": 0,
-            "initial_option": {
-              "text": null,
-              "value": ""
-            },
-            "initial_user": "",
-            "initial_channel": "",
-            "initial_conversation": "",
-            "initial_date": "",
-            "initial_time": ""
-          }
-        },
-        "num_members_etc_block": {
-          "num_etc_members": {
-            "action_id": "",
-            "block_id": "",
-            "type": "number_input",
-            "text": {
-              "type": "",
-              "text": ""
-            },
-            "value": "0",
-            "files": null,
-            "action_ts": "",
-            "selected_option": {
-              "text": null,
-              "value": ""
-            },
-            "selected_options": null,
-            "selected_user": "",
-            "selected_users": null,
-            "selected_channel": "",
-            "selected_channels": null,
-            "selected_conversation": "",
-            "selected_conversations": null,
-            "selected_date": "",
-            "selected_time": "",
-            "selected_date_time": 0,
-            "initial_option": {
-              "text": null,
-              "value": ""
-            },
-            "initial_user": "",
-            "initial_channel": "",
-            "initial_conversation": "",
-            "initial_date": "",
-            "initial_time": ""
-          }
-        },
-        "num_members_front_block": {
-          "num_front_members": {
-            "action_id": "",
-            "block_id": "",
-            "type": "number_input",
-            "text": {
-              "type": "",
-              "text": ""
-            },
-            "value": "0",
-            "files": null,
-            "action_ts": "",
-            "selected_option": {
-              "text": null,
-              "value": ""
-            },
-            "selected_options": null,
-            "selected_user": "",
-            "selected_users": null,
-            "selected_channel": "",
-            "selected_channels": null,
-            "selected_conversation": "",
-            "selected_conversations": null,
-            "selected_date": "",
-            "selected_time": "",
-            "selected_date_time": 0,
-            "initial_option": {
-              "text": null,
-              "value": ""
-            },
-            "initial_user": "",
-            "initial_channel": "",
-            "initial_conversation": "",
-            "initial_date": "",
-            "initial_time": ""
-          }
-        },
-        "num_members_sre_block": {
-          "num_sre_members": {
-            "action_id": "",
-            "block_id": "",
-            "type": "number_input",
-            "text": {
-              "type": "",
-              "text": ""
-            },
-            "value": "0",
-            "files": null,
-            "action_ts": "",
-            "selected_option": {
-              "text": null,
-              "value": ""
-            },
-            "selected_options": null,
-            "selected_user": "",
-            "selected_users": null,
-            "selected_channel": "",
-            "selected_channels": null,
-            "selected_conversation": "",
-            "selected_conversations": null,
-            "selected_date": "",
-            "selected_time": "",
-            "selected_date_time": 0,
-            "initial_option": {
-              "text": null,
-              "value": ""
-            },
-            "initial_user": "",
-            "initial_channel": "",
-            "initial_conversation": "",
-            "initial_date": "",
-            "initial_time": ""
-          }
-        },
-        "num_members_study_block": {
-          "num_study_members": {
-            "action_id": "",
-            "block_id": "",
-            "type": "number_input",
-            "text": {
-              "type": "",
-              "text": ""
-            },
-            "value": "0",
-            "files": null,
-            "action_ts": "",
-            "selected_option": {
-              "text": null,
-              "value": ""
-            },
-            "selected_options": null,
-            "selected_user": "",
-            "selected_users": null,
-            "selected_channel": "",
-            "selected_channels": null,
-            "selected_conversation": "",
-            "selected_conversations": null,
-            "selected_date": "",
-            "selected_time": "",
-            "selected_date_time": 0,
-            "initial_option": {
-              "text": null,
-              "value": ""
-            },
-            "initial_user": "",
-            "initial_channel": "",
-            "initial_conversation": "",
-            "initial_date": "",
-            "initial_time": ""
-          }
-        },
-        "num_members_ux_block": {
-          "num_ux_members": {
-            "action_id": "",
-            "block_id": "",
-            "type": "number_input",
-            "text": {
-              "type": "",
-              "text": ""
-            },
-            "value": "0",
-            "files": null,
-            "action_ts": "",
-            "selected_option": {
-              "text": null,
-              "value": ""
-            },
-            "selected_options": null,
-            "selected_user": "",
-            "selected_users": null,
-            "selected_channel": "",
-            "selected_channels": null,
-            "selected_conversation": "",
-            "selected_conversations": null,
-            "selected_date": "",
-            "selected_time": "",
-            "selected_date_time": 0,
-            "initial_option": {
-              "text": null,
-              "value": ""
-            },
-            "initial_user": "",
-            "initial_channel": "",
-            "initial_conversation": "",
-            "initial_date": "",
-            "initial_time": ""
-          }
-        },
-        "team_desc_block": {
-          "plain_text_input-action": {
-            "action_id": "",
-            "block_id": "",
-            "type": "plain_text_input",
-            "text": {
-              "type": "",
-              "text": ""
-            },
-            "value": "설명이요",
-            "files": null,
-            "action_ts": "",
-            "selected_option": {
-              "text": null,
-              "value": ""
-            },
-            "selected_options": null,
-            "selected_user": "",
-            "selected_users": null,
-            "selected_channel": "",
-            "selected_channels": null,
-            "selected_conversation": "",
-            "selected_conversations": null,
-            "selected_date": "",
-            "selected_time": "",
-            "selected_date_time": 0,
-            "initial_option": {
-              "text": null,
-              "value": ""
-            },
-            "initial_user": "",
-            "initial_channel": "",
-            "initial_conversation": "",
-            "initial_date": "",
-            "initial_time": ""
-          }
-        },
-        "team_etc_block": {
-          "plain_text_input-action": {
-            "action_id": "",
-            "block_id": "",
-            "type": "plain_text_input",
-            "text": {
-              "type": "",
-              "text": ""
-            },
-            "value": "sofeqfqfe",
-            "files": null,
-            "action_ts": "",
-            "selected_option": {
-              "text": null,
-              "value": ""
-            },
-            "selected_options": null,
-            "selected_user": "",
-            "selected_users": null,
-            "selected_channel": "",
-            "selected_channels": null,
-            "selected_conversation": "",
-            "selected_conversations": null,
-            "selected_date": "",
-            "selected_time": "",
-            "selected_date_time": 0,
-            "initial_option": {
-              "text": null,
-              "value": ""
-            },
-            "initial_user": "",
-            "initial_channel": "",
-            "initial_conversation": "",
-            "initial_date": "",
-            "initial_time": ""
-          }
-        },
         "team_intro_block": {
           "team_intro": {
-            "action_id": "",
-            "block_id": "",
             "type": "plain_text_input",
-            "text": {
-              "type": "",
-              "text": ""
-            },
-            "value": "throfwefwef",
-            "files": null,
-            "action_ts": "",
-            "selected_option": {
-              "text": null,
-              "value": ""
-            },
-            "selected_options": null,
-            "selected_user": "",
-            "selected_users": null,
-            "selected_channel": "",
-            "selected_channels": null,
-            "selected_conversation": "",
-            "selected_conversations": null,
-            "selected_date": "",
-            "selected_time": "",
-            "selected_date_time": 0,
-            "initial_option": {
-              "text": null,
-              "value": ""
-            },
-            "initial_user": "",
-            "initial_channel": "",
-            "initial_conversation": "",
-            "initial_date": "",
-            "initial_time": ""
-          }
-        },
-        "team_leader_block": {
-          "users_select-action": {
-            "action_id": "",
-            "block_id": "",
-            "type": "users_select",
-            "text": {
-              "type": "",
-              "text": ""
-            },
-            "value": "",
-            "files": null,
-            "action_ts": "",
-            "selected_option": {
-              "text": null,
-              "value": ""
-            },
-            "selected_options": null,
-            "selected_user": "U02AES3BH17",
-            "selected_users": null,
-            "selected_channel": "",
-            "selected_channels": null,
-            "selected_conversation": "",
-            "selected_conversations": null,
-            "selected_date": "",
-            "selected_time": "",
-            "selected_date_time": 0,
-            "initial_option": {
-              "text": null,
-              "value": ""
-            },
-            "initial_user": "",
-            "initial_channel": "",
-            "initial_conversation": "",
-            "initial_date": "",
-            "initial_time": ""
+            "value": "팀 소개 입니다"
           }
         },
         "team_name_block": {
           "team_name": {
-            "action_id": "",
-            "block_id": "",
             "type": "plain_text_input",
-            "text": {
-              "type": "",
-              "text": ""
-            },
-            "value": "fqe팀이름",
-            "files": null,
-            "action_ts": "",
-            "selected_option": {
-              "text": null,
-              "value": ""
-            },
-            "selected_options": null,
-            "selected_user": "",
-            "selected_users": null,
-            "selected_channel": "",
-            "selected_channels": null,
-            "selected_conversation": "",
-            "selected_conversations": null,
-            "selected_date": "",
-            "selected_time": "",
-            "selected_date_time": 0,
-            "initial_option": {
-              "text": null,
-              "value": ""
-            },
-            "initial_user": "",
-            "initial_channel": "",
-            "initial_conversation": "",
-            "initial_date": "",
-            "initial_time": ""
+            "value": "팀 이름 입니다"
           }
         },
-        "team_rich_block": {
-          "rich_text_input-action": {
-            "action_id": "",
-            "block_id": "",
-            "type": "rich_text_input",
-            "text": {
-              "type": "",
-              "text": ""
-            },
-            "value": "",
-            "files": null,
-            "action_ts": "",
-            "selected_option": {
-              "text": null,
-              "value": ""
-            },
-            "selected_options": null,
-            "selected_user": "",
-            "selected_users": null,
-            "selected_channel": "",
-            "selected_channels": null,
-            "selected_conversation": "",
-            "selected_conversations": null,
-            "selected_date": "",
-            "selected_time": "",
-            "selected_date_time": 0,
-            "initial_option": {
-              "text": null,
-              "value": ""
-            },
-            "initial_user": "",
-            "initial_channel": "",
-            "initial_conversation": "",
-            "initial_date": "",
-            "initial_time": ""
+        "team_leader_block": {
+          "users_select-action": {
+            "type": "users_select",
+            "selected_user": "U02AES3BH17"
           }
         },
         "tech_stack_block": {
           "multi_static_select-action": {
-            "action_id": "",
-            "block_id": "",
             "type": "multi_static_select",
-            "text": {
-              "type": "",
-              "text": ""
-            },
-            "value": "",
-            "files": null,
-            "action_ts": "",
-            "selected_option": {
-              "text": null,
-              "value": ""
-            },
             "selected_options": [
               {
                 "text": {
                   "type": "plain_text",
-                  "text": "Vue.js",
+                  "text": "Next.js",
                   "emoji": true
                 },
-                "value": "vue"
+                "value": "next"
               },
               {
                 "text": {
@@ -1508,70 +821,205 @@
                   "emoji": true
                 },
                 "value": "django"
-              },
-              {
-                "text": {
-                  "type": "plain_text",
-                  "text": "SvelteKit",
-                  "emoji": true
-                },
-                "value": "svelte"
               }
-            ],
-            "selected_user": "",
-            "selected_users": null,
-            "selected_channel": "",
-            "selected_channels": null,
-            "selected_conversation": "",
-            "selected_conversations": null,
-            "selected_date": "",
-            "selected_time": "",
-            "selected_date_time": 0,
-            "initial_option": {
-              "text": null,
-              "value": ""
-            },
-            "initial_user": "",
-            "initial_channel": "",
-            "initial_conversation": "",
-            "initial_date": "",
-            "initial_time": ""
+            ]
+          }
+        },
+        "current_members_block": {
+          "multi_users_select-action": {
+            "type": "multi_users_select",
+            "selected_users": [
+              "U02AES3BH17",
+              "U05KVJ93Y6T"
+            ]
+          }
+        },
+        "num_members_ux_block": {
+          "num_ux_members": {
+            "type": "number_input",
+            "value": "2"
+          }
+        },
+        "num_members_front_block": {
+          "num_front_members": {
+            "type": "number_input",
+            "value": "0"
+          }
+        },
+        "num_members_back_block": {
+          "num_back_members": {
+            "type": "number_input",
+            "value": "0"
+          }
+        },
+        "num_members_data_block": {
+          "num_data_members": {
+            "type": "number_input",
+            "value": "0"
+          }
+        },
+        "num_members_sre_block": {
+          "num_sre_members": {
+            "type": "number_input",
+            "value": "1"
+          }
+        },
+        "num_members_study_block": {
+          "num_study_members": {
+            "type": "number_input",
+            "value": "0"
+          }
+        },
+        "num_members_etc_block": {
+          "num_etc_members": {
+            "type": "number_input",
+            "value": "0"
+          }
+        },
+        "team_desc_block": {
+          "plain_text_input-action": {
+            "type": "plain_text_input",
+            "value": "설명입니다"
+          }
+        },
+        "team_etc_block": {
+          "plain_text_input-action": {
+            "type": "plain_text_input",
+            "value": "내용입니다"
+          }
+        },
+        "custom_tag1_block": {
+          "plain_text_input-action": {
+            "type": "plain_text_input",
+            "value": "ㅂㅇㅂ"
+          }
+        },
+        "custom_tag2_block": {
+          "plain_text_input-action": {
+            "type": "plain_text_input",
+            "value": "ㅇㅂㄹㅂ"
+          }
+        },
+        "team_rich_block": {
+          "rich_text_input-action": {
+            "type": "rich_text_input",
+            "rich_text_value": {
+              "type": "rich_text",
+              "elements": [
+                {
+                  "type": "rich_text_section",
+                  "elements": [
+                    {
+                      "type": "text",
+                      "text": "레발이요\n"
+                    }
+                  ]
+                },
+                {
+                  "type": "rich_text_list",
+                  "style": "bullet",
+                  "indent": 0,
+                  "elements": [
+                    {
+                      "type": "rich_text_section",
+                      "elements": [
+                        {
+                          "type": "text",
+                          "text": "ㅇㅈㅇㅈㅇ"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "rich_text_section",
+                      "elements": [
+                        {
+                          "type": "text",
+                          "text": "ㅂㅈㅇㅈㅂ"
+                        }
+                      ]
+                    }
+                  ],
+                  "border": 0
+                },
+                {
+                  "type": "rich_text_list",
+                  "style": "ordered",
+                  "indent": 0,
+                  "elements": [
+                    {
+                      "type": "rich_text_section",
+                      "elements": [
+                        {
+                          "type": "text",
+                          "text": "1번이요"
+                        }
+                      ]
+                    }
+                  ],
+                  "border": 0
+                },
+                {
+                  "type": "rich_text_preformatted",
+                  "elements": [
+                    {
+                      "type": "text",
+                      "text": "멀티라인\n코드"
+                    }
+                  ],
+                  "border": 0
+                },
+                {
+                  "type": "rich_text_section",
+                  "elements": [
+                    {
+                      "type": "emoji",
+                      "name": "dancing_loompa"
+                    },
+                    {
+                      "type": "text",
+                      "text": "\n"
+                    },
+                    {
+                      "type": "text",
+                      "text": "ㅇ그냥 코드",
+                      "style": {
+                        "code": true
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
           }
         }
       }
     },
-    "hash": "1722802608.uJ9biJXN",
+    "hash": "1722803463.9PszfH3n",
+    "title": {
+      "type": "plain_text",
+      "text": "Recruitment Form",
+      "emoji": true
+    },
     "clear_on_close": false,
     "notify_on_close": false,
-    "root_view_id": "V07FEV30R1R",
-    "previous_view_id": "",
+    "close": {
+      "type": "plain_text",
+      "text": "Cancel",
+      "emoji": true
+    },
+    "submit": {
+      "type": "plain_text",
+      "text": "Submit",
+      "emoji": true
+    },
+    "previous_view_id": null,
+    "root_view_id": "V07FC6ECM2R",
     "app_id": "A07E6ARSXN2",
     "external_id": "",
-    "bot_id": "B07ERKNF8QH",
-    "app_installed_team_id": "T02AD1HSVSL"
+    "app_installed_team_id": "T02AD1HSVSL",
+    "bot_id": "B07ERKNF8QH"
   },
-  "action_id": "",
-  "api_app_id": "A07E6ARSXN2",
-  "block_id": "",
-  "container": {
-    "type": "",
-    "view_id": "",
-    "message_ts": "",
-    "attachment_id": 0,
-    "channel_id": "",
-    "is_ephemeral": false,
-    "is_app_unfurl": false
-  },
-  "enterprise": {
-    "id": "",
-    "name": ""
-  },
+  "response_urls": [],
   "is_enterprise_install": false,
-  "workflow_step": {
-    "workflow_id": "",
-    "step_id": ""
-  },
-  "submission": null,
-  "hash": "",
-  "is_cleared": false
+  "enterprise": null
 }
