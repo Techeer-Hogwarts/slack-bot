@@ -167,10 +167,10 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 }
 
 func postOpenMessageToChannel(api *slack.Client, channelID string, message FormMessage) error {
-	// messageText, err := constructMessageText(message)
-	// if err != nil {
-	// 	return err
-	// }
+	messageText, err := constructMessageText(message)
+	if err != nil {
+		return err
+	}
 	// actionBlock := slack.NewActionBlock(
 	// 	"action_block_id",
 	// 	slack.NewButtonBlockElement("apply_button", "apply", slack.NewTextBlockObject("plain_text", ":white_check_mark: 팀 지원하기!", true, true)),
@@ -189,37 +189,19 @@ func postOpenMessageToChannel(api *slack.Client, channelID string, message FormM
 	// log.Printf("Message successfully sent to channel %s at %s", channelID, timestamp)
 	// err = addTeamToDB(message, timestamp)
 	// return err
-	// Define the button elements
-	button1 := slack.NewButtonBlockElement(
-		"actionId-0",   // Action ID for the button
-		"click_me_123", // Value for the button
-		slack.NewTextBlockObject("plain_text", "Click Me", true, true),
-	)
-
-	// button2 := slack.NewButtonBlockElement(
-	// 	"actionId-1",   // Action ID for the button
-	// 	"click_me_123", // Value for the button
-	// 	slack.NewTextBlockObject("plain_text", "Click Me", true, true),
-	// )
-
-	// Create an action block with the buttons
-	actionBlock := slack.NewActionBlock(
-		"actions_block_id", // Block ID for the action block
-		button1,
-	)
-
-	// Create the message with the action block
-	messageBlocks := slack.MsgOptionBlocks(actionBlock)
-
-	// Post the message to Slack
+	applyButton := slack.NewButtonBlockElement("apply_button", "apply", slack.NewTextBlockObject("plain_text", "지원하기!", false, false))
+	deleteButton := slack.NewButtonBlockElement("delete_button", "delete", slack.NewTextBlockObject("plain_text", "삭제하기!", false, false))
+	actionBlock := slack.NewActionBlock("apply_action", applyButton)
+	actionBlock2 := slack.NewActionBlock("delete_action", deleteButton)
+	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", messageText, false, false), nil, nil)
+	messageBlocks := slack.MsgOptionBlocks(section, actionBlock, actionBlock2)
 	_, timestamp, err := api.PostMessage(channelID, messageBlocks)
 	if err != nil {
 		log.Printf("Failed to send message to channel %s: %v", channelID, err)
 		return err
 	}
-
-	log.Printf("Message successfully sent to channel %s at %s", channelID, timestamp)
-	return nil
+	err = addTeamToDB(message, timestamp)
+	return err
 }
 
 func updateOpenMessageToChannel(api *slack.Client, channelID string, message FormMessage, timestamp string) error {
