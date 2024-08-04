@@ -98,7 +98,7 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	} else if payload.Type == slack.InteractionTypeViewSubmission {
 		if payload.View.CallbackID == "recruitment_form" {
-			richTextBlock := payload.View.State.Values
+			richTextBlock := payload
 			richTextJson, _ := json.Marshal(richTextBlock)
 			log.Printf("RichTextBlock: %s", richTextJson)
 
