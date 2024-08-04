@@ -101,12 +101,16 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	} else if payload.Type == slack.InteractionTypeViewSubmission {
 		if payload.View.CallbackID == "recruitment_form" {
-			jsonVal := handleBlockActions(payload)
-			if err := postMessageToChannel(channelID, jsonVal); err != nil {
-				log.Printf("Failed to post message to channel: %v", err)
-				http.Error(w, "Failed to post message to channel", http.StatusInternalServerError)
-				return
-			}
+			richTextBlock := payload.View.State.Values
+			richTextJson, _ := json.Marshal(richTextBlock)
+			log.Printf("RichTextBlock: %s", richTextJson)
+
+			// jsonVal := handleBlockActions(payload)
+			// if err := postMessageToChannel(channelID, jsonVal); err != nil {
+			// 	log.Printf("Failed to post message to channel: %v", err)
+			// 	http.Error(w, "Failed to post message to channel", http.StatusInternalServerError)
+			// 	return
+			// }
 			w.WriteHeader(http.StatusOK)
 		} else if payload.View.CallbackID == "apply_form" {
 			log.Println("Received view submission 지원하기")
