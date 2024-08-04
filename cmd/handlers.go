@@ -167,50 +167,21 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 }
 
 func postOpenMessageToChannel(api *slack.Client, channelID string, message FormMessage) error {
-	messageText, err := constructMessageText(message)
-	if err != nil {
-		return err
-	}
-	actionBlock := slack.NewActionBlock(
-		"action_block_id",
-		slack.NewButtonBlockElement("apply_button", "apply", slack.NewTextBlockObject("plain_text", ":white_check_mark: 팀 지원하기!", true, true)),
-		slack.NewButtonBlockElement("delete_button", "delete", slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", true, true)),
-		slack.NewButtonBlockElement("close_button", "close", slack.NewTextBlockObject("plain_text", ":lock: 모집 닫기", true, true)),
-	)
-
-	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", messageText, true, false), nil, nil)
-	messageBlocks := slack.MsgOptionBlocks(section, actionBlock)
-
-	_, timestamp, err := api.PostMessage(channelID, messageBlocks)
-	if err != nil {
-		log.Printf("Failed to send message to channel %s: %v", channelID, err)
-		return err
-	}
-	log.Printf("Message successfully sent to channel %s at %s", channelID, timestamp)
-	err = addTeamToDB(message, timestamp)
-	return err
-}
-
-func updateOpenMessageToChannel(api *slack.Client, channelID string, message FormMessage, timestamp string) error {
-	// err := db.DeactivateRecruitTeam(timestamp)
-	// if err != nil {
-	// 	log.Printf("Failed to deactivate team: %v", err)
-	// 	return err
-	// }
 	// messageText, err := constructMessageText(message)
 	// if err != nil {
 	// 	return err
 	// }
 	// actionBlock := slack.NewActionBlock(
 	// 	"action_block_id",
-	// 	slack.NewButtonBlockElement("open_button", "open", slack.NewTextBlockObject("plain_text", ":unlock: 모집 다시 열기", false, false)),
-	// 	slack.NewButtonBlockElement("delete_button", "delete", slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", false, false)),
+	// 	slack.NewButtonBlockElement("apply_button", "apply", slack.NewTextBlockObject("plain_text", ":white_check_mark: 팀 지원하기!", true, true)),
+	// 	slack.NewButtonBlockElement("delete_button", "delete", slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", true, true)),
+	// 	slack.NewButtonBlockElement("close_button", "close", slack.NewTextBlockObject("plain_text", ":lock: 모집 닫기", true, true)),
 	// )
 
 	// section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", messageText, true, false), nil, nil)
 	// messageBlocks := slack.MsgOptionBlocks(section, actionBlock)
 
-	// _, _, _, err = api.UpdateMessage(channelID, timestamp, messageBlocks)
+	// _, timestamp, err := api.PostMessage(channelID, messageBlocks)
 	// if err != nil {
 	// 	log.Printf("Failed to send message to channel %s: %v", channelID, err)
 	// 	return err
@@ -218,22 +189,24 @@ func updateOpenMessageToChannel(api *slack.Client, channelID string, message For
 	// log.Printf("Message successfully sent to channel %s at %s", channelID, timestamp)
 	// err = addTeamToDB(message, timestamp)
 	// return err
+	// Define the button elements
 	button1 := slack.NewButtonBlockElement(
 		"actionId-0",   // Action ID for the button
 		"click_me_123", // Value for the button
 		slack.NewTextBlockObject("plain_text", "Click Me", true, true),
 	)
 
-	// button2 := slack.NewButtonBlockElement(
-	// 	"actionId-1",   // Action ID for the button
-	// 	"click_me_123", // Value for the button
-	// 	slack.NewTextBlockObject("plain_text", "Click Me", true, true),
-	// )
+	button2 := slack.NewButtonBlockElement(
+		"actionId-1",   // Action ID for the button
+		"click_me_123", // Value for the button
+		slack.NewTextBlockObject("plain_text", "Click Me", true, true),
+	)
 
 	// Create an action block with the buttons
 	actionBlock := slack.NewActionBlock(
 		"actions_block_id", // Block ID for the action block
 		button1,
+		button2,
 	)
 
 	// Create the message with the action block
@@ -248,6 +221,35 @@ func updateOpenMessageToChannel(api *slack.Client, channelID string, message For
 
 	log.Printf("Message successfully sent to channel %s at %s", channelID, timestamp)
 	return nil
+}
+
+func updateOpenMessageToChannel(api *slack.Client, channelID string, message FormMessage, timestamp string) error {
+	err := db.DeactivateRecruitTeam(timestamp)
+	if err != nil {
+		log.Printf("Failed to deactivate team: %v", err)
+		return err
+	}
+	messageText, err := constructMessageText(message)
+	if err != nil {
+		return err
+	}
+	actionBlock := slack.NewActionBlock(
+		"action_block_id",
+		slack.NewButtonBlockElement("open_button", "open", slack.NewTextBlockObject("plain_text", ":unlock: 모집 다시 열기", false, false)),
+		slack.NewButtonBlockElement("delete_button", "delete", slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", false, false)),
+	)
+
+	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", messageText, true, false), nil, nil)
+	messageBlocks := slack.MsgOptionBlocks(section, actionBlock)
+
+	_, _, _, err = api.UpdateMessage(channelID, timestamp, messageBlocks)
+	if err != nil {
+		log.Printf("Failed to send message to channel %s: %v", channelID, err)
+		return err
+	}
+	log.Printf("Message successfully sent to channel %s at %s", channelID, timestamp)
+	err = addTeamToDB(message, timestamp)
+	return err
 }
 
 func reOpenRecruitment(api *slack.Client, channelID string, message FormMessage, timestamp string) error {
