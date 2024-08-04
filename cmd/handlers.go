@@ -51,6 +51,13 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
+	requestVal, err := json.Marshal(r.Form)
+	if err != nil {
+		log.Printf("Failed to marshal request: %v", err)
+		http.Error(w, "Failed to marshal request", http.StatusInternalServerError)
+		return
+	}
+	log.Printf("Received request: %s", string(requestVal))
 
 	payloadStr := r.FormValue("payload")
 	if payloadStr == "" {
@@ -94,19 +101,12 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	} else if payload.Type == slack.InteractionTypeViewSubmission {
 		if payload.View.CallbackID == "recruitment_form" {
-			payloadJSON, err := json.Marshal(payload)
-			if err != nil {
-				log.Printf("Failed to marshal payload: %v", err)
-				http.Error(w, "Failed to marshal payload", http.StatusInternalServerError)
+			jsonVal := handleBlockActions(payload)
+			if err := postMessageToChannel(channelID, jsonVal); err != nil {
+				log.Printf("Failed to post message to channel: %v", err)
+				http.Error(w, "Failed to post message to channel", http.StatusInternalServerError)
 				return
 			}
-			log.Printf("Received view submission 구인하기: %s", string(payloadJSON))
-			// jsonVal := handleBlockActions(payload)
-			// if err := postMessageToChannel(channelID, jsonVal); err != nil {
-			// 	log.Printf("Failed to post message to channel: %v", err)
-			// 	http.Error(w, "Failed to post message to channel", http.StatusInternalServerError)
-			// 	return
-			// }
 			w.WriteHeader(http.StatusOK)
 		} else if payload.View.CallbackID == "apply_form" {
 			log.Println("Received view submission 지원하기")
