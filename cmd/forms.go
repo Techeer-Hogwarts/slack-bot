@@ -73,6 +73,7 @@ func sendDMSuccessMessage(api *slack.Client, applicant, message string) error {
 
 func openApplyModal(payload slack.InteractionCallback) error {
 	triggerID := payload.TriggerID
+	originalMessageTimestmap := payload.Message.Timestamp
 	payloadJson, _ := json.MarshalIndent(payload, "", "  ")
 	log.Printf("Payload: %s", payloadJson)
 	api := slack.New(botToken)
@@ -82,6 +83,8 @@ func openApplyModal(payload slack.InteractionCallback) error {
 	if err != nil {
 		return fmt.Errorf("failed to get active teams: %w", err)
 	}
+
+	var defaultTeam *slack.OptionBlockObject
 
 	// Create options from active teams
 	var options []*slack.OptionBlockObject
@@ -96,6 +99,9 @@ func openApplyModal(payload slack.InteractionCallback) error {
 			nil,
 		)
 		options = append(options, option)
+		if team.TeamTs == originalMessageTimestmap {
+			defaultTeam = option
+		}
 	}
 
 	// Create the modal view request
@@ -104,6 +110,15 @@ func openApplyModal(payload slack.InteractionCallback) error {
 		"desc_action",
 	)
 	descInput.Multiline = true
+
+	teamSelectElement := slack.NewOptionsSelectBlockElement(
+		slack.OptTypeStatic,
+		slack.NewTextBlockObject("plain_text", "팀을 골라주세요", false, false),
+		"selected_team",
+		options...,
+	)
+	teamSelectElement.InitialOption = defaultTeam
+
 	modalRequest := slack.ModalViewRequest{
 		Type:       slack.VTModal,
 		CallbackID: "apply_form",
@@ -116,12 +131,7 @@ func openApplyModal(payload slack.InteractionCallback) error {
 					"team_select",
 					slack.NewTextBlockObject("plain_text", "Select a Team", false, false),
 					nil,
-					slack.NewOptionsSelectBlockElement(
-						slack.OptTypeStatic,
-						slack.NewTextBlockObject("plain_text", "팀을 골라주세요", false, false),
-						"selected_team",
-						options...,
-					),
+					teamSelectElement,
 				),
 				slack.NewInputBlock(
 					"age_input",
