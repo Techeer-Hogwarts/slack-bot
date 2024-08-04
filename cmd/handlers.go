@@ -191,7 +191,7 @@ func postOpenMessageToChannel(api *slack.Client, channelID string, message FormM
 	// return err
 	applyButton := slack.NewButtonBlockElement("apply_button", "apply", slack.NewTextBlockObject("plain_text", "지원하기!", false, false))
 	deleteButton := slack.NewButtonBlockElement("delete_button", "delete", slack.NewTextBlockObject("plain_text", "삭제하기!", false, false))
-	actionBlock := slack.NewActionBlock("apply_action", applyButton)
+	actionBlock := slack.NewActionBlock("apply_action", applyButton, deleteButton)
 	actionBlock2 := slack.NewActionBlock("delete_action", deleteButton)
 	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", messageText, false, false), nil, nil)
 	messageBlocks := slack.MsgOptionBlocks(section, actionBlock, actionBlock2)
