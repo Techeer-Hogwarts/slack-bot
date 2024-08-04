@@ -74,8 +74,8 @@ func sendDMSuccessMessage(api *slack.Client, applicant, message string) error {
 func openApplyModal(payload slack.InteractionCallback) error {
 	triggerID := payload.TriggerID
 	originalMessageTimestmap := payload.Message.Timestamp
-	payloadJson, _ := json.MarshalIndent(payload, "", "  ")
-	log.Printf("Payload: %s", payloadJson)
+	// payloadJson, _ := json.MarshalIndent(payload, "", "  ")
+	// log.Printf("Payload: %s", payloadJson)
 	api := slack.New(botToken)
 
 	// Fetch active teams
