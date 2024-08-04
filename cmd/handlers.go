@@ -39,10 +39,6 @@ type ApplyMessage struct {
 	Pr        string `json:"pr"`
 	Role      string `json:"role"`
 }
-type InteractionCallbackExtended struct {
-	slack.InteractionCallback
-	RichText slack.RichTextBlock `json:"rich_text_value"`
-}
 
 func SendHelloWorld(w http.ResponseWriter, r *http.Request) {
 	log.Println("Received a request to the root path")
@@ -62,7 +58,7 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
-	var payload InteractionCallbackExtended
+	var payload slack.InteractionCallback
 	if err := json.Unmarshal([]byte(payloadStr), &payload); err != nil {
 		log.Printf("Failed to decode interaction payload: %v", err)
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
@@ -98,10 +94,16 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	} else if payload.Type == slack.InteractionTypeViewSubmission {
 		if payload.View.CallbackID == "recruitment_form" {
-			richTextBlock := payload
-			richTextJson, _ := json.Marshal(richTextBlock)
-			log.Printf("RichTextBlock: %s", richTextJson)
-
+			for _, block := range payload.View.Blocks.BlockSet {
+				switch blockElement := block.(type) {
+				case *slack.SectionBlock:
+					// Handle SectionBlock with text or markdown
+					text := blockElement.Text.Text
+					log.Println("Received rich text:", text)
+					// You can parse markdown or handle the text as needed
+					// Add cases for other block elements if needed
+				}
+			}
 			// jsonVal := handleBlockActions(payload)
 			// if err := postMessageToChannel(channelID, jsonVal); err != nil {
 			// 	log.Printf("Failed to post message to channel: %v", err)
