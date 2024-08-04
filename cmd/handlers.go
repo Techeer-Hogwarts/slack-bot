@@ -224,17 +224,16 @@ func updateOpenMessageToChannel(api *slack.Client, channelID string, message For
 		slack.NewTextBlockObject("plain_text", "Click Me", true, true),
 	)
 
-	button2 := slack.NewButtonBlockElement(
-		"actionId-1",   // Action ID for the button
-		"click_me_123", // Value for the button
-		slack.NewTextBlockObject("plain_text", "Click Me", true, true),
-	)
+	// button2 := slack.NewButtonBlockElement(
+	// 	"actionId-1",   // Action ID for the button
+	// 	"click_me_123", // Value for the button
+	// 	slack.NewTextBlockObject("plain_text", "Click Me", true, true),
+	// )
 
 	// Create an action block with the buttons
 	actionBlock := slack.NewActionBlock(
 		"actions_block_id", // Block ID for the action block
 		button1,
-		button2,
 	)
 
 	// Create the message with the action block
