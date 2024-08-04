@@ -1,0 +1,711 @@
+{
+	"type": "modal",
+	"title": {
+		"type": "plain_text",
+		"text": "Recruitment Form"
+	},
+	"callback_id": "recruitment_form",
+	"blocks": [
+		{
+			"type": "input",
+			"block_id": "team_intro_block",
+			"label": {
+				"type": "plain_text",
+				"text": "소개"
+			},
+			"element": {
+				"type": "plain_text_input",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "ex. 무슨무슨팀에서 누구누구 구합니다",
+					"emoji": true
+				},
+				"action_id": "team_intro"
+			}
+		},
+		{
+			"type": "input",
+			"block_id": "team_name_block",
+			"label": {
+				"type": "plain_text",
+				"text": "팀 이름"
+			},
+			"element": {
+				"type": "plain_text_input",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "팀 이름",
+					"emoji": true
+				},
+				"action_id": "team_name"
+			}
+		},
+		{
+			"type": "section",
+			"block_id": "team_leader_block",
+			"text": {
+				"type": "plain_text",
+				"text": "팀장"
+			},
+			"accessory": {
+				"type": "users_select",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "유저 선택",
+					"emoji": true
+				},
+				"action_id": "users_select-action"
+			}
+		},
+		{
+			"type": "input",
+			"block_id": "tech_stack_block",
+			"element": {
+				"type": "multi_static_select",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "스택 추가하기",
+					"emoji": true
+				},
+				"options": [
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "없음",
+							"emoji": true
+						},
+						"value": "none"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "React.js",
+							"emoji": true
+						},
+						"value": "react"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Vue.js",
+							"emoji": true
+						},
+						"value": "vue"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Next.js",
+							"emoji": true
+						},
+						"value": "next"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "SvelteKit",
+							"emoji": true
+						},
+						"value": "svelte"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Angular",
+							"emoji": true
+						},
+						"value": "angular"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Django",
+							"emoji": true
+						},
+						"value": "django"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Flask",
+							"emoji": true
+						},
+						"value": "flask"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Ruby on Rails",
+							"emoji": true
+						},
+						"value": "rails"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Spring Boot",
+							"emoji": true
+						},
+						"value": "spring"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Express.js",
+							"emoji": true
+						},
+						"value": "express"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Laravel",
+							"emoji": true
+						},
+						"value": "laravel"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "S3/Cloud Storage",
+							"emoji": true
+						},
+						"value": "s3"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Go Lang",
+							"emoji": true
+						},
+						"value": "go"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "AI/ML (Tensorflow, PyTorch)",
+							"emoji": true
+						},
+						"value": "ai"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Kubernetes",
+							"emoji": true
+						},
+						"value": "kube"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Jenkins CI",
+							"emoji": true
+						},
+						"value": "jenkins"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Github Actions",
+							"emoji": true
+						},
+						"value": "actions"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Spinnaker",
+							"emoji": true
+						},
+						"value": "spin"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Graphite",
+							"emoji": true
+						},
+						"value": "graphite"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Kafka",
+							"emoji": true
+						},
+						"value": "kafka"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Docker",
+							"emoji": true
+						},
+						"value": "docker"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Ansible",
+							"emoji": true
+						},
+						"value": "ansible"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Terraform",
+							"emoji": true
+						},
+						"value": "terraform"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "FastAPI",
+							"emoji": true
+						},
+						"value": "fast"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Redis",
+							"emoji": true
+						},
+						"value": "redis"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "RabbitMQ",
+							"emoji": true
+						},
+						"value": "rabbit"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "MSA",
+							"emoji": true
+						},
+						"value": "msa"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Java",
+							"emoji": true
+						},
+						"value": "java"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Python",
+							"emoji": true
+						},
+						"value": "python"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "JS/TS",
+							"emoji": true
+						},
+						"value": "jsts"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "C++",
+							"emoji": true
+						},
+						"value": "cpp"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "C#",
+							"emoji": true
+						},
+						"value": "csh"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Ruby",
+							"emoji": true
+						},
+						"value": "ruby"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "AWS",
+							"emoji": true
+						},
+						"value": "aws"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "GCP",
+							"emoji": true
+						},
+						"value": "gcp"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "ELK",
+							"emoji": true
+						},
+						"value": "elk"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "ElasticSearch/OpenSearch",
+							"emoji": true
+						},
+						"value": "elasticsearch"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Prometheus",
+							"emoji": true
+						},
+						"value": "prom"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Grafana",
+							"emoji": true
+						},
+						"value": "grafana"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Celery",
+							"emoji": true
+						},
+						"value": "celery"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "NGINX",
+							"emoji": true
+						},
+						"value": "nginx"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "CDN (CloudFront)",
+							"emoji": true
+						},
+						"value": "cdn"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Nest.js",
+							"emoji": true
+						},
+						"value": "nest"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Zustand",
+							"emoji": true
+						},
+						"value": "zustand"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Tailwind CSS",
+							"emoji": true
+						},
+						"value": "tailwind"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Bootstrap CSS",
+							"emoji": true
+						},
+						"value": "bootstrap"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "PostgreSQL",
+							"emoji": true
+						},
+						"value": "postgre"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "MySQL",
+							"emoji": true
+						},
+						"value": "mysql"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "MongoDB",
+							"emoji": true
+						},
+						"value": "mongo"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Node.JS",
+							"emoji": true
+						},
+						"value": "node"
+					}
+				],
+				"action_id": "multi_static_select-action"
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "기술 스택/프레임워크",
+				"emoji": true
+			}
+		},
+		{
+			"type": "input",
+			"block_id": "current_members_block",
+			"element": {
+				"type": "multi_users_select",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "팀장 포함 멤버 추가하기",
+					"emoji": true
+				},
+				"action_id": "multi_users_select-action"
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "팀 멤버",
+				"emoji": true
+			},
+			"hint": {
+				"type": "plain_text",
+				"text": "팀장도 추가 해주세요",
+				"emoji": false
+			}
+		},
+		{
+			"type": "input",
+			"block_id": "num_members_ux_block",
+			"label": {
+				"type": "plain_text",
+				"text": "구하는 UX/UI Designer 인원수"
+			},
+			"element": {
+				"type": "number_input",
+				"is_decimal_allowed": false,
+				"min_value": "0",
+				"initial_value": "0",
+				"action_id": "num_ux_members"
+			}
+		},
+		{
+			"type": "input",
+			"block_id": "num_members_front_block",
+			"label": {
+				"type": "plain_text",
+				"text": "구하는 Frontend Developer 인원수"
+			},
+			"element": {
+				"type": "number_input",
+				"is_decimal_allowed": false,
+				"min_value": "0",
+				"initial_value": "0",
+				"action_id": "num_front_members"
+			}
+		},
+		{
+			"type": "input",
+			"block_id": "num_members_back_block",
+			"label": {
+				"type": "plain_text",
+				"text": "구하는 Backend Developer 인원수"
+			},
+			"element": {
+				"type": "number_input",
+				"is_decimal_allowed": false,
+				"min_value": "0",
+				"initial_value": "0",
+				"action_id": "num_back_members"
+			}
+		},
+		{
+			"type": "input",
+			"block_id": "num_members_data_block",
+			"label": {
+				"type": "plain_text",
+				"text": "구하는 Data Engineer 인원수"
+			},
+			"element": {
+				"type": "number_input",
+				"is_decimal_allowed": false,
+				"min_value": "0",
+				"initial_value": "0",
+				"action_id": "num_data_members"
+			}
+		},
+		{
+			"type": "input",
+			"block_id": "num_members_sre_block",
+			"label": {
+				"type": "plain_text",
+				"text": "구하는 Ops/SRE 인원수"
+			},
+			"element": {
+				"type": "number_input",
+				"is_decimal_allowed": false,
+				"min_value": "0",
+				"initial_value": "0",
+				"action_id": "num_sre_members"
+			}
+		},
+		{
+			"type": "input",
+			"block_id": "num_members_study_block",
+			"label": {
+				"type": "plain_text",
+				"text": "구하는 스터디 인원수"
+			},
+			"element": {
+				"type": "number_input",
+				"is_decimal_allowed": false,
+				"min_value": "0",
+				"initial_value": "0",
+				"action_id": "num_study_members"
+			}
+		},
+		{
+			"type": "input",
+			"block_id": "num_members_etc_block",
+			"label": {
+				"type": "plain_text",
+				"text": "구하는 기타 인원수 (기타 내용에 직군 추가 해주세요)"
+			},
+			"element": {
+				"type": "number_input",
+				"is_decimal_allowed": false,
+				"min_value": "0",
+				"initial_value": "0",
+				"action_id": "num_etc_members"
+			}
+		},
+		{
+			"type": "input",
+			"block_id": "team_desc_block",
+			"element": {
+				"type": "plain_text_input",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "팀 설명 내용 추가 (마크다운)",
+					"emoji": true
+				},
+				"multiline": true,
+				"action_id": "plain_text_input-action"
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "팀/프로젝트 설명",
+				"emoji": true
+			}
+		},
+		{
+			"type": "input",
+			"block_id": "team_etc_block",
+			"element": {
+				"type": "plain_text_input",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "기타 내용 추가 (마크다운)",
+					"emoji": true
+				},
+				"multiline": true,
+				"action_id": "plain_text_input-action"
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "기타 내용",
+				"emoji": true
+			}
+		},
+		{
+			"dispatch_action": true,
+			"type": "input",
+			"element": {
+				"type": "plain_text_input",
+				"action_id": "plain_text_input-action"
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "Label",
+				"emoji": true
+			}
+		},
+		{
+			"dispatch_action": true,
+			"type": "input",
+			"element": {
+				"type": "plain_text_input",
+				"dispatch_action_config": {
+					"trigger_actions_on": [
+						"on_character_entered"
+					]
+				},
+				"action_id": "plain_text_input-action"
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "Label",
+				"emoji": true
+			}
+		},
+		{
+			"type": "input",
+			"element": {
+				"type": "rich_text_input",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "기타 내용 추가 (마크다운)",
+					"emoji": true
+				},
+				"action_id": "rich_text_input-action"
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "Test Label",
+				"emoji": true
+			}
+		}
+	],
+	"submit": {
+		"type": "plain_text",
+		"text": "Submit"
+	},
+	"close": {
+		"type": "plain_text",
+		"text": "Cancel"
+	}
+}
