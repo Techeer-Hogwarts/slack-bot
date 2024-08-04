@@ -22,7 +22,6 @@ var (
 	botToken   string
 	channelID  string
 	roleMap    map[string]string
-	// stackMap   map[string]string
 )
 
 const (
@@ -49,58 +48,6 @@ func init() {
 		"study":     "스터디",
 		"etc":       "기타",
 	}
-	// stackMap = map[string]string{
-	// 	"none":          "없음",
-	// 	"react":         "React.js",
-	// 	"vue":           "Vue.js",
-	// 	"next":          "Next.js",
-	// 	"svelte":        "SvelteKit",
-	// 	"angular":       "Angular",
-	// 	"django":        "Django",
-	// 	"flask":         "Flask",
-	// 	"rails":         "Ruby on Rails",
-	// 	"spring":        "Spring Boot",
-	// 	"express":       "Express.js",
-	// 	"laravel":       "Laravel",
-	// 	"s3":            "S3/Cloud Storage",
-	// 	"go":            "Go Lang",
-	// 	"ai":            "AI/ML (Tensorflow, PyTorch)",
-	// 	"kube":          "Kubernetes",
-	// 	"jenkins":       "Jenkins CI",
-	// 	"actions":       "Github Actions",
-	// 	"spin":          "Spinnaker",
-	// 	"graphite":      "Graphite",
-	// 	"kafka":         "Kafka",
-	// 	"docker":        "Docker",
-	// 	"ansible":       "Ansible",
-	// 	"terraform":     "Terraform",
-	// 	"fastapi":       "FastAPI",
-	// 	"redis":         "Redis",
-	// 	"msa":           "MSA",
-	// 	"java":          "Java",
-	// 	"python":        "Python",
-	// 	"jsts":          "JavaScript/TypeScript",
-	// 	"cpp":           "C/C++",
-	// 	"csharp":        "C#",
-	// 	"ruby":          "Ruby",
-	// 	"aws":           "AWS",
-	// 	"gcp":           "GCP",
-	// 	"ELK":           "ELK Stack",
-	// 	"elasticsearch": "Elasticsearch",
-	// 	"prom":          "Prometheus",
-	// 	"grafana":       "Grafana",
-	// 	"celery":        "Celery",
-	// 	"nginx":         "Nginx",
-	// 	"cdn":           "CDN (CloudFront)",
-	// 	"nestjs":        "Nest.JS",
-	// 	"zustand":       "Zustand",
-	// 	"tailwind":      "Tailwind CSS",
-	// 	"bootstrap":     "Bootstrap",
-	// 	"postgre":       "PostgreSQL",
-	// 	"mysql":         "MySQL",
-	// 	"mongo":         "MongoDB",
-	// 	"node":          "Node.js",
-	// }
 }
 
 func VerifySlackRequest(req *http.Request) error {
@@ -126,41 +73,18 @@ func VerifySlackRequest(req *http.Request) error {
 	return nil
 }
 
-func getChannelMessages(api *slack.Client, channelID string) (*slack.GetConversationHistoryResponse, error) {
-	historyParams := slack.GetConversationHistoryParameters{
-		ChannelID: channelID,
-		Limit:     100,
-	}
+// func getChannelMessages(api *slack.Client, channelID string) (*slack.GetConversationHistoryResponse, error) {
+// 	historyParams := slack.GetConversationHistoryParameters{
+// 		ChannelID: channelID,
+// 		Limit:     100,
+// 	}
 
-	history, err := api.GetConversationHistory(&historyParams)
-	if err != nil {
-		return nil, err
-	}
-
-	return history, nil
-}
-
-// func TriggerEvent(w http.ResponseWriter, r *http.Request) {
-// 	log.Println("Received a trigger event request")
-
-// 	api := slack.New(botToken)
-// 	history, err := getChannelMessages(api, channelID)
+// 	history, err := api.GetConversationHistory(&historyParams)
 // 	if err != nil {
-// 		log.Printf("Failed to retrieve messages: %v", err)
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
+// 		return nil, err
 // 	}
 
-// 	log.Printf("channelID: %v", channelID)
-
-// 	w.Header().Set("Content-Type", "application/json")
-// 	if err := json.NewEncoder(w).Encode(history); err != nil {
-// 		log.Printf("Failed to encode response: %v", err)
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-
-// 	log.Println("Trigger event processed successfully")
+// 	return history, nil
 // }
 
 func constructMessageText(message FormMessage) (string, error) {
