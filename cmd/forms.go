@@ -13,7 +13,7 @@ import (
 
 func openRecruitmentModal(w http.ResponseWriter, triggerID string, api *slack.Client) {
 	// Read the modal JSON from a file
-	modal, err := readModalJSON("recruitment_form.json")
+	modal, err := readModalJSON("recruit.json")
 	if err != nil {
 		log.Printf("Failed to read modal JSON: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
