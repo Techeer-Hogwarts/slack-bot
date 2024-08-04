@@ -95,8 +95,11 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	} else if payload.Type == slack.InteractionTypeViewSubmission {
 		if payload.View.CallbackID == "recruitment_form" {
-			jsonVal, _ := json.Marshal(payload.View.Blocks)
+			jsonVal, _ := json.Marshal(payload)
 			log.Printf("Received view submission 구인하기: %s", jsonVal)
+			loadedBlocks := payload.View.State.Values
+			jsonVal2, _ := json.Marshal(loadedBlocks)
+			log.Printf("Loaded blocks: %s", jsonVal2)
 			// jsonVal := handleBlockActions(payload)
 			// if err := postMessageToChannel(channelID, jsonVal); err != nil {
 			// 	log.Printf("Failed to post message to channel: %v", err)
