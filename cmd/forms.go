@@ -42,18 +42,6 @@ func readModalJSON(filename string) (slack.ModalViewRequest, error) {
 		return modal, err
 	}
 
-	teamRichBlock := slack.NewInputBlock(
-		"team_rich_block",
-		slack.NewTextBlockObject("plain_text", "Test Label", true, false),
-		nil,
-		slack.NewRichTextInputBlockElement(
-			slack.NewTextBlockObject("plain_text", "기타 내용 추가 (마크다운)", true, false),
-			"rich_text_input-action",
-		),
-	)
-
-	modal.Blocks.BlockSet = append(modal.Blocks.BlockSet, teamRichBlock)
-
 	return modal, nil
 }
 
@@ -66,7 +54,7 @@ func sendDMToLeader(api *slack.Client, msg ApplyMessage) error {
 	)
 	actionBlock := slack.NewActionBlock("", enrollButton)
 
-	messageText := fmt.Sprintf(":heavy_exclamation_mark: 새로운 지원자가 있습니다!\n\n*지원자:* <@%s>\n\n*나이:* %s\n\n*학년:* %s\n\n*자기소개:* %s\n\n*희망 직군:* %s\n\n", msg.Applicant, msg.Age, msg.Grade, msg.Pr, msg.Role)
+	messageText := fmt.Sprintf(":heavy_exclamation_mark: %s 팀의 새로운 지원자가 있습니다!\n\n*지원자:* <@%s>\n\n*나이:* %s\n\n*학년:* %s\n\n*자기소개:* %s\n\n*희망 직군:* %s\n\n", msg.TeamName, msg.Applicant, msg.Age, msg.Grade, msg.Pr, msg.Role)
 	sectionBlock := slack.NewSectionBlock(
 		slack.NewTextBlockObject("mrkdwn", messageText, false, false),
 		nil, nil,
@@ -83,7 +71,10 @@ func sendDMSuccessMessage(api *slack.Client, applicant, message string) error {
 	return err
 }
 
-func openApplyModal(triggerID string) error {
+func openApplyModal(payload slack.InteractionCallback) error {
+	triggerID := payload.TriggerID
+	payloadJson, _ := json.MarshalIndent(payload, "", "  ")
+	log.Printf("Payload: %s", payloadJson)
 	api := slack.New(botToken)
 
 	// Fetch active teams
