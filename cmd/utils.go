@@ -312,8 +312,7 @@ func loadStacksFromFile(filename string) ([]db.Stack, error) {
 
 	return stacks, nil
 }
-func deleteMessage(payload slack.InteractionCallback) error {
-	api := slack.New(botToken)
+func deleteMessage(api *slack.Client, payload slack.InteractionCallback) error {
 	actionUserID := payload.User.ID
 	actionMessageTimestamp := payload.Message.Timestamp
 
@@ -395,8 +394,7 @@ func sendFailMessage(api *slack.Client, channelID string, userID string, message
 	return err
 }
 
-func enrollUser(value string, channelID string) error {
-	api := slack.New(botToken)
+func enrollUser(api *slack.Client, value string, channelID string) error {
 	values := strings.Split(value, "|")
 	applicantID := values[0]
 	teamID, err := strconv.Atoi(values[1])

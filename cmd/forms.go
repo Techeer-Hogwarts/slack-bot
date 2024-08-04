@@ -71,15 +71,14 @@ func sendDMSuccessMessage(api *slack.Client, applicant, message string) error {
 	return err
 }
 
-func openApplyModal(payload slack.InteractionCallback) error {
+func openApplyModal(api *slack.Client, payload slack.InteractionCallback) error {
 	triggerID := payload.TriggerID
 	originalMessageTimestmap := payload.Message.Timestamp
 	// payloadJson, _ := json.MarshalIndent(payload, "", "  ")
 	// log.Printf("Payload: %s", payloadJson)
-	api := slack.New(botToken)
 
 	// Fetch active teams
-	activeTeams, err := db.GetAllTeams()
+	activeTeams, err := db.GetAllRecruitingTeams()
 	if err != nil {
 		return fmt.Errorf("failed to get active teams: %w", err)
 	}
