@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -32,6 +31,7 @@ type FormMessage struct {
 
 type ApplyMessage struct {
 	TeamID    string `json:"team_id"`
+	TeamName  string `json:"team_name"`
 	Leader    string `json:"leader"`
 	Applicant string `json:"applicant"`
 	Age       string `json:"age"`
@@ -58,7 +58,6 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
-	log.Printf("Received payload: %s", payloadStr)
 	var payload slack.InteractionCallback
 	err := payload.UnmarshalJSON([]byte(payloadStr))
 	if err != nil {
@@ -66,17 +65,12 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
-	// if err := json.Unmarshal([]byte(payloadStr), &payload); err != nil {
-	// 	log.Printf("Failed to decode interaction payload: %v", err)
-	// 	http.Error(w, "Invalid request payload", http.StatusBadRequest)
-	// 	return
-	// }
 	if payload.Type == slack.InteractionTypeBlockActions {
 		log.Println("Received block actions 지원하기/삭제하기")
 		for _, action := range payload.ActionCallback.BlockActions {
 			if action.ActionID == "apply_button" {
 				log.Println("Apply button clicked")
-				err := openApplyModal(payload.TriggerID)
+				err := openApplyModal(payload)
 				if err != nil {
 					log.Printf("Failed to open modal: %v", err)
 				}
@@ -101,17 +95,12 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	} else if payload.Type == slack.InteractionTypeViewSubmission {
 		if payload.View.CallbackID == "recruitment_form" {
-			jsonVal, _ := json.Marshal(payload)
-			log.Printf("Received view submission 구인하기: %s", jsonVal)
-			loadedBlocks := payload.View.State.Values
-			jsonVal2, _ := json.Marshal(loadedBlocks)
-			log.Printf("Loaded blocks: %s", jsonVal2)
-			// jsonVal := handleBlockActions(payload)
-			// if err := postMessageToChannel(channelID, jsonVal); err != nil {
-			// 	log.Printf("Failed to post message to channel: %v", err)
-			// 	http.Error(w, "Failed to post message to channel", http.StatusInternalServerError)
-			// 	return
-			// }
+			jsonVal := handleBlockActions(payload)
+			if err := postMessageToChannel(channelID, jsonVal); err != nil {
+				log.Printf("Failed to post message to channel: %v", err)
+				http.Error(w, "Failed to post message to channel", http.StatusInternalServerError)
+				return
+			}
 			w.WriteHeader(http.StatusOK)
 		} else if payload.View.CallbackID == "apply_form" {
 			log.Println("Received view submission 지원하기")
@@ -124,15 +113,17 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			teamObject, err := db.GetTeamByID(teamID)
-			leaderCode := teamObject.TeamLeader
 			if err != nil {
 				log.Printf("Failed to get team leader code: %v", err)
 				http.Error(w, "Failed to get team leader code", http.StatusInternalServerError)
 				return
 			}
+			leaderCode := teamObject.TeamLeader
+			teamName := teamObject.TeamName
 			api := slack.New(botToken)
 			appMsg := ApplyMessage{
 				TeamID:    selectedTeam,
+				TeamName:  teamName,
 				Leader:    leaderCode,
 				Applicant: applicant,
 				Age:       payload.View.State.Values["age_input"]["age_action"].Value,
