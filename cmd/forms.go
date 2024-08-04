@@ -13,7 +13,7 @@ import (
 
 func openRecruitmentModal(w http.ResponseWriter, triggerID string, api *slack.Client) {
 	// Read the modal JSON from a file
-	modal, err := readModalJSON("recruit.json")
+	modal, err := readModalJSON("recruitment_form.json")
 	if err != nil {
 		log.Printf("Failed to read modal JSON: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -41,6 +41,18 @@ func readModalJSON(filename string) (slack.ModalViewRequest, error) {
 	if err := json.Unmarshal(data, &modal); err != nil {
 		return modal, err
 	}
+
+	teamRichBlock := slack.NewInputBlock(
+		"team_rich_block",
+		slack.NewTextBlockObject("plain_text", "Test Label", true, false),
+		nil,
+		slack.NewRichTextInputBlockElement(
+			slack.NewTextBlockObject("plain_text", "기타 내용 추가 (마크다운)", true, false),
+			"rich_text_input-action",
+		),
+	)
+
+	modal.Blocks.BlockSet = append(modal.Blocks.BlockSet, teamRichBlock)
 
 	return modal, nil
 }
