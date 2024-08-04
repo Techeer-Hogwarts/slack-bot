@@ -173,9 +173,9 @@ func postOpenMessageToChannel(api *slack.Client, channelID string, message FormM
 	}
 	actionBlock := slack.NewActionBlock(
 		"action_block_id",
-		slack.NewButtonBlockElement("apply_button", "apply", slack.NewTextBlockObject("plain_text", ":white_check_mark: 팀 지원하기!", false, false)),
-		slack.NewButtonBlockElement("delete_button", "delete", slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", false, false)),
-		slack.NewButtonBlockElement("close_button", "close", slack.NewTextBlockObject("plain_text", ":lock: 모집 닫기", false, false)),
+		slack.NewButtonBlockElement("apply_button", "apply", slack.NewTextBlockObject("plain_text", ":white_check_mark: 팀 지원하기!", true, true)),
+		slack.NewButtonBlockElement("delete_button", "delete", slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", true, true)),
+		slack.NewButtonBlockElement("close_button", "close", slack.NewTextBlockObject("plain_text", ":lock: 모집 닫기", true, true)),
 	)
 
 	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", messageText, true, false), nil, nil)
