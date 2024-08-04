@@ -86,6 +86,26 @@ func DeleteTeam(ts string) error {
 	return nil
 }
 
+func DeactivateRecruitTeam(ts string) error {
+	// Delete a team from the database
+	_, err := DBMain.Exec("UPDATE teams SET recruit_active = FALSE WHERE message_ts = $1", ts)
+	if err != nil {
+		return fmt.Errorf("failed to mark team as recruit deactive: %s", err.Error())
+	}
+	log.Printf("Team with message_ts %s marked as recruit deactive in the database", ts)
+	return nil
+}
+
+func ActivateRecruitTeam(ts string) error {
+	// Delete a team from the database
+	_, err := DBMain.Exec("UPDATE teams SET recruit_active = TRUE WHERE message_ts = $1", ts)
+	if err != nil {
+		return fmt.Errorf("failed to mark team as recruit active: %s", err.Error())
+	}
+	log.Printf("Team with message_ts %s marked as recruit active in the database", ts)
+	return nil
+}
+
 func GetTeam(ts string) (Team, error) {
 	// Get a team from the database
 	teamObj := Team{}
@@ -187,9 +207,47 @@ func GetUserInTeam(userID int, teamID int) (bool, error) {
 	return true, nil
 }
 
-func GetAllTeams() ([]Team, error) {
+func GetAllActiveTeams() ([]Team, error) {
 	// Get all teams from the database
 	rows, err := DBMain.Query("SELECT team_id, team_type, team_intro, team_name, team_leader, team_description, num_members, team_etc, message_ts FROM teams WHERE is_active = TRUE")
+	if err != nil {
+		return []Team{}, fmt.Errorf("failed to get all teams: %s", err.Error())
+	}
+	defer rows.Close()
+	teams := []Team{}
+	for rows.Next() {
+		teamObj := Team{}
+		var teamLeaderID int
+		err := rows.Scan(
+			&teamObj.TeamID,
+			&teamObj.TeamType,
+			&teamObj.TeamIntro,
+			&teamObj.TeamName,
+			&teamLeaderID,
+			&teamObj.TeamDesc,
+			&teamObj.NumMembers,
+			&teamObj.TeamEtc,
+			&teamObj.TeamTs,
+		)
+		if err != nil {
+			return []Team{}, fmt.Errorf("failed to scan team: %s", err.Error())
+		}
+		_, teamLeaderCode, err := GetUserWithID(teamLeaderID)
+		if err == sql.ErrNoRows {
+			return []Team{}, fmt.Errorf("leader not found")
+		}
+		if err != nil {
+			return []Team{}, fmt.Errorf("failed to get leader for team: %s", err.Error())
+		}
+		teamObj.TeamLeader = teamLeaderCode
+		teams = append(teams, teamObj)
+	}
+	return teams, nil
+}
+
+func GetAllRecruitingTeams() ([]Team, error) {
+	// Get all teams from the database
+	rows, err := DBMain.Query("SELECT team_id, team_type, team_intro, team_name, team_leader, team_description, num_members, team_etc, message_ts FROM teams WHERE is_active = TRUE AND recruit_active = TRUE")
 	if err != nil {
 		return []Team{}, fmt.Errorf("failed to get all teams: %s", err.Error())
 	}

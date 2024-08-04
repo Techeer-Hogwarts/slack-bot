@@ -71,14 +71,14 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		for _, action := range payload.ActionCallback.BlockActions {
 			if action.ActionID == "apply_button" {
 				log.Println("Apply button clicked")
-				err := openApplyModal(payload)
+				err := openApplyModal(api, payload)
 				if err != nil {
 					log.Printf("Failed to open modal: %v", err)
 				}
 				return
 			} else if action.ActionID == "delete_button" {
 				log.Println("Delete button clicked")
-				err := deleteMessage(payload)
+				err := deleteMessage(api, payload)
 				if err != nil {
 					log.Printf("Failed to delete message: %v", err)
 				}
@@ -86,7 +86,7 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 			} else if action.ActionID == "enroll_button" {
 				log.Println("Enroll button clicked")
 				log.Printf("Payload Message: %s", action.Value)
-				err := enrollUser(action.Value, payload.Channel.ID)
+				err := enrollUser(api, action.Value, payload.Channel.ID)
 				if err != nil {
 					log.Printf("Failed to enroll user: %v", err)
 				}
@@ -192,6 +192,11 @@ func postOpenMessageToChannel(api *slack.Client, channelID string, message FormM
 }
 
 func updateOpenMessageToChannel(api *slack.Client, channelID string, message FormMessage, timestamp string) error {
+	err := db.DeactivateRecruitTeam(timestamp)
+	if err != nil {
+		log.Printf("Failed to deactivate team: %v", err)
+		return err
+	}
 	messageText, err := constructMessageText(message)
 	if err != nil {
 		return err
@@ -216,6 +221,11 @@ func updateOpenMessageToChannel(api *slack.Client, channelID string, message For
 }
 
 func reOpenRecruitment(api *slack.Client, channelID string, message FormMessage, timestamp string) error {
+	err := db.ActivateRecruitTeam(timestamp)
+	if err != nil {
+		log.Printf("Failed to activate team: %v", err)
+		return err
+	}
 	messageText, err := constructMessageText(message)
 	if err != nil {
 		return err
