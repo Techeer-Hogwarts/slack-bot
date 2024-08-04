@@ -12,9 +12,9 @@
   },
   "api_app_id": "A07E6ARSXN2",
   "token": "IlM4qha2ED82DpcUKIXT5BId",
-  "trigger_id": "7510528932727.2353051913904.1f4145c362e4b6eae7aabb44b3da1572",
+  "trigger_id": "7547893059280.2353051913904.73a31a8665276b26e9c842ac0c95ed32",
   "view": {
-    "id": "V07G3RSB0GY",
+    "id": "V07FEV30R1R",
     "team_id": "T02AD1HSVSL",
     "type": "modal",
     "blocks": [
@@ -787,13 +787,13 @@
         "team_intro_block": {
           "team_intro": {
             "type": "plain_text_input",
-            "value": "Eh thro"
+            "value": "throfwefwef"
           }
         },
         "team_name_block": {
           "team_name": {
             "type": "plain_text_input",
-            "value": "eqfefqfq"
+            "value": "fqe팀이름"
           }
         },
         "team_leader_block": {
@@ -809,10 +809,18 @@
               {
                 "text": {
                   "type": "plain_text",
-                  "text": "Docker",
+                  "text": "Vue.js",
                   "emoji": true
                 },
-                "value": "docker"
+                "value": "vue"
+              },
+              {
+                "text": {
+                  "type": "plain_text",
+                  "text": "Django",
+                  "emoji": true
+                },
+                "value": "django"
               },
               {
                 "text": {
@@ -836,7 +844,7 @@
         "num_members_ux_block": {
           "num_ux_members": {
             "type": "number_input",
-            "value": "2"
+            "value": "0"
           }
         },
         "num_members_front_block": {
@@ -878,25 +886,25 @@
         "team_desc_block": {
           "plain_text_input-action": {
             "type": "plain_text_input",
-            "value": "d"
+            "value": "설명이요"
           }
         },
         "team_etc_block": {
           "plain_text_input-action": {
             "type": "plain_text_input",
-            "value": "d"
+            "value": "sofeqfqfe"
           }
         },
         "custom_tag1_block": {
           "plain_text_input-action": {
             "type": "plain_text_input",
-            "value": "dqdq"
+            "value": "dwq"
           }
         },
         "custom_tag2_block": {
           "plain_text_input-action": {
             "type": "plain_text_input",
-            "value": "qdqw"
+            "value": "dqwdqff"
           }
         },
         "team_rich_block": {
@@ -910,7 +918,7 @@
                   "elements": [
                     {
                       "type": "text",
-                      "text": "d,dqkdpqekld\n"
+                      "text": "라벨 테스트\n"
                     }
                   ]
                 },
@@ -924,7 +932,24 @@
                       "elements": [
                         {
                           "type": "text",
-                          "text": "dwefwef"
+                          "text": "테스"
+                        }
+                      ]
+                    }
+                  ],
+                  "border": 0
+                },
+                {
+                  "type": "rich_text_list",
+                  "style": "ordered",
+                  "indent": 0,
+                  "elements": [
+                    {
+                      "type": "rich_text_section",
+                      "elements": [
+                        {
+                          "type": "text",
+                          "text": "ㅇ"
                         }
                       ]
                     }
@@ -937,7 +962,7 @@
         }
       }
     },
-    "hash": "1722801762.0xYIIDI2",
+    "hash": "1722802608.uJ9biJXN",
     "title": {
       "type": "plain_text",
       "text": "Recruitment Form",
@@ -956,7 +981,7 @@
       "emoji": true
     },
     "previous_view_id": null,
-    "root_view_id": "V07G3RSB0GY",
+    "root_view_id": "V07FEV30R1R",
     "app_id": "A07E6ARSXN2",
     "external_id": "",
     "app_installed_team_id": "T02AD1HSVSL",
