@@ -60,11 +60,17 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Printf("Received payload: %s", payloadStr)
 	var payload slack.InteractionCallback
-	if err := json.Unmarshal([]byte(payloadStr), &payload); err != nil {
+	err := payload.UnmarshalJSON([]byte(payloadStr))
+	if err != nil {
 		log.Printf("Failed to decode interaction payload: %v", err)
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
+	// if err := json.Unmarshal([]byte(payloadStr), &payload); err != nil {
+	// 	log.Printf("Failed to decode interaction payload: %v", err)
+	// 	http.Error(w, "Invalid request payload", http.StatusBadRequest)
+	// 	return
+	// }
 	if payload.Type == slack.InteractionTypeBlockActions {
 		log.Println("Received block actions 지원하기/삭제하기")
 		for _, action := range payload.ActionCallback.BlockActions {
