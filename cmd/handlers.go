@@ -58,6 +58,7 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
+	log.Printf("Received payload: %s", payloadStr)
 	var payload slack.InteractionCallback
 	if err := json.Unmarshal([]byte(payloadStr), &payload); err != nil {
 		log.Printf("Failed to decode interaction payload: %v", err)
