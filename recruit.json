@@ -654,6 +654,7 @@
 		{
 			"dispatch_action": true,
 			"type": "input",
+            "block_id": "custom_tag1_block",
 			"element": {
 				"type": "plain_text_input",
 				"action_id": "plain_text_input-action"
@@ -667,6 +668,7 @@
 		{
 			"dispatch_action": true,
 			"type": "input",
+            "block_id": "custom_tag2_block",
 			"element": {
 				"type": "plain_text_input",
 				"dispatch_action_config": {
@@ -684,6 +686,7 @@
 		},
 		{
 			"type": "input",
+            "block_id": "team_rich_block",
 			"element": {
 				"type": "rich_text_input",
 				"placeholder": {
