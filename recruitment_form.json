@@ -518,6 +518,7 @@
 			"element": {
 				"type": "number_input",
 				"is_decimal_allowed": false,
+				"min_value": "0",
 				"initial_value": "0",
 				"action_id": "num_ux_members"
 			}
@@ -532,6 +533,7 @@
 			"element": {
 				"type": "number_input",
 				"is_decimal_allowed": false,
+				"min_value": "0",
 				"initial_value": "0",
 				"action_id": "num_front_members"
 			}
@@ -546,6 +548,7 @@
 			"element": {
 				"type": "number_input",
 				"is_decimal_allowed": false,
+				"min_value": "0",
 				"initial_value": "0",
 				"action_id": "num_back_members"
 			}
@@ -560,6 +563,7 @@
 			"element": {
 				"type": "number_input",
 				"is_decimal_allowed": false,
+				"min_value": "0",
 				"initial_value": "0",
 				"action_id": "num_data_members"
 			}
@@ -574,6 +578,7 @@
 			"element": {
 				"type": "number_input",
 				"is_decimal_allowed": false,
+				"min_value": "0",
 				"initial_value": "0",
 				"action_id": "num_sre_members"
 			}
@@ -588,6 +593,7 @@
 			"element": {
 				"type": "number_input",
 				"is_decimal_allowed": false,
+				"min_value": "0",
 				"initial_value": "0",
 				"action_id": "num_study_members"
 			}
@@ -602,6 +608,7 @@
 			"element": {
 				"type": "number_input",
 				"is_decimal_allowed": false,
+				"min_value": "0",
 				"initial_value": "0",
 				"action_id": "num_etc_members"
 			}
