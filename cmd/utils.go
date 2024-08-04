@@ -312,7 +312,7 @@ func loadStacksFromFile(filename string) ([]db.Stack, error) {
 
 	return stacks, nil
 }
-func deleteMessage(payload slack.InteractionCallback) error {
+func deleteMessage(payload InteractionCallbackExtended) error {
 	api := slack.New(botToken)
 	actionUserID := payload.User.ID
 	actionMessageTimestamp := payload.Message.Timestamp

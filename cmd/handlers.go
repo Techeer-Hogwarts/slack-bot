@@ -39,6 +39,10 @@ type ApplyMessage struct {
 	Pr        string `json:"pr"`
 	Role      string `json:"role"`
 }
+type InteractionCallbackExtended struct {
+	slack.InteractionCallback
+	RichText slack.RichTextBlock `json:"rich_text_value"`
+}
 
 func SendHelloWorld(w http.ResponseWriter, r *http.Request) {
 	log.Println("Received a request to the root path")
@@ -51,13 +55,6 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
-	requestVal, err := json.Marshal(r.Form)
-	if err != nil {
-		log.Printf("Failed to marshal request: %v", err)
-		http.Error(w, "Failed to marshal request", http.StatusInternalServerError)
-		return
-	}
-	log.Printf("Received request: %s", string(requestVal))
 
 	payloadStr := r.FormValue("payload")
 	if payloadStr == "" {
@@ -65,7 +62,7 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
-	var payload slack.InteractionCallback
+	var payload InteractionCallbackExtended
 	if err := json.Unmarshal([]byte(payloadStr), &payload); err != nil {
 		log.Printf("Failed to decode interaction payload: %v", err)
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
@@ -101,9 +98,6 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	} else if payload.Type == slack.InteractionTypeViewSubmission {
 		if payload.View.CallbackID == "recruitment_form" {
-			jsonVal := payload.RawState
-			viewAbleJson, _ := json.Marshal(jsonVal)
-			log.Printf("RawState: %s", viewAbleJson)
 			richTextBlock := payload.View.State.Values
 			richTextJson, _ := json.Marshal(richTextBlock)
 			log.Printf("RichTextBlock: %s", richTextJson)
