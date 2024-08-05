@@ -175,11 +175,8 @@ func postOpenMessageToChannel(api *slack.Client, channelID string, message FormM
 		return err
 	}
 	applyButton := slack.NewButtonBlockElement("apply_button", "apply", slack.NewTextBlockObject("plain_text", ":white_check_mark: 팀 지원하기!", false, false))
-	applyButton.Style = "primary"
 	deleteButton := slack.NewButtonBlockElement("delete_button", "delete", slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", false, false))
-	deleteButton.Style = "danger"
 	closeButton := slack.NewButtonBlockElement("close_button", "close", slack.NewTextBlockObject("plain_text", ":lock: 모집 닫기", false, false))
-	closeButton.Style = "default"
 	actionBlock := slack.NewActionBlock("apply_action", applyButton, deleteButton, closeButton)
 	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", messageText, false, false), nil, nil)
 	messageBlocks := slack.MsgOptionBlocks(section, actionBlock)
@@ -209,11 +206,9 @@ func updateOpenMessageToChannel(api *slack.Client, channelID string, message For
 		return err
 	}
 	applyButton := slack.NewButtonBlockElement("fake_apply_button", "apply", slack.NewTextBlockObject("plain_text", ":white_check_mark: 팀 모집 마감!", false, false))
-	applyButton.Style = "primary"
 	deleteButton := slack.NewButtonBlockElement("delete_button", "delete", slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", false, false))
-	deleteButton.Style = "danger"
 	closeButton := slack.NewButtonBlockElement("open_button", "close", slack.NewTextBlockObject("plain_text", ":unlock: 모집 다시 열기", false, false))
-	closeButton.Style = "default"
+
 	actionBlock := slack.NewActionBlock("apply_action", applyButton, deleteButton, closeButton)
 	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", messageText, false, false), nil, nil)
 	messageBlocks := slack.MsgOptionBlocks(section, actionBlock)
@@ -239,11 +234,11 @@ func reOpenRecruitment(api *slack.Client, channelID string, message FormMessage,
 		return err
 	}
 	applyButton := slack.NewButtonBlockElement("apply_button", "apply", slack.NewTextBlockObject("plain_text", ":white_check_mark: 팀 지원하기!", false, false))
-	applyButton.Style = "primary"
+
 	deleteButton := slack.NewButtonBlockElement("delete_button", "delete", slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", false, false))
-	deleteButton.Style = "danger"
+
 	closeButton := slack.NewButtonBlockElement("close_button", "close", slack.NewTextBlockObject("plain_text", ":lock: 모집 닫기", false, false))
-	closeButton.Style = "default"
+
 	actionBlock := slack.NewActionBlock("apply_action", applyButton, deleteButton, closeButton)
 	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", messageText, false, false), nil, nil)
 	messageBlocks := slack.MsgOptionBlocks(section, actionBlock)
