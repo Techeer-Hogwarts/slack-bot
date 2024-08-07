@@ -103,6 +103,8 @@ func openApplyModal(api *slack.Client, payload slack.InteractionCallback) error 
 		}
 	}
 
+	// var roleOptions []*slack.OptionBlockObject
+
 	// Create the modal view request
 	descInput := slack.NewPlainTextInputBlockElement(
 		slack.NewTextBlockObject("plain_text", "지원 동기/자기소개", false, false),
@@ -117,6 +119,40 @@ func openApplyModal(api *slack.Client, payload slack.InteractionCallback) error 
 		options...,
 	)
 	teamSelectElement.InitialOption = defaultTeam
+
+	extraMessage, err := db.GetExtraMessage(originalMessageTimestmap)
+	if err != nil {
+		return fmt.Errorf("failed to get team: %w", err)
+	}
+	var roleOptions []*slack.OptionBlockObject
+	if extraMessage.BackendWant > 0 {
+		roleOptions = append(roleOptions, slack.NewOptionBlockObject("backend", slack.NewTextBlockObject("plain_text", "백엔드", false, false), nil))
+	}
+	if extraMessage.FrontendWant > 0 {
+		roleOptions = append(roleOptions, slack.NewOptionBlockObject("frontend", slack.NewTextBlockObject("plain_text", "프런트", false, false), nil))
+	}
+	if extraMessage.UXWant > 0 {
+		roleOptions = append(roleOptions, slack.NewOptionBlockObject("uxui", slack.NewTextBlockObject("plain_text", "UX/UI 디자이너", false, false), nil))
+	}
+	if extraMessage.DevopsWant > 0 {
+		roleOptions = append(roleOptions, slack.NewOptionBlockObject("devops", slack.NewTextBlockObject("plain_text", "데브옵스/SRE", false, false), nil))
+	}
+	if extraMessage.DataWant > 0 {
+		roleOptions = append(roleOptions, slack.NewOptionBlockObject("data", slack.NewTextBlockObject("plain_text", "데이터 엔지니어", false, false), nil))
+	}
+	if extraMessage.StudyWant > 0 {
+		roleOptions = append(roleOptions, slack.NewOptionBlockObject("study", slack.NewTextBlockObject("plain_text", "스터디", false, false), nil))
+	}
+	if extraMessage.EtcWant > 0 {
+		roleOptions = append(roleOptions, slack.NewOptionBlockObject("etc", slack.NewTextBlockObject("plain_text", "기타", false, false), nil))
+	}
+
+	roleSelectElement := slack.NewOptionsSelectBlockElement(
+		slack.OptTypeStatic,
+		slack.NewTextBlockObject("plain_text", "희망 직군을 골라주세요", false, false),
+		"selected_role",
+		roleOptions...,
+	)
 
 	modalRequest := slack.ModalViewRequest{
 		Type:       slack.VTModal,
@@ -152,9 +188,9 @@ func openApplyModal(api *slack.Client, payload slack.InteractionCallback) error 
 				),
 				slack.NewInputBlock(
 					"role_input",
-					slack.NewTextBlockObject("plain_text", "희망하는 직군", false, false),
+					slack.NewTextBlockObject("plain_text", "지원하는 직군", false, false),
 					slack.NewTextBlockObject("plain_text", "role", false, false),
-					slack.NewPlainTextInputBlockElement(slack.NewTextBlockObject("plain_text", "ex. 프런트", false, false), "role_action"),
+					roleSelectElement,
 				),
 			},
 		},
