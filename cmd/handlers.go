@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -101,12 +100,6 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 				return
 			} else if action.ActionID == "close_button" {
 				log.Println("Close button clicked")
-				log.Println(api)
-				// currently causes nil pointer error
-				jsonValforDebug, _ := json.MarshalIndent(payload, "", "  ")
-				log.Println(string(jsonValforDebug))
-
-				// jsonVal := handleBlockActions(payload)
 				err := closeOpenMessageToChannel(api, channelID, payload.Message.Timestamp, payload)
 				if err != nil {
 					log.Printf("Failed to close recruitment: %v", err)
@@ -114,7 +107,6 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 				return
 			} else if action.ActionID == "open_button" {
 				log.Println("Open button clicked")
-				// jsonVal := handleBlockActions(payload)
 				err := reOpenRecruitment(api, channelID, payload.Message.Timestamp, payload)
 				if err != nil {
 					log.Printf("Failed to reopen recruitment: %v", err)
