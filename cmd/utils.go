@@ -88,7 +88,7 @@ func VerifySlackRequest(req *http.Request) error {
 // }
 
 func constructMessageText(message FormMessage) (string, error) {
-	if len(message.Members) == 0 || message.Description == "" || message.TeamName == "" || message.TechStacks == nil {
+	if message.Description == "" || message.TeamName == "" || message.TechStacks == nil {
 		return "", errors.New("missing required fields except team leader")
 	}
 	return "[" + emoji_people + message.TeamIntro + emoji_people + "]\n" +

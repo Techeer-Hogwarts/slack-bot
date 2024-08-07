@@ -54,7 +54,7 @@ func sendDMToLeader(api *slack.Client, msg ApplyMessage) error {
 	)
 	actionBlock := slack.NewActionBlock("", enrollButton)
 
-	messageText := fmt.Sprintf(":heavy_exclamation_mark: %s 팀의 새로운 지원자가 있습니다!\n\n*지원자:* <@%s>\n\n*나이:* %s\n\n*학년:* %s\n\n*자기소개:* %s\n\n*희망 직군:* %s\n\n", msg.TeamName, msg.Applicant, msg.Age, msg.Grade, msg.Pr, msg.Role)
+	messageText := fmt.Sprintf(":heavy_exclamation_mark: %s 팀의 새로운 지원자가 있습니다!\n\n*지원자:* <@%s>\n\n*나이:* %s\n\n*대학/직장:* %s\n\n*학년:* %s\n\n*자기소개:* %s\n\n*희망 직군:* %s\n\n", msg.TeamName, msg.Applicant, msg.Age, msg.School, msg.Grade, msg.Pr, msg.Role)
 	sectionBlock := slack.NewSectionBlock(
 		slack.NewTextBlockObject("mrkdwn", messageText, false, false),
 		nil, nil,
@@ -173,6 +173,12 @@ func openApplyModal(api *slack.Client, payload slack.InteractionCallback) error 
 					slack.NewTextBlockObject("plain_text", "나이를 입력 해주세요", false, false),
 					slack.NewTextBlockObject("plain_text", "나이 입력", false, false),
 					slack.NewPlainTextInputBlockElement(slack.NewTextBlockObject("plain_text", "나이", false, false), "age_action"),
+				),
+				slack.NewInputBlock(
+					"school_input",
+					slack.NewTextBlockObject("plain_text", "학교 이름을 입력 해주세요 (직장인은 회사 이름을 적어주세요)", false, false),
+					slack.NewTextBlockObject("plain_text", "학교 입력", false, false),
+					slack.NewPlainTextInputBlockElement(slack.NewTextBlockObject("plain_text", "학교", false, false), "school_action"),
 				),
 				slack.NewInputBlock(
 					"grade_input",

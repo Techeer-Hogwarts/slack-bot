@@ -37,6 +37,7 @@ type ApplyMessage struct {
 	Leader    string `json:"leader"`
 	Applicant string `json:"applicant"`
 	Age       string `json:"age"`
+	School    string `json:"school"`
 	Grade     string `json:"grade"`
 	Pr        string `json:"pr"`
 	Role      string `json:"role"`
@@ -156,6 +157,7 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 				Applicant: applicant,
 				Age:       payload.View.State.Values["age_input"]["age_action"].Value,
 				Grade:     payload.View.State.Values["grade_input"]["grade_action"].Value,
+				School:    payload.View.State.Values["school_input"]["school_action"].Value,
 				Pr:        payload.View.State.Values["desc_input"]["desc_action"].Value,
 				Role:      payload.View.State.Values["role_input"]["selected_role"].SelectedOption.Value,
 			}
@@ -247,6 +249,7 @@ func closeOpenMessageToChannel(api *slack.Client, channelID string, timestamp st
 	}
 	messageText, err := constructMessageText(message)
 	if err != nil {
+		log.Println("Failed to construct message text")
 		return err
 	}
 	applyButton := slack.NewButtonBlockElement("apply_button", "apply", slack.NewTextBlockObject("plain_text", ":white_check_mark: 팀 지원하기!", false, false))
