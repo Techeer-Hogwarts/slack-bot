@@ -19,6 +19,18 @@ type Team struct {
 	TeamTs         string
 }
 
+type ExtraMessage struct {
+	TeamID       int    `json:"team_id"`
+	MessageTS    string `json:"message_ts"`
+	UXWant       int    `json:"ux_want"`
+	FrontendWant int    `json:"frontend_want"`
+	BackendWant  int    `json:"backend_want"`
+	DataWant     int    `json:"data_want"`
+	DevopsWant   int    `json:"devops_want"`
+	StudyWant    int    `json:"study_want"`
+	EtcWant      int    `json:"etc_want"`
+}
+
 type Stack struct {
 	Key  string `json:"key"`
 	Name string `json:"name"`
@@ -76,6 +88,16 @@ func AddTeam(teamobj Team) (int, error) {
 	return teamID, nil
 }
 
+func AddExtraMessage(message ExtraMessage) error {
+	_, err := DBMain.Exec("INSERT INTO messages (team_id, message_ts, ux_want, frontend_want, backend_want, data_want, devops_want, study_want, etc_want) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+		message.TeamID, message.MessageTS, message.UXWant, message.FrontendWant, message.BackendWant, message.DataWant, message.DevopsWant, message.StudyWant, message.EtcWant)
+	if err != nil {
+		return fmt.Errorf("failed to insert new extra message: %s", err.Error())
+	}
+	log.Println("Extra message added to the database")
+	return nil
+}
+
 func DeleteTeam(ts string) error {
 	// Delete a team from the database
 	_, err := DBMain.Exec("UPDATE teams SET is_active = FALSE WHERE message_ts = $1", ts)
@@ -87,7 +109,7 @@ func DeleteTeam(ts string) error {
 }
 
 func DeactivateRecruitTeam(ts string) error {
-	// Delete a team from the database
+	// Deactivat a team from the database
 	_, err := DBMain.Exec("UPDATE teams SET recruit_active = FALSE WHERE message_ts = $1", ts)
 	if err != nil {
 		return fmt.Errorf("failed to mark team as recruit deactive: %s", err.Error())
@@ -97,7 +119,7 @@ func DeactivateRecruitTeam(ts string) error {
 }
 
 func ActivateRecruitTeam(ts string) error {
-	// Delete a team from the database
+	// Activate a team from the database
 	_, err := DBMain.Exec("UPDATE teams SET recruit_active = TRUE WHERE message_ts = $1", ts)
 	if err != nil {
 		return fmt.Errorf("failed to mark team as recruit active: %s", err.Error())
@@ -172,6 +194,30 @@ func GetTeamByID(teamID int) (Team, error) {
 	return teamObj, nil
 }
 
+func GetExtraMessage(ts string) (ExtraMessage, error) {
+	// Get a team message from the database
+	messageObj := ExtraMessage{}
+	err := DBMain.QueryRow(
+		"SELECT team_id, message_ts, ux_want, frontend_want, backend_want, data_want, devops_want, study_want, etc_want FROM messages WHERE message_ts = $1",
+		ts,
+	).Scan(
+		&messageObj.TeamID,
+		&messageObj.MessageTS,
+		&messageObj.UXWant,
+		&messageObj.FrontendWant,
+		&messageObj.BackendWant,
+		&messageObj.DataWant,
+		&messageObj.DevopsWant,
+		&messageObj.StudyWant,
+		&messageObj.EtcWant,
+	)
+	if err == sql.ErrNoRows {
+		return ExtraMessage{}, fmt.Errorf("message not found")
+	}
+	log.Printf("Extra message found in the database")
+	return messageObj, nil
+}
+
 func UpdateTeamMembers(teamID int, numMembers int) error {
 	_, err := DBMain.Exec("UPDATE teams SET num_members = $1 WHERE team_id = $2", numMembers, teamID)
 	if err != nil {
@@ -190,9 +236,10 @@ func AddUserToTeam(teamID int, userID int) error {
 	return nil
 }
 
-func GetUsersInTeam() {
-	// Get all users in a team
-}
+// func GetUsersInTeam(teamId int) ([]int, error) {
+// 	// Get all users in a team
+
+// }
 
 func GetUserInTeam(userID int, teamID int) (bool, error) {
 	// Get a user in a team
@@ -312,4 +359,25 @@ func AddTagsToTeam(teamID int, tag int) error {
 		return fmt.Errorf("failed to insert new tag to team: %s", err.Error())
 	}
 	return nil
+}
+
+func GetTagsFromTeam(teamID int) ([]string, error) {
+	// Get all tags from the database
+	rows, err := DBMain.Query("SELECT t.tag_name FROM tags t JOIN team_tags tt ON t.tag_id = tt.tag_id WHERE tt.team_id = $1", teamID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get all tags: %s", err.Error())
+	}
+	defer rows.Close()
+	var tags []string
+	for rows.Next() {
+		var tagObj string
+		err := rows.Scan(
+			&tagObj,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan tag: %s", err.Error())
+		}
+		tags = append(tags, tagObj)
+	}
+	return tags, nil
 }

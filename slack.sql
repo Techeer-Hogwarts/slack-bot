@@ -23,6 +23,21 @@ CREATE TABLE IF NOT EXISTS teams (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Table for storing initial team message
+CREATE TABLE IF NOT EXISTS messages (
+    message_id SERIAL PRIMARY KEY,
+    team_id INT REFERENCES teams(team_id) ON DELETE CASCADE,
+    message_ts VARCHAR(100) NOT NULL
+    ux_want INT DEFAULT 0,
+    frontend_want INT DEFAULT 0,
+    backend_want INT DEFAULT 0,
+    data_want INT DEFAULT 0,
+    devops_want INT DEFAULT 0,
+    study_want INT DEFAULT 0,
+    etc_want INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Table for storing tags
 CREATE TABLE IF NOT EXISTS tags (
     tag_id SERIAL PRIMARY KEY,

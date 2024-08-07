@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -91,21 +92,31 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					log.Printf("Failed to enroll user: %v", err)
 				}
+				actionVals := payload.View.State.Values["role_input"]
+				log.Println(actionVals)
+
+				// err = updateOpenMessageToChannel(api, channelID, payload.View.Blocks)
+				// if err != nil {
+				// 	log.Printf("Failed to update message: %v", err)
+				// }
 				return
 			} else if action.ActionID == "close_button" {
 				log.Println("Close button clicked")
 				log.Println(api)
 				// currently causes nil pointer error
-				jsonVal := handleBlockActions(payload)
-				err := updateOpenMessageToChannel(api, channelID, jsonVal, payload.Message.Timestamp)
+				jsonValforDebug, _ := json.MarshalIndent(payload, "", "  ")
+				log.Println(string(jsonValforDebug))
+
+				// jsonVal := handleBlockActions(payload)
+				err := closeOpenMessageToChannel(api, channelID, payload.Message.Timestamp)
 				if err != nil {
 					log.Printf("Failed to close recruitment: %v", err)
 				}
 				return
 			} else if action.ActionID == "open_button" {
 				log.Println("Open button clicked")
-				jsonVal := handleBlockActions(payload)
-				err := reOpenRecruitment(api, channelID, jsonVal, payload.Message.Timestamp)
+				// jsonVal := handleBlockActions(payload)
+				err := reOpenRecruitment(api, channelID, payload.Message.Timestamp)
 				if err != nil {
 					log.Printf("Failed to reopen recruitment: %v", err)
 				}
@@ -189,7 +200,7 @@ func postOpenMessageToChannel(api *slack.Client, channelID string, message FormM
 	return err
 }
 
-func updateOpenMessageToChannel(api *slack.Client, channelID string, message FormMessage, timestamp string) error {
+func closeOpenMessageToChannel(api *slack.Client, channelID string, timestamp string) error {
 	if timestamp == "" {
 		return errors.New("timestamp cannot be empty")
 	}
@@ -200,6 +211,41 @@ func updateOpenMessageToChannel(api *slack.Client, channelID string, message For
 	if err != nil {
 		log.Printf("Failed to deactivate team: %v", err)
 		return err
+	}
+	teamObj, err := db.GetTeam(timestamp)
+	if err != nil {
+		log.Printf("Failed to get team: %v", err)
+		return err
+	}
+	additionalMesssage, err := db.GetExtraMessage(timestamp)
+	if err != nil {
+		log.Printf("Failed to get extra message: %v", err)
+		return err
+	}
+	teamIDint, _ := strconv.Atoi(teamObj.TeamID)
+	techStacks, err := db.GetTagsFromTeam(teamIDint)
+	if err != nil {
+		log.Printf("Failed to get tags from team: %v", err)
+		return err
+	}
+
+	message := FormMessage{
+		TeamType:          teamObj.TeamType,
+		TeamLeader:        teamObj.TeamLeader,
+		TeamIntro:         teamObj.TeamIntro,
+		TeamName:          teamObj.TeamName,
+		TechStacks:        techStacks,
+		Members:           nil,
+		NumCurrentMembers: teamObj.NumMembers,
+		UxMembers:         strconv.Itoa(additionalMesssage.UXWant),
+		FrontMembers:      strconv.Itoa(additionalMesssage.FrontendWant),
+		BackMembers:       strconv.Itoa(additionalMesssage.BackendWant),
+		DataMembers:       strconv.Itoa(additionalMesssage.DataWant),
+		OpsMembers:        strconv.Itoa(additionalMesssage.DevopsWant),
+		StudyMembers:      strconv.Itoa(additionalMesssage.StudyWant),
+		EtcMembers:        strconv.Itoa(additionalMesssage.EtcWant),
+		Description:       teamObj.TeamDesc,
+		Etc:               teamObj.TeamEtc,
 	}
 	messageText, err := constructMessageText(message)
 	if err != nil {
@@ -219,15 +265,122 @@ func updateOpenMessageToChannel(api *slack.Client, channelID string, message For
 		return err
 	}
 	log.Printf("Message successfully sent to channel %s at %s", channelID, timestamp)
-	err = addTeamToDB(message, timestamp)
 	return err
 }
 
-func reOpenRecruitment(api *slack.Client, channelID string, message FormMessage, timestamp string) error {
+func updateOpenMessageToChannel(api *slack.Client, channelID string, timestamp string) error {
+	if timestamp == "" {
+		return errors.New("timestamp cannot be empty")
+	}
+	if api == nil {
+		return errors.New("api is nil")
+	}
+	err := db.DeactivateRecruitTeam(timestamp)
+	if err != nil {
+		log.Printf("Failed to deactivate team: %v", err)
+		return err
+	}
+	teamObj, err := db.GetTeam(timestamp)
+	if err != nil {
+		log.Printf("Failed to get team: %v", err)
+		return err
+	}
+	additionalMesssage, err := db.GetExtraMessage(timestamp)
+	if err != nil {
+		log.Printf("Failed to get extra message: %v", err)
+		return err
+	}
+	teamIDint, _ := strconv.Atoi(teamObj.TeamID)
+	techStacks, err := db.GetTagsFromTeam(teamIDint)
+	if err != nil {
+		log.Printf("Failed to get tags from team: %v", err)
+		return err
+	}
+
+	message := FormMessage{
+		TeamType:          teamObj.TeamType,
+		TeamLeader:        teamObj.TeamLeader,
+		TeamIntro:         teamObj.TeamIntro,
+		TeamName:          teamObj.TeamName,
+		TechStacks:        techStacks,
+		Members:           nil,
+		NumCurrentMembers: teamObj.NumMembers,
+		UxMembers:         strconv.Itoa(additionalMesssage.UXWant),
+		FrontMembers:      strconv.Itoa(additionalMesssage.FrontendWant),
+		BackMembers:       strconv.Itoa(additionalMesssage.BackendWant),
+		DataMembers:       strconv.Itoa(additionalMesssage.DataWant),
+		OpsMembers:        strconv.Itoa(additionalMesssage.DevopsWant),
+		StudyMembers:      strconv.Itoa(additionalMesssage.StudyWant),
+		EtcMembers:        strconv.Itoa(additionalMesssage.EtcWant),
+		Description:       teamObj.TeamDesc,
+		Etc:               teamObj.TeamEtc,
+	}
+	messageText, err := constructMessageText(message)
+	if err != nil {
+		return err
+	}
+	applyButton := slack.NewButtonBlockElement("fake_apply_button", "apply", slack.NewTextBlockObject("plain_text", ":white_check_mark: 팀 모집 마감!", false, false))
+	deleteButton := slack.NewButtonBlockElement("delete_button", "delete", slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", false, false))
+	closeButton := slack.NewButtonBlockElement("open_button", "close", slack.NewTextBlockObject("plain_text", ":unlock: 모집 다시 열기", false, false))
+
+	actionBlock := slack.NewActionBlock("apply_action", applyButton, deleteButton, closeButton)
+	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", messageText, false, false), nil, nil)
+	messageBlocks := slack.MsgOptionBlocks(section, actionBlock)
+
+	_, _, _, err = api.UpdateMessage(channelID, timestamp, messageBlocks)
+	if err != nil {
+		log.Printf("Failed to send message to channel %s: %v", channelID, err)
+		return err
+	}
+	log.Printf("Message successfully sent to channel %s at %s", channelID, timestamp)
+	return err
+}
+
+func reOpenRecruitment(api *slack.Client, channelID string, timestamp string) error {
+	if timestamp == "" {
+		return errors.New("timestamp cannot be empty")
+	}
+	if api == nil {
+		return errors.New("api is nil")
+	}
 	err := db.ActivateRecruitTeam(timestamp)
 	if err != nil {
-		log.Printf("Failed to activate team: %v", err)
+		log.Printf("Failed to deactivate team: %v", err)
 		return err
+	}
+	teamObj, err := db.GetTeam(timestamp)
+	if err != nil {
+		log.Printf("Failed to get team: %v", err)
+		return err
+	}
+	additionalMesssage, err := db.GetExtraMessage(timestamp)
+	if err != nil {
+		log.Printf("Failed to get extra message: %v", err)
+		return err
+	}
+	teamIDint, _ := strconv.Atoi(teamObj.TeamID)
+	techStacks, err := db.GetTagsFromTeam(teamIDint)
+	if err != nil {
+		log.Printf("Failed to get tags from team: %v", err)
+		return err
+	}
+	message := FormMessage{
+		TeamType:          teamObj.TeamType,
+		TeamLeader:        teamObj.TeamLeader,
+		TeamIntro:         teamObj.TeamIntro,
+		TeamName:          teamObj.TeamName,
+		TechStacks:        techStacks,
+		Members:           nil,
+		NumCurrentMembers: teamObj.NumMembers,
+		UxMembers:         strconv.Itoa(additionalMesssage.UXWant),
+		FrontMembers:      strconv.Itoa(additionalMesssage.FrontendWant),
+		BackMembers:       strconv.Itoa(additionalMesssage.BackendWant),
+		DataMembers:       strconv.Itoa(additionalMesssage.DataWant),
+		OpsMembers:        strconv.Itoa(additionalMesssage.DevopsWant),
+		StudyMembers:      strconv.Itoa(additionalMesssage.StudyWant),
+		EtcMembers:        strconv.Itoa(additionalMesssage.EtcWant),
+		Description:       teamObj.TeamDesc,
+		Etc:               teamObj.TeamEtc,
 	}
 	messageText, err := constructMessageText(message)
 	if err != nil {

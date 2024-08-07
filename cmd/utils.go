@@ -381,6 +381,49 @@ func addTeamToDB(message FormMessage, ts string) error {
 			return err
 		}
 	}
+	uxWant, err := strconv.Atoi(message.UxMembers)
+	if err != nil {
+		uxWant = 0
+	}
+	frontWant, err := strconv.Atoi(message.FrontMembers)
+	if err != nil {
+		frontWant = 0
+	}
+	backWant, err := strconv.Atoi(message.BackMembers)
+	if err != nil {
+		backWant = 0
+	}
+	dataWant, err := strconv.Atoi(message.DataMembers)
+	if err != nil {
+		dataWant = 0
+	}
+	devopsWant, err := strconv.Atoi(message.OpsMembers)
+	if err != nil {
+		devopsWant = 0
+	}
+	studyWant, err := strconv.Atoi(message.StudyMembers)
+	if err != nil {
+		studyWant = 0
+	}
+	etcWant, err := strconv.Atoi(message.EtcMembers)
+	if err != nil {
+		etcWant = 0
+	}
+	messageObj := db.ExtraMessage{
+		TeamID:       teamID,
+		MessageTS:    ts,
+		UXWant:       uxWant,
+		FrontendWant: frontWant,
+		BackendWant:  backWant,
+		DataWant:     dataWant,
+		DevopsWant:   devopsWant,
+		StudyWant:    studyWant,
+		EtcWant:      etcWant,
+	}
+	err = db.AddExtraMessage(messageObj)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
