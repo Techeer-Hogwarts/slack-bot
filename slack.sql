@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS teams (
 CREATE TABLE IF NOT EXISTS messages (
     message_id SERIAL PRIMARY KEY,
     team_id INT REFERENCES teams(team_id) ON DELETE CASCADE,
-    message_ts VARCHAR(100) NOT NULL
+    message_ts VARCHAR(100) NOT NULL,
     ux_want INT DEFAULT 0,
     frontend_want INT DEFAULT 0,
     backend_want INT DEFAULT 0,
