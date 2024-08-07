@@ -94,7 +94,7 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 					log.Printf("Failed to enroll user: %v", err)
 				}
 
-				err = updateOpenMessageToChannel(api, channelID, teamTimestamp)
+				err = updateOpenMessageToChannel(api, channelID, teamTimestamp, payload)
 				if err != nil {
 					log.Printf("Failed to update message: %v", err)
 				}
@@ -107,7 +107,7 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 				log.Println(string(jsonValforDebug))
 
 				// jsonVal := handleBlockActions(payload)
-				err := closeOpenMessageToChannel(api, channelID, payload.Message.Timestamp)
+				err := closeOpenMessageToChannel(api, channelID, payload.Message.Timestamp, payload)
 				if err != nil {
 					log.Printf("Failed to close recruitment: %v", err)
 				}
@@ -115,7 +115,7 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 			} else if action.ActionID == "open_button" {
 				log.Println("Open button clicked")
 				// jsonVal := handleBlockActions(payload)
-				err := reOpenRecruitment(api, channelID, payload.Message.Timestamp)
+				err := reOpenRecruitment(api, channelID, payload.Message.Timestamp, payload)
 				if err != nil {
 					log.Printf("Failed to reopen recruitment: %v", err)
 				}
@@ -201,77 +201,86 @@ func postOpenMessageToChannel(api *slack.Client, channelID string, message FormM
 	return err
 }
 
-func closeOpenMessageToChannel(api *slack.Client, channelID string, timestamp string) error {
+func closeOpenMessageToChannel(api *slack.Client, channelID string, timestamp string, payload slack.InteractionCallback) error {
+	actionUserID := payload.User.ID
 	if timestamp == "" {
 		return errors.New("timestamp cannot be empty")
 	}
 	if api == nil {
 		return errors.New("api is nil")
 	}
-	err := db.DeactivateRecruitTeam(timestamp)
-	if err != nil {
-		log.Printf("Failed to deactivate team: %v", err)
-		return err
-	}
 	teamObj, err := db.GetTeam(timestamp)
 	if err != nil {
 		log.Printf("Failed to get team: %v", err)
 		return err
 	}
-	additionalMesssage, err := db.GetExtraMessage(timestamp)
-	if err != nil {
-		log.Printf("Failed to get extra message: %v", err)
-		return err
-	}
-	teamIDint, _ := strconv.Atoi(teamObj.TeamID)
-	techStacks, err := db.GetTagsFromTeam(teamIDint)
-	if err != nil {
-		log.Printf("Failed to get tags from team: %v", err)
-		return err
-	}
+	if teamObj.TeamLeader == actionUserID || actionUserID == "U02AES3BH17" || actionUserID == "U033UTX061X" {
+		err := db.DeactivateRecruitTeam(timestamp)
+		if err != nil {
+			log.Printf("Failed to deactivate team: %v", err)
+			return err
+		}
+		additionalMesssage, err := db.GetExtraMessage(timestamp)
+		if err != nil {
+			log.Printf("Failed to get extra message: %v", err)
+			return err
+		}
+		teamIDint, _ := strconv.Atoi(teamObj.TeamID)
+		techStacks, err := db.GetTagsFromTeam(teamIDint)
+		if err != nil {
+			log.Printf("Failed to get tags from team: %v", err)
+			return err
+		}
 
-	message := FormMessage{
-		TeamType:          teamObj.TeamType,
-		TeamLeader:        teamObj.TeamLeader,
-		TeamIntro:         teamObj.TeamIntro,
-		TeamName:          teamObj.TeamName,
-		TechStacks:        techStacks,
-		Members:           nil,
-		NumCurrentMembers: teamObj.NumMembers,
-		UxMembers:         strconv.Itoa(additionalMesssage.UXWant),
-		FrontMembers:      strconv.Itoa(additionalMesssage.FrontendWant),
-		BackMembers:       strconv.Itoa(additionalMesssage.BackendWant),
-		DataMembers:       strconv.Itoa(additionalMesssage.DataWant),
-		OpsMembers:        strconv.Itoa(additionalMesssage.DevopsWant),
-		StudyMembers:      strconv.Itoa(additionalMesssage.StudyWant),
-		EtcMembers:        strconv.Itoa(additionalMesssage.EtcWant),
-		Description:       teamObj.TeamDesc,
-		Etc:               teamObj.TeamEtc,
-	}
-	messageText, err := constructMessageText(message)
-	if err != nil {
-		log.Println("Failed to construct message text")
-		return err
-	}
+		message := FormMessage{
+			TeamType:          teamObj.TeamType,
+			TeamLeader:        teamObj.TeamLeader,
+			TeamIntro:         teamObj.TeamIntro,
+			TeamName:          teamObj.TeamName,
+			TechStacks:        techStacks,
+			Members:           nil,
+			NumCurrentMembers: teamObj.NumMembers,
+			UxMembers:         strconv.Itoa(additionalMesssage.UXWant),
+			FrontMembers:      strconv.Itoa(additionalMesssage.FrontendWant),
+			BackMembers:       strconv.Itoa(additionalMesssage.BackendWant),
+			DataMembers:       strconv.Itoa(additionalMesssage.DataWant),
+			OpsMembers:        strconv.Itoa(additionalMesssage.DevopsWant),
+			StudyMembers:      strconv.Itoa(additionalMesssage.StudyWant),
+			EtcMembers:        strconv.Itoa(additionalMesssage.EtcWant),
+			Description:       teamObj.TeamDesc,
+			Etc:               teamObj.TeamEtc,
+		}
+		messageText, err := constructMessageText(message)
+		if err != nil {
+			log.Println("Failed to construct message text")
+			return err
+		}
 
-	applyButton := slack.NewButtonBlockElement("fake_apply_button", "apply", slack.NewTextBlockObject("plain_text", ":white_check_mark: 팀 모집 마감!", false, false))
-	deleteButton := slack.NewButtonBlockElement("delete_button", "delete", slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", false, false))
-	closeButton := slack.NewButtonBlockElement("open_button", "close", slack.NewTextBlockObject("plain_text", ":unlock: 모집 다시 열기", false, false))
+		applyButton := slack.NewButtonBlockElement("fake_apply_button", "apply", slack.NewTextBlockObject("plain_text", ":x: 팀 모집 마감!", false, false))
+		deleteButton := slack.NewButtonBlockElement("delete_button", "delete", slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", false, false))
+		closeButton := slack.NewButtonBlockElement("open_button", "close", slack.NewTextBlockObject("plain_text", ":unlock: 모집 다시 열기", false, false))
 
-	actionBlock := slack.NewActionBlock("apply_action", applyButton, deleteButton, closeButton)
-	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", messageText, false, false), nil, nil)
-	messageBlocks := slack.MsgOptionBlocks(section, actionBlock)
+		actionBlock := slack.NewActionBlock("apply_action", applyButton, deleteButton, closeButton)
+		section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", messageText, false, false), nil, nil)
+		messageBlocks := slack.MsgOptionBlocks(section, actionBlock)
 
-	_, _, _, err = api.UpdateMessage(channelID, timestamp, messageBlocks)
-	if err != nil {
-		log.Printf("Failed to send message to channel %s: %v", channelID, err)
-		return err
+		_, _, _, err = api.UpdateMessage(channelID, timestamp, messageBlocks)
+		if err != nil {
+			log.Printf("Failed to send message to channel %s: %v", channelID, err)
+			return err
+		}
+		log.Printf("Message successfully sent to channel %s at %s", channelID, timestamp)
+	} else {
+		err = sendFailMessage(api, channelID, actionUserID, "팀 리더만 모집을 닫을 수 있습니다.")
+		if err != nil {
+			log.Printf("Failed to send error message: %v", err)
+			return err
+		}
 	}
-	log.Printf("Message successfully sent to channel %s at %s", channelID, timestamp)
 	return err
 }
 
-func updateOpenMessageToChannel(api *slack.Client, channelID string, timestamp string) error {
+func updateOpenMessageToChannel(api *slack.Client, channelID string, timestamp string, payload slack.InteractionCallback) error {
 	if timestamp == "" {
 		return errors.New("timestamp cannot be empty")
 	}
@@ -339,71 +348,79 @@ func updateOpenMessageToChannel(api *slack.Client, channelID string, timestamp s
 	return err
 }
 
-func reOpenRecruitment(api *slack.Client, channelID string, timestamp string) error {
+func reOpenRecruitment(api *slack.Client, channelID string, timestamp string, payload slack.InteractionCallback) error {
+	actionUserID := payload.User.ID
 	if timestamp == "" {
 		return errors.New("timestamp cannot be empty")
 	}
 	if api == nil {
 		return errors.New("api is nil")
 	}
-	err := db.ActivateRecruitTeam(timestamp)
-	if err != nil {
-		log.Printf("Failed to deactivate team: %v", err)
-		return err
-	}
 	teamObj, err := db.GetTeam(timestamp)
 	if err != nil {
 		log.Printf("Failed to get team: %v", err)
 		return err
 	}
-	additionalMesssage, err := db.GetExtraMessage(timestamp)
-	if err != nil {
-		log.Printf("Failed to get extra message: %v", err)
-		return err
-	}
-	teamIDint, _ := strconv.Atoi(teamObj.TeamID)
-	techStacks, err := db.GetTagsFromTeam(teamIDint)
-	if err != nil {
-		log.Printf("Failed to get tags from team: %v", err)
-		return err
-	}
-	message := FormMessage{
-		TeamType:          teamObj.TeamType,
-		TeamLeader:        teamObj.TeamLeader,
-		TeamIntro:         teamObj.TeamIntro,
-		TeamName:          teamObj.TeamName,
-		TechStacks:        techStacks,
-		Members:           nil,
-		NumCurrentMembers: teamObj.NumMembers,
-		UxMembers:         strconv.Itoa(additionalMesssage.UXWant),
-		FrontMembers:      strconv.Itoa(additionalMesssage.FrontendWant),
-		BackMembers:       strconv.Itoa(additionalMesssage.BackendWant),
-		DataMembers:       strconv.Itoa(additionalMesssage.DataWant),
-		OpsMembers:        strconv.Itoa(additionalMesssage.DevopsWant),
-		StudyMembers:      strconv.Itoa(additionalMesssage.StudyWant),
-		EtcMembers:        strconv.Itoa(additionalMesssage.EtcWant),
-		Description:       teamObj.TeamDesc,
-		Etc:               teamObj.TeamEtc,
-	}
-	messageText, err := constructMessageText(message)
-	if err != nil {
-		return err
-	}
-	applyButton := slack.NewButtonBlockElement("apply_button", "apply", slack.NewTextBlockObject("plain_text", ":white_check_mark: 팀 지원하기!", false, false))
-	deleteButton := slack.NewButtonBlockElement("delete_button", "delete", slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", false, false))
-	closeButton := slack.NewButtonBlockElement("close_button", "close", slack.NewTextBlockObject("plain_text", ":lock: 모집 닫기", false, false))
+	if teamObj.TeamLeader == actionUserID || actionUserID == "U02AES3BH17" || actionUserID == "U033UTX061X" {
+		err := db.ActivateRecruitTeam(timestamp)
+		if err != nil {
+			log.Printf("Failed to activate team: %v", err)
+			return err
+		}
+		additionalMesssage, err := db.GetExtraMessage(timestamp)
+		if err != nil {
+			log.Printf("Failed to get extra message: %v", err)
+			return err
+		}
+		teamIDint, _ := strconv.Atoi(teamObj.TeamID)
+		techStacks, err := db.GetTagsFromTeam(teamIDint)
+		if err != nil {
+			log.Printf("Failed to get tags from team: %v", err)
+			return err
+		}
+		message := FormMessage{
+			TeamType:          teamObj.TeamType,
+			TeamLeader:        teamObj.TeamLeader,
+			TeamIntro:         teamObj.TeamIntro,
+			TeamName:          teamObj.TeamName,
+			TechStacks:        techStacks,
+			Members:           nil,
+			NumCurrentMembers: teamObj.NumMembers,
+			UxMembers:         strconv.Itoa(additionalMesssage.UXWant),
+			FrontMembers:      strconv.Itoa(additionalMesssage.FrontendWant),
+			BackMembers:       strconv.Itoa(additionalMesssage.BackendWant),
+			DataMembers:       strconv.Itoa(additionalMesssage.DataWant),
+			OpsMembers:        strconv.Itoa(additionalMesssage.DevopsWant),
+			StudyMembers:      strconv.Itoa(additionalMesssage.StudyWant),
+			EtcMembers:        strconv.Itoa(additionalMesssage.EtcWant),
+			Description:       teamObj.TeamDesc,
+			Etc:               teamObj.TeamEtc,
+		}
+		messageText, err := constructMessageText(message)
+		if err != nil {
+			return err
+		}
+		applyButton := slack.NewButtonBlockElement("apply_button", "apply", slack.NewTextBlockObject("plain_text", ":white_check_mark: 팀 지원하기!", false, false))
+		deleteButton := slack.NewButtonBlockElement("delete_button", "delete", slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", false, false))
+		closeButton := slack.NewButtonBlockElement("close_button", "close", slack.NewTextBlockObject("plain_text", ":lock: 모집 닫기", false, false))
 
-	actionBlock := slack.NewActionBlock("apply_action", applyButton, deleteButton, closeButton)
-	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", messageText, false, false), nil, nil)
-	messageBlocks := slack.MsgOptionBlocks(section, actionBlock)
+		actionBlock := slack.NewActionBlock("apply_action", applyButton, deleteButton, closeButton)
+		section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", messageText, false, false), nil, nil)
+		messageBlocks := slack.MsgOptionBlocks(section, actionBlock)
 
-	_, _, _, err = api.UpdateMessage(channelID, timestamp, messageBlocks)
-	if err != nil {
-		log.Printf("Failed to send message to channel %s: %v", channelID, err)
-		return err
+		_, _, _, err = api.UpdateMessage(channelID, timestamp, messageBlocks)
+		if err != nil {
+			log.Printf("Failed to send message to channel %s: %v", channelID, err)
+			return err
+		}
+		log.Printf("Message successfully sent to channel %s at %s", channelID, timestamp)
+	} else {
+		err = sendFailMessage(api, channelID, actionUserID, "팀 리더만 모집을 다시 열 수 있습니다.")
+		if err != nil {
+			log.Printf("Failed to send error message: %v", err)
+			return err
+		}
 	}
-	log.Printf("Message successfully sent to channel %s at %s", channelID, timestamp)
-	err = addTeamToDB(message, timestamp)
 	return err
 }
 
