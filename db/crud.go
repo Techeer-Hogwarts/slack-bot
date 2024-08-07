@@ -218,6 +218,46 @@ func GetExtraMessage(ts string) (ExtraMessage, error) {
 	return messageObj, nil
 }
 
+func UpdateExtraMessage(role string, ts string) error {
+	if role == "backend" {
+		_, err := DBMain.Exec("UPDATE messages SET backend_want = backend_want - 1 WHERE message_ts = $1", ts)
+		if err != nil {
+			return fmt.Errorf("failed to update extra message: %s", err.Error())
+		}
+	} else if role == "frontend" {
+		_, err := DBMain.Exec("UPDATE messages SET frontend_want = frontend_want - 1 WHERE message_ts = $1", ts)
+		if err != nil {
+			return fmt.Errorf("failed to update extra message: %s", err.Error())
+		}
+	} else if role == "uxui" {
+		_, err := DBMain.Exec("UPDATE messages SET ux_want = ux_want - 1 WHERE message_ts = $1", ts)
+		if err != nil {
+			return fmt.Errorf("failed to update extra message: %s", err.Error())
+		}
+	} else if role == "devops" {
+		_, err := DBMain.Exec("UPDATE messages SET devops_want = devops_want - 1 WHERE message_ts = $1", ts)
+		if err != nil {
+			return fmt.Errorf("failed to update extra message: %s", err.Error())
+		}
+	} else if role == "data" {
+		_, err := DBMain.Exec("UPDATE messages SET data_want = data_want - 1 WHERE message_ts = $1", ts)
+		if err != nil {
+			return fmt.Errorf("failed to update extra message: %s", err.Error())
+		}
+	} else if role == "study" {
+		_, err := DBMain.Exec("UPDATE messages SET study_want = study_want - 1 WHERE message_ts = $1", ts)
+		if err != nil {
+			return fmt.Errorf("failed to update extra message: %s", err.Error())
+		}
+	} else if role == "etc" {
+		_, err := DBMain.Exec("UPDATE messages SET etc_want = etc_want - 1 WHERE message_ts = $1", ts)
+		if err != nil {
+			return fmt.Errorf("failed to update extra message: %s", err.Error())
+		}
+	}
+	return nil
+}
+
 func UpdateTeamMembers(teamID int, numMembers int) error {
 	_, err := DBMain.Exec("UPDATE teams SET num_members = $1 WHERE team_id = $2", numMembers, teamID)
 	if err != nil {

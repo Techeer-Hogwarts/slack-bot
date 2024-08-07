@@ -46,7 +46,7 @@ func readModalJSON(filename string) (slack.ModalViewRequest, error) {
 }
 
 func sendDMToLeader(api *slack.Client, msg ApplyMessage) error {
-	buttonValue := fmt.Sprintf("%s|%s", msg.Applicant, msg.TeamID)
+	buttonValue := fmt.Sprintf("%s|%s|%s", msg.Applicant, msg.TeamID, msg.Role)
 	enrollButton := slack.NewButtonBlockElement(
 		"enroll_button", // ActionID
 		buttonValue,     // Value
