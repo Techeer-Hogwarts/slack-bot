@@ -249,6 +249,7 @@ func closeOpenMessageToChannel(api *slack.Client, channelID string, timestamp st
 	}
 	messageText, err := constructMessageText(message)
 	if err != nil {
+		log.Println("Failed to construct message text")
 		return err
 	}
 	applyButton := slack.NewButtonBlockElement("apply_button", "apply", slack.NewTextBlockObject("plain_text", ":white_check_mark: 팀 지원하기!", false, false))
