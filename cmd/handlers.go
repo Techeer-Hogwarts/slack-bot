@@ -88,17 +88,15 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 			} else if action.ActionID == "enroll_button" {
 				log.Println("Enroll button clicked")
 				log.Printf("Payload Message: %s", action.Value)
-				err := enrollUser(api, action.Value, payload.Channel.ID)
+				teamTimestamp, err := enrollUser(api, action.Value, payload.Channel.ID)
 				if err != nil {
 					log.Printf("Failed to enroll user: %v", err)
 				}
-				actionVals := payload.View.State.Values["role_input"]
-				log.Println(actionVals)
 
-				// err = updateOpenMessageToChannel(api, channelID, payload.View.Blocks)
-				// if err != nil {
-				// 	log.Printf("Failed to update message: %v", err)
-				// }
+				err = updateOpenMessageToChannel(api, channelID, teamTimestamp)
+				if err != nil {
+					log.Printf("Failed to update message: %v", err)
+				}
 				return
 			} else if action.ActionID == "close_button" {
 				log.Println("Close button clicked")
@@ -159,7 +157,7 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 				Age:       payload.View.State.Values["age_input"]["age_action"].Value,
 				Grade:     payload.View.State.Values["grade_input"]["grade_action"].Value,
 				Pr:        payload.View.State.Values["desc_input"]["desc_action"].Value,
-				Role:      payload.View.State.Values["role_input"]["role_action"].Value,
+				Role:      payload.View.State.Values["role_input"]["selected_role"].SelectedOption.Value,
 			}
 
 			err = sendDMToLeader(api, appMsg)
@@ -251,9 +249,11 @@ func closeOpenMessageToChannel(api *slack.Client, channelID string, timestamp st
 	if err != nil {
 		return err
 	}
-	applyButton := slack.NewButtonBlockElement("fake_apply_button", "apply", slack.NewTextBlockObject("plain_text", ":white_check_mark: 팀 모집 마감!", false, false))
+	applyButton := slack.NewButtonBlockElement("apply_button", "apply", slack.NewTextBlockObject("plain_text", ":white_check_mark: 팀 지원하기!", false, false))
+
 	deleteButton := slack.NewButtonBlockElement("delete_button", "delete", slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", false, false))
-	closeButton := slack.NewButtonBlockElement("open_button", "close", slack.NewTextBlockObject("plain_text", ":unlock: 모집 다시 열기", false, false))
+
+	closeButton := slack.NewButtonBlockElement("close_button", "close", slack.NewTextBlockObject("plain_text", ":lock: 모집 닫기", false, false))
 
 	actionBlock := slack.NewActionBlock("apply_action", applyButton, deleteButton, closeButton)
 	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", messageText, false, false), nil, nil)

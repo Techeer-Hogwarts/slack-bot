@@ -437,44 +437,49 @@ func sendFailMessage(api *slack.Client, channelID string, userID string, message
 	return err
 }
 
-func enrollUser(api *slack.Client, value string, channelID string) error {
+func enrollUser(api *slack.Client, value string, channelID string) (string, error) {
 	values := strings.Split(value, "|")
 	applicantID := values[0]
+	role := values[2]
 	teamID, err := strconv.Atoi(values[1])
 	if err != nil {
-		return err
+		return "", err
 	}
 	teamObj, err := db.GetTeamByID(teamID)
 	if err != nil {
-		return err
+		return "", err
 	}
 	_, applicantIDInt, err := db.GetUser(applicantID)
 	if err != nil {
-		return err
+		return "", err
 	}
 	flag, _ := db.GetUserInTeam(applicantIDInt, teamID)
 	if flag {
 		log.Println("User already in team")
 		err = sendFailMessage(api, channelID, teamObj.TeamLeader, "이미 팀에 속해있습니다.")
-		return err
+		return "", err
 	}
 	err = db.AddUserToTeam(teamID, applicantIDInt)
 	if err != nil {
-		return err
+		return "", err
 	}
 	err = db.UpdateTeamMembers(teamID, teamObj.NumMembers+1)
 	if err != nil {
-		return err
+		return "", err
+	}
+	err = db.UpdateExtraMessage(role, teamObj.TeamTs)
+	if err != nil {
+		return "", err
 	}
 	msgText := fmt.Sprintf("<@%s>님의 팀 가입 신청을 수락하셨습니다.", applicantID)
 	_, err = api.PostEphemeral(channelID, teamObj.TeamLeader, slack.MsgOptionText(msgText, false))
 	if err != nil {
-		return err
+		return "", err
 	}
 	msgText = fmt.Sprintf("%v 팀 가입 신청이 수락되었습니다.", teamObj.TeamName)
 	err = sendDMSuccessMessage(api, applicantID, msgText)
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+	return teamObj.TeamTs, nil
 }
