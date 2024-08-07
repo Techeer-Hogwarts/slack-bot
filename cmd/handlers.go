@@ -76,6 +76,7 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 				err := openApplyModal(api, payload)
 				if err != nil {
 					log.Printf("Failed to open modal: %v", err)
+					sendFailMessage(api, payload.Channel.ID, payload.User.ID, "지원할수 있는 직군이 없습니다")
 				}
 				return
 			} else if action.ActionID == "delete_button" {
@@ -110,6 +111,13 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 				err := reOpenRecruitment(api, channelID, payload.Message.Timestamp, payload)
 				if err != nil {
 					log.Printf("Failed to reopen recruitment: %v", err)
+				}
+				return
+			} else if action.ActionID == "fake_apply_button" {
+				log.Println("Fake apply button clicked")
+				err := sendFailMessage(api, payload.Channel.ID, payload.User.ID, "이미 지원이 마감된 팀입니다.")
+				if err != nil {
+					log.Printf("Failed to send error message: %v", err)
 				}
 				return
 			}
