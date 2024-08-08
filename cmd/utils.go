@@ -471,8 +471,9 @@ func enrollUser(api *slack.Client, value string, channelID string) (string, erro
 	if err != nil {
 		return "", err
 	}
-	msgText := fmt.Sprintf("<@%s>님의 팀 가입 신청을 수락하셨습니다.", applicantID)
-	_, err = api.PostEphemeral(channelID, teamObj.TeamLeader, slack.MsgOptionText(msgText, false))
+	msgText := fmt.Sprintf("<@%s>님의 %s 팀 가입 신청을 수락하셨습니다.", applicantID, teamObj.TeamName)
+	// _, err = api.PostEphemeral(channelID, teamObj.TeamLeader, slack.MsgOptionText(msgText, false))
+	err = sendDMSuccessMessage(api, teamObj.TeamLeader, msgText)
 	if err != nil {
 		return "", err
 	}
