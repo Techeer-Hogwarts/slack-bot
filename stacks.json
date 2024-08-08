@@ -48,5 +48,18 @@
     {"key": "postgre", "name": "PostgreSQL", "type": "backend"},
     {"key": "mysql", "name": "MySQL", "type": "backend"},
     {"key": "mongo", "name": "MongoDB", "type": "backend"},
-    {"key": "node", "name": "Node.js", "type": "backend"}
+    {"key": "node", "name": "Node.js", "type": "backend"},
+    {"key": "apollo", "name": "Apollo GraphQL", "type": "backend"},
+    {"key": "graphql", "name": "GraphQL", "type": "backend"},
+    {"key": "redux", "name": "Redux", "type": "frontend"},
+    {"key": "mobx", "name": "MobX", "type": "frontend"},
+    {"key": "vuex", "name": "Vuex", "type": "frontend"},
+    {"key": "jest", "name": "Jest", "type": "frontend"},
+    {"key": "mocha", "name": "Mocha", "type": "frontend"},
+    {"key": "cypress", "name": "Cypress", "type": "frontend"},
+    {"key": "traefik", "name": "Traefik", "type": "devops"},
+    {"key": "selenium", "name": "Selenium", "type": "other"},
+    {"key": "grpc", "name": "gRPC", "type": "other"},
+    {"key": "compose", "name": "Docker Compose", "type":"devops"},
+    {"key": "swarm", "name": "Docker Swarm", "type":"devops"}
 ]
