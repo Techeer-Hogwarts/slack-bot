@@ -169,7 +169,7 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			msg := fmt.Sprintf("%s 팀에 지원이 완료되었습니다! 팀 리더에게 DM을 보냈습니다.", teamObject.TeamName)
-			err = sendSuccessMessage(api, channelID, applicant, msg)
+			err = sendDMSuccessMessage(api, applicant, msg)
 			if err != nil {
 				log.Printf("Failed to send success message: %v", err)
 				http.Error(w, "Failed to send success message", http.StatusInternalServerError)
