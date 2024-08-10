@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -98,6 +99,14 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					log.Printf("Failed to update message: %v", err)
 				}
+				return
+			} else if action.ActionID == "deny_button" {
+				log.Println("Deny button clicked")
+				log.Printf("Payload Message: %s", action.Value)
+				pyalodJsonVal, _ := json.MarshalIndent(payload, "", "  ")
+				log.Printf("Payload: %s", pyalodJsonVal)
+				// err := applyDenyMessage(api, action.Value, payload.Channel.ID)
+
 				return
 			} else if action.ActionID == "close_button" {
 				log.Println("Close button clicked")
@@ -347,6 +356,21 @@ func updateOpenMessageToChannel(api *slack.Client, channelID string, timestamp s
 	log.Printf("Message successfully sent to channel %s at %s", channelID, timestamp)
 	return err
 }
+
+// func deleteApplyMessage(api *slack.Client, channelID string, timestamp string) error {
+// 	if timestamp == "" {
+// 		return errors.New("timestamp cannot be empty")
+// 	}
+// 	if api == nil {
+// 		return errors.New("api is nil")
+// 	}
+// 	_, _, err := api.DeleteMessage(channelID, timestamp)
+// 	if err != nil {
+// 		log.Printf("Failed to delete message: %v", err)
+// 		return err
+// 	}
+// 	return err
+// }
 
 func reOpenRecruitment(api *slack.Client, channelID string, timestamp string, payload slack.InteractionCallback) error {
 	actionUserID := payload.User.ID

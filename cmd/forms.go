@@ -52,7 +52,12 @@ func sendDMToLeader(api *slack.Client, msg ApplyMessage) error {
 		buttonValue,     // Value
 		slack.NewTextBlockObject("plain_text", "수락", false, false),
 	)
-	actionBlock := slack.NewActionBlock("", enrollButton)
+	denyButton := slack.NewButtonBlockElement(
+		"deny_button", // ActionID
+		buttonValue,   // Value
+		slack.NewTextBlockObject("plain_text", "거절", false, false),
+	)
+	actionBlock := slack.NewActionBlock("accept_action", enrollButton, denyButton)
 
 	messageText := fmt.Sprintf(":heavy_exclamation_mark: %s 팀의 새로운 지원자가 있습니다!\n\n*지원자:* <@%s>\n\n*나이:* %s\n\n*대학/직장:* %s\n\n*학년:* %s\n\n*자기소개:* %s\n\n*희망 직군:* %s\n\n", msg.TeamName, msg.Applicant, msg.Age, msg.School, msg.Grade, msg.Pr, msg.Role)
 	sectionBlock := slack.NewSectionBlock(
