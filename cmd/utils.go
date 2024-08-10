@@ -37,7 +37,7 @@ func init() {
 	config.LoadEnv()
 	signingKey = config.GetEnv("SLACK_SIGNING_SECRET", "")
 	botToken = config.GetEnv("SLACK_BOT_TOKEN", "")
-	channelID = config.GetEnv("CHANNEL_ID2", "")
+	channelID = config.GetEnv("CHANNEL_ID", "")
 	roleMap = map[string]string{
 		"frontend":  "Frontend Developer",
 		"backend":   "Backend Developer",
