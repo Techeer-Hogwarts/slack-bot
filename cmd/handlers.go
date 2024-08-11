@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/slack-go/slack"
 	"github.com/thomas-and-friends/slack-bot/db"
@@ -79,6 +80,7 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 					log.Printf("Failed to open modal: %v", err)
 					sendFailMessage(api, payload.Channel.ID, payload.User.ID, "지원할수 있는 직군이 없습니다")
 				}
+				w.WriteHeader(http.StatusOK)
 				return
 			} else if action.ActionID == "delete_button" {
 				log.Println("Delete button clicked")
@@ -86,6 +88,7 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					log.Printf("Failed to delete message: %v", err)
 				}
+				w.WriteHeader(http.StatusOK)
 				return
 			} else if action.ActionID == "enroll_button" {
 				log.Println("Enroll button clicked")
@@ -99,14 +102,21 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					log.Printf("Failed to update message: %v", err)
 				}
+				w.WriteHeader(http.StatusOK)
 				return
 			} else if action.ActionID == "deny_button" {
 				log.Println("Deny button clicked")
 				log.Printf("Payload Message: %s", action.Value)
 				pyalodJsonVal, _ := json.MarshalIndent(payload, "", "  ")
 				log.Printf("Payload: %s", pyalodJsonVal)
-				// err := applyDenyMessage(api, action.Value, payload.Channel.ID)
-
+				denyChannelID := payload.Channel.ID
+				payloadMessageValue := action.Value // "user_id|team_id|role"
+				denyMessageTs := payload.Message.Timestamp
+				err := deleteApplyMessage(api, denyChannelID, payloadMessageValue, denyMessageTs)
+				if err != nil {
+					log.Printf("Failed to delete message: %v", err)
+				}
+				w.WriteHeader(http.StatusOK)
 				return
 			} else if action.ActionID == "close_button" {
 				log.Println("Close button clicked")
@@ -114,6 +124,7 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					log.Printf("Failed to close recruitment: %v", err)
 				}
+				w.WriteHeader(http.StatusOK)
 				return
 			} else if action.ActionID == "open_button" {
 				log.Println("Open button clicked")
@@ -121,6 +132,7 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					log.Printf("Failed to reopen recruitment: %v", err)
 				}
+				w.WriteHeader(http.StatusOK)
 				return
 			} else if action.ActionID == "fake_apply_button" {
 				log.Println("Fake apply button clicked")
@@ -128,6 +140,7 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					log.Printf("Failed to send error message: %v", err)
 				}
+				w.WriteHeader(http.StatusOK)
 				return
 			}
 		}
@@ -141,6 +154,7 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			w.WriteHeader(http.StatusOK)
+			return
 		} else if payload.View.CallbackID == "apply_form" {
 			log.Println("Received view submission 지원하기")
 			applicant := payload.User.ID
@@ -185,6 +199,7 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			w.WriteHeader(http.StatusOK)
+			return
 		}
 	}
 }
@@ -357,20 +372,43 @@ func updateOpenMessageToChannel(api *slack.Client, channelID string, timestamp s
 	return err
 }
 
-// func deleteApplyMessage(api *slack.Client, channelID string, timestamp string) error {
-// 	if timestamp == "" {
-// 		return errors.New("timestamp cannot be empty")
-// 	}
-// 	if api == nil {
-// 		return errors.New("api is nil")
-// 	}
-// 	_, _, err := api.DeleteMessage(channelID, timestamp)
-// 	if err != nil {
-// 		log.Printf("Failed to delete message: %v", err)
-// 		return err
-// 	}
-// 	return err
-// }
+// this function should delete the message, send dm to applicant and leader that the application is denied
+func deleteApplyMessage(api *slack.Client, channelID string, value string, timestamp string) error {
+	if timestamp == "" {
+		return errors.New("timestamp cannot be empty")
+	}
+	if api == nil {
+		return errors.New("api is nil")
+	}
+	values := strings.Split(value, "|")
+	applicantID := values[0]
+	role := values[2]
+	teamID, err := strconv.Atoi(values[1])
+	if err != nil {
+		return err
+	}
+	teamObj, err := db.GetTeamByID(teamID)
+	if err != nil {
+		return err
+	}
+
+	msgText := fmt.Sprintf("<@%s>님의 %s 팀 가입 신청을 거절하셨습니다.\n 포지션: %s", applicantID, teamObj.TeamName, role)
+	err = sendDMSuccessMessage(api, applicantID, msgText)
+	if err != nil {
+		return err
+	}
+	msgText = fmt.Sprintf("<@%s>님의 %s 팀 가입 신청이 거절되었습니다.\n 포지션: %s", applicantID, teamObj.TeamName, role)
+	err = sendDMSuccessMessage(api, teamObj.TeamLeader, msgText)
+	if err != nil {
+		return err
+	}
+	_, _, err = api.DeleteMessage(channelID, timestamp)
+	if err != nil {
+		log.Printf("Failed to delete message: %v", err)
+		return err
+	}
+	return err
+}
 
 func reOpenRecruitment(api *slack.Client, channelID string, timestamp string, payload slack.InteractionCallback) error {
 	actionUserID := payload.User.ID
