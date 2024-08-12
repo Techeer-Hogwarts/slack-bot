@@ -191,7 +191,7 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "Failed to send DM to leader", http.StatusInternalServerError)
 				return
 			}
-			msg := fmt.Sprintf("%s 팀에 지원이 완료되었습니다! 팀 리더에게 DM을 보냈습니다.\n*지원내용*\n\n*나이:* %s\n\n*대학/직장:* %s\n\n*학년:* %s\n\n*자기소개:* %s\n\n*희망 직군:* %s\n\n", teamObject.TeamName, appMsg.Age, appMsg.School, appMsg.Grade, appMsg.Pr, roleMap[appMsg.Role])
+			msg := fmt.Sprintf("%s 팀에 지원이 완료되었습니다! 팀 리더에게 DM을 보냈습니다.\n\n\n*지원내용*\n\n*나이:* %s\n\n*대학/직장:* %s\n\n*학년:* %s\n\n*자기소개:* %s\n\n*희망 직군:* %s\n", teamObject.TeamName, appMsg.Age, appMsg.School, appMsg.Grade, appMsg.Pr, roleMap[appMsg.Role])
 			err = sendDMSuccessMessage(api, applicant, msg)
 			if err != nil {
 				log.Printf("Failed to send success message: %v", err)
