@@ -191,7 +191,7 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "Failed to send DM to leader", http.StatusInternalServerError)
 				return
 			}
-			msg := fmt.Sprintf("%s 팀에 지원이 완료되었습니다! 팀 리더에게 DM을 보냈습니다.", teamObject.TeamName)
+			msg := fmt.Sprintf("%s 팀에 지원이 완료되었습니다! 팀 리더에게 DM을 보냈습니다.\n*지원내용*\n\n*나이:* %s\n\n*대학/직장:* %s\n\n*학년:* %s\n\n*자기소개:* %s\n\n*희망 직군:* %s\n\n", teamObject.TeamName, appMsg.Age, appMsg.School, appMsg.Grade, appMsg.Pr, roleMap[appMsg.Role])
 			err = sendDMSuccessMessage(api, applicant, msg)
 			if err != nil {
 				log.Printf("Failed to send success message: %v", err)
@@ -382,7 +382,7 @@ func deleteApplyMessage(api *slack.Client, channelID string, value string, times
 	}
 	values := strings.Split(value, "|")
 	applicantID := values[0]
-	role := values[2]
+
 	teamID, err := strconv.Atoi(values[1])
 	if err != nil {
 		return err
@@ -392,12 +392,12 @@ func deleteApplyMessage(api *slack.Client, channelID string, value string, times
 		return err
 	}
 
-	msgText := fmt.Sprintf("<@%s>님의 %s 팀 가입 신청을 거절하셨습니다.\n 포지션: %s", applicantID, teamObj.TeamName, role)
+	msgText := fmt.Sprintf("<@%s>님의 %s 팀 가입 신청을 거절하셨습니다.", applicantID, teamObj.TeamName)
 	err = sendDMSuccessMessage(api, applicantID, msgText)
 	if err != nil {
 		return err
 	}
-	msgText = fmt.Sprintf("<@%s>님의 %s 팀 가입 신청이 거절되었습니다.\n 포지션: %s", applicantID, teamObj.TeamName, role)
+	msgText = fmt.Sprintf("<@%s>님의 %s 팀 가입 신청이 거절되었습니다.", applicantID, teamObj.TeamName)
 	err = sendDMSuccessMessage(api, teamObj.TeamLeader, msgText)
 	if err != nil {
 		return err
