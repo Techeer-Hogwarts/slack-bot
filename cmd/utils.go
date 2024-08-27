@@ -318,8 +318,19 @@ func deleteMessage(api *slack.Client, payload slack.InteractionCallback) error {
 
 	teamObj, err := db.GetTeam(actionMessageTimestamp)
 	if err != nil {
-		_ = sendFailMessage(api, payload.Channel.ID, payload.User.ID, "오류가 발생했습니다. 다시 시도해주시거나 개발자를 연락 하세요")
-		return err
+		if actionUserID == "U02AES3BH17" || actionUserID == "U033UTX061X" {
+			_, _, err = api.DeleteMessage(payload.Channel.ID, actionMessageTimestamp)
+			if err != nil {
+				return fmt.Errorf("failed to delete message from Slack: %s", err.Error())
+			}
+			err = sendSuccessMessage(api, payload.Channel.ID, payload.User.ID, "메시지가 삭제되었습니다.")
+			if err != nil {
+				return err
+			}
+		} else {
+			_ = sendFailMessage(api, payload.Channel.ID, payload.User.ID, "오류가 발생했습니다. 다시 시도해주시거나 개발자를 연락 하세요")
+			return err
+		}
 	}
 	if teamObj.TeamLeader == actionUserID || actionUserID == "U02AES3BH17" || actionUserID == "U033UTX061X" {
 		err = db.DeleteTeam(actionMessageTimestamp)
