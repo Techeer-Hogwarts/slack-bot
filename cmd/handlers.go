@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -107,8 +106,8 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 			} else if action.ActionID == "deny_button" {
 				log.Println("Deny button clicked")
 				log.Printf("Payload Message: %s", action.Value)
-				pyalodJsonVal, _ := json.MarshalIndent(payload, "", "  ")
-				log.Printf("Payload: %s", pyalodJsonVal)
+				// pyalodJsonVal, _ := json.MarshalIndent(payload, "", "  ")
+				// log.Printf("Payload: %s", pyalodJsonVal)
 				denyChannelID := payload.Channel.ID
 				payloadMessageValue := action.Value // "user_id|team_id|role"
 				denyMessageTs := payload.Message.Timestamp
