@@ -157,6 +157,8 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 		} else if payload.View.CallbackID == "apply_form" {
 			log.Println("Received view submission 지원하기")
 			applicant := payload.User.ID
+			applicantName := payload.User.Name
+			log.Println("Applicant Name: ", applicantName)
 			selectedTeam := payload.View.State.Values["team_select"]["selected_team"].SelectedOption.Value
 			teamID, err := strconv.Atoi(selectedTeam)
 			if err != nil {
