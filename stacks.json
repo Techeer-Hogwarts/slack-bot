@@ -80,5 +80,6 @@
     {"key": "jmeter", "name": "JMeter", "type": "other"},
     {"key": "postman", "name": "Postman", "type": "other"},
     {"key": "insomnia", "name": "Insomnia", "type": "other"},
-    {"key": "rtl", "name": "React Testing Library", "type": "frontend"}
+    {"key": "rtl", "name": "React Testing Library", "type": "frontend"},
+    {"key": "rabbit", "name": "RabbitMQ", "type": "devops"}
 ]
