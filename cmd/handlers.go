@@ -312,11 +312,6 @@ func updateOpenMessageToChannel(api *slack.Client, channelID string, timestamp s
 	if api == nil {
 		return errors.New("api is nil")
 	}
-	err := db.DeactivateRecruitTeam(timestamp)
-	if err != nil {
-		log.Printf("Failed to deactivate team: %v", err)
-		return err
-	}
 	teamObj, err := db.GetTeam(timestamp)
 	if err != nil {
 		log.Printf("Failed to get team: %v", err)
@@ -327,7 +322,18 @@ func updateOpenMessageToChannel(api *slack.Client, channelID string, timestamp s
 		log.Printf("Failed to get extra message: %v", err)
 		return err
 	}
+
 	teamIDint, _ := strconv.Atoi(teamObj.TeamID)
+
+	numberOfAvailableMembers := additionalMesssage.BackendWant + additionalMesssage.DataWant + additionalMesssage.DevopsWant + additionalMesssage.EtcWant + additionalMesssage.FrontendWant + additionalMesssage.StudyWant + additionalMesssage.UXWant
+	if numberOfAvailableMembers == 0 {
+		err = db.DeactivateRecruitTeam(timestamp)
+		if err != nil {
+			log.Printf("Failed to deactivate team: %v", err)
+			return err
+		}
+	}
+
 	techStacks, err := db.GetTagsFromTeam(teamIDint)
 	if err != nil {
 		log.Printf("Failed to get tags from team: %v", err)
