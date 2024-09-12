@@ -475,7 +475,272 @@
 							"emoji": true
 						},
 						"value": "node"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Apollo GraphQL",
+							"emoji": true
+						},
+						"value": "apollo"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "GraphQL",
+							"emoji": true
+						},
+						"value": "graphql"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Redux",
+							"emoji": true
+						},
+						"value": "redux"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "MobX",
+							"emoji": true
+						},
+						"value": "mobx"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Vuex",
+							"emoji": true
+						},
+						"value": "vuex"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Jest",
+							"emoji": true
+						},
+						"value": "jest"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Mocha",
+							"emoji": true
+						},
+						"value": "mocha"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Cypress",
+							"emoji": true
+						},
+						"value": "cypress"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Traefik",
+							"emoji": true
+						},
+						"value": "traefik"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Selenium",
+							"emoji": true
+						},
+						"value": "selenium"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "gRPC",
+							"emoji": true
+						},
+						"value": "grpc"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Docker Compose",
+							"emoji": true
+						},
+						"value": "compose"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Docker Swarm",
+							"emoji": true
+						},
+						"value": "swarm"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "React Native",
+							"emoji": true
+						},
+						"value": "rn"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Flutter",
+							"emoji": true
+						},
+						"value": "flutter"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Figma",
+							"emoji": true
+						},
+						"value": "figma"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Zeplin",
+							"emoji": true
+						},
+						"value": "zeplin"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "NX",
+							"emoji": true
+						},
+						"value": "nx"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Shadcn/ui",
+							"emoji": true
+						},
+						"value": "shad"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Turborepo",
+							"emoji": true
+						},
+						"value": "turbo"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Lerna",
+							"emoji": true
+						},
+						"value": "lerna"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Chromatic",
+							"emoji": true
+						},
+						"value": "chrom"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "PlayWright",
+							"emoji": true
+						},
+						"value": "pw"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Storybook",
+							"emoji": true
+						},
+						"value": "story"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Vite",
+							"emoji": true
+						},
+						"value": "vite"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Vitest",
+							"emoji": true
+						},
+						"value": "vitest"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "K6",
+							"emoji": true
+						},
+						"value": "k6"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Locust",
+							"emoji": true
+						},
+						"value": "locust"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Jmeter",
+							"emoji": true
+						},
+						"value": "jmeter"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Postman",
+							"emoji": true
+						},
+						"value": "postman"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Insomnia",
+							"emoji": true
+						},
+						"value": "insomnia"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "React Testing Library",
+							"emoji": true
+						},
+						"value": "rtl"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "RabbitMQ",
+							"emoji": true
+						},
+						"value": "rabbit"
 					}
+
 				],
 				"action_id": "multi_static_select-action"
 			},
