@@ -620,7 +620,7 @@
 				"type": "plain_text_input",
 				"placeholder": {
 					"type": "plain_text",
-					"text": "팀 설명 내용 추가 (마크다운)",
+					"text": "팀 설명 내용 추가",
 					"emoji": true
 				},
 				"multiline": true,
@@ -639,7 +639,7 @@
 				"type": "plain_text_input",
 				"placeholder": {
 					"type": "plain_text",
-					"text": "기타 내용 추가 (마크다운)",
+					"text": "기타 내용 추가",
 					"emoji": true
 				},
 				"multiline": true,
