@@ -16,9 +16,10 @@ type zipRequest struct {
 
 func ZipPictureHandler(w http.ResponseWriter, r *http.Request) {
 	api := slack.New(botToken)
-	headerJson := r.Header
-	jsonHeader, _ := json.Marshal(headerJson)
-	log.Println(string(jsonHeader))
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	var req zipRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
@@ -30,13 +31,7 @@ func ZipPictureHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
-	// userCode, _, err := db.CheckUserWithEmail(req.Email)
-	// if err != nil {
-	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
-	// 	return
-	// }
 	profile, err := api.GetUserByEmail(req.Email)
-	// profile, err := api.GetUserProfile(&slack.GetUserProfileParameters{UserID: userCode})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -47,8 +42,10 @@ func ZipPictureHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ZipVerifyHandler(w http.ResponseWriter, r *http.Request) {
-	origin := r.Header.Get("Origin")
-	log.Println(origin)
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	var req zipRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
