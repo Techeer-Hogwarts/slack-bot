@@ -18,7 +18,8 @@ func main() {
 	// http.HandleFunc("/trigger_event", cmd.TriggerEvent)
 	http.HandleFunc("/slack/interactions", cmd.HandleInteraction)
 	http.HandleFunc("/", cmd.SendHelloWorld)
-	// http.HandleFunc("/test", cmd.TestEvent)
+	http.HandleFunc("/api/v1/profile/picture", cmd.ZipPictureHandler)
+	http.HandleFunc("/api/v1/profile/verify", cmd.ZipVerifyHandler)
 	if port == "" {
 		port = "8080"
 	}
