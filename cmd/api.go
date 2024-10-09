@@ -16,8 +16,9 @@ type zipRequest struct {
 
 func ZipPictureHandler(w http.ResponseWriter, r *http.Request) {
 	api := slack.New(botToken)
-	origin := r.Header.Get("Origin")
-	log.Println(origin)
+	headerJson := r.Header
+	jsonHeader, _ := json.Marshal(headerJson)
+	log.Println(string(jsonHeader))
 	var req zipRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
