@@ -421,3 +421,17 @@ func GetTagsFromTeam(teamID int) ([]string, error) {
 	}
 	return tags, nil
 }
+
+// below functions are for slack api requests from techeerzip
+
+func CheckUserWithEmail(email string) (string, bool, error) {
+	var userCode string
+	err := DBMain.QueryRow("SELECT user_code FROM users WHERE user_email = $1", email).Scan(&userCode)
+	if err == sql.ErrNoRows {
+		return "", false, nil
+	}
+	if err != nil {
+		return "", false, fmt.Errorf("failed to get user with email: %s", err)
+	}
+	return userCode, true, nil
+}

@@ -584,6 +584,10 @@ func HandleSlashCommand(w http.ResponseWriter, r *http.Request) {
 	switch command {
 	case "/구인":
 		openRecruitmentModal(w, triggerID, api)
+	case "/엑셀":
+		exportToGoogleSheet(w, r, api)
+		log.Println("Received command to export data to excel")
+		w.WriteHeader(http.StatusOK)
 	default:
 		w.WriteHeader(http.StatusOK)
 	}
