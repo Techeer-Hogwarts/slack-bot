@@ -39,6 +39,10 @@ func ZipPictureHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	profile, err := api.GetUserByEmail(req.Email)
 	if err != nil {
+		if err.Error() == "users_not_found" {
+			http.Error(w, "User not found", http.StatusNotFound)
+			return
+		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -76,15 +80,10 @@ func ZipVerifyHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(zipResponse{
 			Email:     req.Email,
-			Image:     "",
 			IsTecheer: true,
 		})
 	} else {
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(zipResponse{
-			Email:     req.Email,
-			Image:     "",
-			IsTecheer: false,
-		})
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
 	}
 }
