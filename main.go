@@ -13,9 +13,9 @@ import (
 var err error
 
 func main() {
+	reload := config.GetEnv("RELOAD", "true")
 	port := config.GetEnv("PORT", "")
 	http.HandleFunc("/slack/commands", cmd.HandleSlashCommand)
-	// http.HandleFunc("/trigger_event", cmd.TriggerEvent)
 	http.HandleFunc("/slack/interactions", cmd.HandleInteraction)
 	http.HandleFunc("/", cmd.SendHelloWorld)
 	http.HandleFunc("/api/v1/profile/picture", cmd.ZipPictureHandler)
@@ -28,9 +28,12 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	if reload == "true" {
+		cmd.InitialDataUsers()
+		cmd.InitialDataTags()
+	}
 	db.ExecuteSQLFile("slack.sql")
-	cmd.InitialDataUsers()
-	cmd.InitialDataTags()
+	// config.ConnectGoogle()
 	defer func() {
 		if err = db.DBMain.Close(); err != nil {
 			panic(err)
