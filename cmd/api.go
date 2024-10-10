@@ -14,10 +14,16 @@ type zipRequest struct {
 	Secret string `json:"secret"`
 }
 
+type zipResponse struct {
+	Email     string `json:"email"`
+	Image     string `json:"image"`
+	IsTecheer bool   `json:"is_techeer"`
+}
+
 func ZipPictureHandler(w http.ResponseWriter, r *http.Request) {
 	api := slack.New(botToken)
 	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		http.Error(w, "Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
 	var req zipRequest
@@ -38,12 +44,16 @@ func ZipPictureHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	userImage := profile.Profile.ImageOriginal
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(userImage)
+	json.NewEncoder(w).Encode(zipResponse{
+		Email:     req.Email,
+		Image:     userImage,
+		IsTecheer: true,
+	})
 }
 
 func ZipVerifyHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		http.Error(w, "Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
 	var req zipRequest
@@ -63,8 +73,18 @@ func ZipVerifyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if verify {
-		w.Write([]byte("true"))
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(zipResponse{
+			Email:     req.Email,
+			Image:     "",
+			IsTecheer: true,
+		})
 	} else {
-		w.Write([]byte("false"))
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(zipResponse{
+			Email:     req.Email,
+			Image:     "",
+			IsTecheer: false,
+		})
 	}
 }
