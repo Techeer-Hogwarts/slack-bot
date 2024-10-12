@@ -5,105 +5,138 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"net/http"
-	"os"
-	"strings"
+	"time"
 
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 	"google.golang.org/api/sheets/v4"
 )
 
 var Srv *sheets.Service
 
-// Retrieve a token, saves the token, then returns the generated client.
-func getClient(config *oauth2.Config) *http.Client {
-	// The file token.json stores the user's access and refresh tokens, and is
-	// created automatically when the authorization flow completes for the first
-	// time.
-	tokFile := "token.json"
-	tok, err := tokenFromFile(tokFile)
-	if err != nil {
-		tok = getTokenFromWeb(config)
-		saveToken(tokFile, tok)
-	}
-	return config.Client(context.Background(), tok)
+type YourStruct struct {
+	Key1 string
+	Key2 string
+	Key3 string
 }
 
-// Request a token from the web, then returns the retrieved token.
-func getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
-	authURL := config.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
-	fmt.Printf("Go to the following link in your browser then type the "+
-		"authorization code: \n%v\n", authURL)
-
-	var authCode string
-	if _, err := fmt.Scan(&authCode); err != nil {
-		log.Fatalf("Unable to read authorization code: %v", err)
-	}
-
-	tok, err := config.Exchange(context.TODO(), authCode)
-	if err != nil {
-		log.Fatalf("Unable to retrieve token from web: %v", err)
-	}
-	return tok
-}
-
-// Retrieves a token from a local file.
-func tokenFromFile(file string) (*oauth2.Token, error) {
-	f, err := os.Open(file)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-	tok := &oauth2.Token{}
-	err = json.NewDecoder(f).Decode(tok)
-	return tok, err
-}
-
-// Saves a token to a file path.
-func saveToken(path string, token *oauth2.Token) {
-	fmt.Printf("Saving credential file to: %s\n", path)
-	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
-	if err != nil {
-		log.Fatalf("Unable to cache oauth token: %v", err)
-	}
-	defer f.Close()
-	json.NewEncoder(f).Encode(token)
-}
-
-func ConnectGoogle() {
-	ctx := context.Background()
-	redirectURIs := strings.Split(GetEnv("REDIRECT_URIS", "something something"), ",")
-	log.Println(redirectURIs)
+func ConnectGoogle(spreadsheetID string) {
 	credentials := map[string]interface{}{
-		"installed": map[string]interface{}{
-			"client_id":                   GetEnv("CLIENT_ID", "something"),
-			"project_id":                  GetEnv("PROJECT_ID", "something"),
-			"auth_uri":                    "https://accounts.google.com/o/oauth2/auth",
-			"token_uri":                   "https://oauth2.googleapis.com/token",
-			"auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-			"client_secret":               GetEnv("CLIENT_SECRET", "something"),
-			"redirect_uris":               redirectURIs,
-		},
+		"type":                        GetEnv("TYPE", "service_account"),
+		"project_id":                  GetEnv("PROJECT_ID", ""),
+		"private_key_id":              GetEnv("PRIVATE_KEY_ID", ""),
+		"private_key":                 GetEnv("PRIVATE_KEY", ""),
+		"client_email":                GetEnv("CLIENT_EMAIL", ""),
+		"client_id":                   GetEnv("CLIENT_ID", ""),
+		"auth_uri":                    GetEnv("AUTH_URI", "https://accounts.google.com/o/oauth2/auth"),
+		"token_uri":                   GetEnv("TOKEN_URI", "https://oauth2.googleapis.com/token"),
+		"auth_provider_x509_cert_url": GetEnv("AUTH_PROVIDER_X509_CERT_URL", "https://www.googleapis.com/oauth2/v1/certs"),
+		"client_x509_cert_url":        GetEnv("CLIENT_X509_CERT_URL", ""),
+		"universe_domain":             GetEnv("UNIVERSE_DOMAIN", "googleapis.com"),
 	}
 
-	// Convert the map to JSON
-	b, err := json.Marshal(credentials)
+	// Convert the credentials map to JSON
+	credentialsJSON, err := json.Marshal(credentials)
 	if err != nil {
-		log.Fatalf("Unable to read client secret file: %v", err)
+		log.Fatalf("Unable to marshal credentials: %v", err)
 	}
 
-	// If modifying these scopes, delete your previously saved token.json.
-	config, err := google.ConfigFromJSON(b, "https://www.googleapis.com/auth/spreadsheets.readonly")
-	if err != nil {
-		log.Fatalf("Unable to parse client secret file to config: %v", err)
-	}
-	client := getClient(config)
+	// Create the Sheets service using the credentials JSON
+	ctx := context.Background()
 
-	Srv, err = sheets.NewService(ctx, option.WithHTTPClient(client))
+	// Initialize Google Sheets API client
+	srv, err := sheets.NewService(ctx, option.WithCredentialsJSON(credentialsJSON))
 	if err != nil {
 		log.Fatalf("Unable to retrieve Sheets client: %v", err)
 	}
-	log.Println("Connected to Google Sheets")
+
+	// Step 1: Create new tab with today's date and time
+	now := time.Now()
+	tabName := now.Format("2006/01/02 - 15:04")
+
+	// Create new sheet (tab)
+	addSheetRequest := &sheets.AddSheetRequest{
+		Properties: &sheets.SheetProperties{
+			Title: tabName,
+		},
+	}
+
+	// Batch update request to add the new sheet
+	request := &sheets.BatchUpdateSpreadsheetRequest{
+		Requests: []*sheets.Request{
+			{
+				AddSheet: addSheetRequest,
+			},
+		},
+	}
+
+	resp, err := srv.Spreadsheets.BatchUpdate(spreadsheetID, request).Context(ctx).Do()
+	if err != nil {
+		log.Fatalf("Unable to create new sheet: %v", err)
+	}
+
+	newSheetID := resp.Replies[0].AddSheet.Properties.SheetId
+	log.Printf("Created new sheet: %s\n", tabName)
+
+	// Step 2: Mock data from your database
+	data := []YourStruct{
+		{"Value 1A", "Value 1B", "Value 1C"},
+		{"Value 2A", "Value 2B", "Value 2C"},
+	}
+
+	// Step 3: Convert struct to a 2D array
+	var values [][]interface{}
+
+	headers := []interface{}{"Key1", "Key2", "Key3"}
+	values = append(values, headers)
+
+	for _, item := range data {
+		row := []interface{}{item.Key1, item.Key2, item.Key3}
+		values = append(values, row)
+	}
+
+	// Populate the new sheet with data
+	writeRange := fmt.Sprintf("%s!A1", tabName)
+	_, err = srv.Spreadsheets.Values.Update(spreadsheetID, writeRange, &sheets.ValueRange{
+		Values: values,
+	}).ValueInputOption("RAW").Do()
+	if err != nil {
+		log.Fatalf("Unable to write data to sheet: %v", err)
+	}
+
+	// Step 4: Format header row to be bold
+	headerFormatRequest := &sheets.BatchUpdateSpreadsheetRequest{
+		Requests: []*sheets.Request{
+			{
+				RepeatCell: &sheets.RepeatCellRequest{
+					Range: &sheets.GridRange{
+						SheetId:          newSheetID,
+						StartRowIndex:    0, // First row (headers)
+						EndRowIndex:      1, // Apply to just the header row
+						StartColumnIndex: 0,
+						EndColumnIndex:   3, // Adjust based on the number of columns
+					},
+					Cell: &sheets.CellData{
+						UserEnteredFormat: &sheets.CellFormat{
+							TextFormat: &sheets.TextFormat{
+								Bold: true, // Bold formatting
+							},
+							BackgroundColor: &sheets.Color{
+								Red:   0.9,
+								Green: 0.9,
+								Blue:  0.9, // Light gray background for headers
+							},
+						},
+					},
+					Fields: "userEnteredFormat(textFormat,backgroundColor)", // Specify which fields to format
+				},
+			},
+		},
+	}
+
+	_, err = srv.Spreadsheets.BatchUpdate(spreadsheetID, headerFormatRequest).Context(ctx).Do()
+	if err != nil {
+		log.Fatalf("Unable to format header row: %v", err)
+	}
+
+	log.Println("Header row formatted successfully.")
 }
