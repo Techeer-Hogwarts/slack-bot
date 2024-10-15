@@ -38,9 +38,10 @@ type Stack struct {
 }
 
 type UserObj struct {
-	UserID   int    `json:"user_id"`
-	UserCode string `json:"user_code"`
-	UserName string `json:"user_name"`
+	UserID    int    `json:"user_id"`
+	UserCode  string `json:"user_code"`
+	UserName  string `json:"user_name"`
+	UserEmail string `json:"user_email"`
 }
 
 func AddUser(userCode string, userName string, email string) error {
@@ -78,6 +79,19 @@ func GetUserWithID(userID int) (string, string, error) {
 	}
 	log.Printf("User %s found in the database", userName)
 	return userName, userCode, nil
+}
+
+func GetUserWithIDAll(userID int) (UserObj, error) {
+	userObj := UserObj{}
+	err := DBMain.QueryRow("SELECT user_name, user_code, user_email FROM users WHERE user_id = $1", userID).Scan(&userObj.UserName, &userObj.UserCode, &userObj.UserEmail)
+	if err == sql.ErrNoRows {
+		return UserObj{}, fmt.Errorf("user not found. Error content: %v", err)
+	}
+	if err != nil {
+		return UserObj{}, fmt.Errorf("some other sql error: %s", err.Error())
+	}
+	log.Printf("User %s found in the database", userObj.UserName)
+	return userObj, nil
 }
 
 func AddTeam(teamobj Team) (int, error) {
@@ -318,13 +332,13 @@ func GetAllUsersInTeam(teamID int) ([]UserObj, error) {
 		}
 		users = append(users, userObj)
 	}
-	var userObjs []UserObj
+	userObjs := []UserObj{}
 	for _, user := range users {
-		userName, userCode, err := GetUserWithID(user)
+		userObj, err := GetUserWithIDAll(user)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get user with id: %s", err.Error())
 		}
-		userObjs = append(userObjs, UserObj{UserID: user, UserCode: userCode, UserName: userName})
+		userObjs = append(userObjs, userObj)
 	}
 	return userObjs, nil
 }

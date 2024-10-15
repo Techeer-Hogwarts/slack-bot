@@ -68,7 +68,7 @@ func writeGoogleSheet() string {
 	for _, team := range data {
 		var users string
 		for _, user := range team.Users {
-			users += fmt.Sprintf("%s (%s)\n", user.UserName, user.UserCode)
+			users += fmt.Sprintf("%s (%s)\n", user.UserName, user.UserEmail)
 		}
 		team.Team.TeamLeaderName, _, _ = db.GetUser(team.Team.TeamLeader)
 		row := []interface{}{team.Team.TeamName, team.Team.TeamType, team.Team.TeamLeaderName, team.Team.TeamIntro, team.Team.TeamDesc, users, team.Team.TeamEtc}
