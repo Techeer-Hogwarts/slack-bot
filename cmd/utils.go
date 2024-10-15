@@ -41,7 +41,7 @@ func init() {
 	botToken = config.GetEnv("SLACK_BOT_TOKEN", "")
 	secret = config.GetEnv("SECRET_ALLOW", "")
 	channelID = config.GetEnv("CHANNEL_ID2", "")
-	sheetsID = config.GetEnv("SHEETS_ID", "")
+	sheetsID = config.GetEnv("GSHEETS_ID", "")
 	roleMap = map[string]string{
 		"frontend":  "Frontend Developer",
 		"backend":   "Backend Developer",

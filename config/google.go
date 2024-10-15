@@ -20,17 +20,17 @@ type YourStruct struct {
 
 func ConnectGoogle() {
 	credentials := map[string]interface{}{
-		"type":                        GetEnv("TYPE", "service_account"),
-		"project_id":                  GetEnv("PROJECT_ID", ""),
-		"private_key_id":              GetEnv("PRIVATE_KEY_ID", ""),
-		"private_key":                 GetEnv("PRIVATE_KEY", ""),
-		"client_email":                GetEnv("CLIENT_EMAIL", ""),
-		"client_id":                   GetEnv("CLIENT_ID", ""),
-		"auth_uri":                    GetEnv("AUTH_URI", "https://accounts.google.com/o/oauth2/auth"),
-		"token_uri":                   GetEnv("TOKEN_URI", "https://oauth2.googleapis.com/token"),
-		"auth_provider_x509_cert_url": GetEnv("AUTH_PROVIDER_X509_CERT_URL", "https://www.googleapis.com/oauth2/v1/certs"),
-		"client_x509_cert_url":        GetEnv("CLIENT_X509_CERT_URL", ""),
-		"universe_domain":             GetEnv("UNIVERSE_DOMAIN", "googleapis.com"),
+		"type":                        GetEnv("GTYPE", "service_account"),
+		"project_id":                  GetEnv("GPROJECT_ID", ""),
+		"private_key_id":              GetEnv("GPRIVATE_KEY_ID", ""),
+		"private_key":                 GetEnv("GPRIVATE_KEY", ""),
+		"client_email":                GetEnv("GCLIENT_EMAIL", ""),
+		"client_id":                   GetEnv("GCLIENT_ID", ""),
+		"auth_uri":                    GetEnv("GAUTH_URI", "https://accounts.google.com/o/oauth2/auth"),
+		"token_uri":                   GetEnv("GTOKEN_URI", "https://oauth2.googleapis.com/token"),
+		"auth_provider_x509_cert_url": GetEnv("GAUTH_PROVIDER_X509_CERT_URL", "https://www.googleapis.com/oauth2/v1/certs"),
+		"client_x509_cert_url":        GetEnv("GCLIENT_X509_CERT_URL", ""),
+		"universe_domain":             GetEnv("GUNIVERSE_DOMAIN", "googleapis.com"),
 	}
 
 	// Convert the credentials map to JSON
