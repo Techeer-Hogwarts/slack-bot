@@ -33,7 +33,7 @@ func main() {
 		cmd.InitialDataTags()
 	}
 	db.ExecuteSQLFile("slack.sql")
-	config.ConnectGoogle(cmd.SheetsID)
+	config.ConnectGoogle()
 	defer func() {
 		if err = db.DBMain.Close(); err != nil {
 			panic(err)

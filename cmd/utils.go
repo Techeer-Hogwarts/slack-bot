@@ -23,7 +23,7 @@ var (
 	channelID  string
 	roleMap    map[string]string
 	secret     string
-	SheetsID   string
+	sheetsID   string
 )
 
 const (
@@ -41,7 +41,7 @@ func init() {
 	botToken = config.GetEnv("SLACK_BOT_TOKEN", "")
 	secret = config.GetEnv("SECRET_ALLOW", "")
 	channelID = config.GetEnv("CHANNEL_ID2", "")
-	SheetsID = config.GetEnv("SHEETS_ID", "")
+	sheetsID = config.GetEnv("SHEETS_ID", "")
 	roleMap = map[string]string{
 		"frontend":  "Frontend Developer",
 		"backend":   "Backend Developer",
