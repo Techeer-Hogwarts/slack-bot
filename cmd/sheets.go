@@ -38,7 +38,7 @@ func writeGoogleSheet() string {
 
 	resp, err := config.Srv.Spreadsheets.BatchUpdate(sheetsID, request).Context(config.SheetsCTX).Do()
 	if err != nil {
-		log.Printf("Unable to create new sheet: %v", err)
+		log.Fatalf("Unable to create new sheet: %v", err)
 	}
 
 	newSheetID := resp.Replies[0].AddSheet.Properties.SheetId
