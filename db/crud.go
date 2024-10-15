@@ -37,6 +37,12 @@ type Stack struct {
 	Type string `json:"type"`
 }
 
+type UserObj struct {
+	UserID   int    `json:"user_id"`
+	UserCode string `json:"user_code"`
+	UserName string `json:"user_name"`
+}
+
 func AddUser(userCode string, userName string, email string) error {
 	_, err := DBMain.Exec("INSERT INTO users (user_code, user_name, user_email) VALUES ($1, $2, $3)", userCode, userName, email)
 	if err != nil {
@@ -292,6 +298,35 @@ func GetUserInTeam(userID int, teamID int) (bool, error) {
 		return true, fmt.Errorf("failed to get user in team: %s", err)
 	}
 	return true, nil
+}
+
+func GetAllUsersInTeam(teamID int) ([]UserObj, error) {
+	// Get all users in a team
+	rows, err := DBMain.Query("SELECT user_id FROM user_teams WHERE team_id = $1", teamID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get all users in team: %s", err.Error())
+	}
+	defer rows.Close()
+	var users []int
+	for rows.Next() {
+		var userObj int
+		err := rows.Scan(
+			&userObj,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan user: %s", err.Error())
+		}
+		users = append(users, userObj)
+	}
+	var userObjs []UserObj
+	for _, user := range users {
+		userName, userCode, err := GetUserWithID(user)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get user with id: %s", err.Error())
+		}
+		userObjs = append(userObjs, UserObj{UserID: user, UserCode: userCode, UserName: userName})
+	}
+	return userObjs, nil
 }
 
 func GetAllActiveTeams() ([]Team, error) {

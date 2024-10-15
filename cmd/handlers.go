@@ -577,7 +577,6 @@ func HandleSlashCommand(w http.ResponseWriter, r *http.Request) {
 	triggerID := r.FormValue("trigger_id")
 
 	log.Printf("Received command: %s", command)
-	log.Printf("Trigger ID: %s", triggerID)
 
 	api := slack.New(botToken)
 
@@ -585,9 +584,8 @@ func HandleSlashCommand(w http.ResponseWriter, r *http.Request) {
 	case "/구인":
 		openRecruitmentModal(w, triggerID, api)
 	case "/엑셀":
-		// exportToGoogleSheet(w, api)
-		log.Println("form", r.Form)
-		log.Println("postform", r.PostForm)
+		exportToGoogleSheet(w, r, api)
+		log.Println("form: ", r.Form)
 		log.Println("Received command to export data to excel")
 		w.WriteHeader(http.StatusOK)
 	default:
