@@ -147,7 +147,8 @@ func writeGoogleSheet() string {
 	return spreadsheetLink
 }
 
-func exportToGoogleSheet(w http.ResponseWriter, r *http.Request, api *slack.Client) {
+func ExportToGoogleSheet(w http.ResponseWriter, r *http.Request) {
+	api := slack.New(botToken)
 	userCode := r.FormValue("user_id")
 	log.Println(userCode)
 	if userCode == "U02AES3BH17" || userCode == "U033UTX061X" {
