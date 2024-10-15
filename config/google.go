@@ -32,7 +32,6 @@ func ConnectGoogle() {
 		"client_x509_cert_url":        GetEnv("GCLIENT_X509_CERT_URL", ""),
 		"universe_domain":             GetEnv("GUNIVERSE_DOMAIN", "googleapis.com"),
 	}
-	log.Println(credentials["private_key"])
 
 	// Convert the credentials map to JSON
 	credentialsJSON, err := json.Marshal(credentials)
