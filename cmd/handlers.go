@@ -586,7 +586,6 @@ func HandleSlashCommand(w http.ResponseWriter, r *http.Request) {
 	case "/엑셀":
 		ExportToGoogleSheet(w, r)
 		log.Println("Received command to export data to excel")
-		w.WriteHeader(http.StatusOK)
 	default:
 		w.WriteHeader(http.StatusOK)
 	}
