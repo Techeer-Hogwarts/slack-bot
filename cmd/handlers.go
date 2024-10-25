@@ -97,7 +97,7 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 					log.Printf("Failed to enroll user: %v", err)
 				}
 
-				err = updateOpenMessageToChannel(api, channelID, teamTimestamp, payload)
+				err = updateOpenMessageToChannel(api, channelID, teamTimestamp)
 				if err != nil {
 					log.Printf("Failed to update message: %v", err)
 				}
@@ -305,7 +305,7 @@ func closeOpenMessageToChannel(api *slack.Client, channelID string, timestamp st
 	return err
 }
 
-func updateOpenMessageToChannel(api *slack.Client, channelID string, timestamp string, payload slack.InteractionCallback) error {
+func updateOpenMessageToChannel(api *slack.Client, channelID string, timestamp string) error {
 	if timestamp == "" {
 		return errors.New("timestamp cannot be empty")
 	}
