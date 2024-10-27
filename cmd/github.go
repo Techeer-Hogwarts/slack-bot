@@ -27,12 +27,12 @@ func DeployImageHandler(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(requestBody).Decode(&temp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Println(err)
 		return
 	}
-	log.Println(temp.Secret)
-	log.Println(secret)
 	if temp.Secret != secret {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		log.Println("Unauthorized")
 		return
 	}
 	defer requestBody.Close()
