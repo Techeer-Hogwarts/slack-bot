@@ -19,7 +19,7 @@ func main() {
 	http.HandleFunc("/slack/interactions", cmd.HandleInteraction)
 	http.HandleFunc("/", cmd.SendHelloWorld)
 	http.HandleFunc("/api/v1/profile/picture", cmd.ZipPictureHandler)
-	http.HandleFunc("/test", cmd.ExportToGoogleSheet)
+	http.HandleFunc("/api/v1/deploy/image", cmd.DeployImageHandler)
 	if port == "" {
 		port = "8080"
 	}
