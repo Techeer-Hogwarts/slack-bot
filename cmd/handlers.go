@@ -141,6 +141,14 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 				}
 				w.WriteHeader(http.StatusOK)
 				return
+			} else if action.ActionID == "deploy_button" {
+				log.Println("Deploy button clicked")
+				err := triggerDeployment(action.Value, payload)
+				if err != nil {
+					log.Printf("Failed to send deployment message: %v", err)
+				}
+				w.WriteHeader(http.StatusOK)
+				return
 			}
 		}
 		w.WriteHeader(http.StatusOK)

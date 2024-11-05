@@ -49,14 +49,28 @@ func DeployImageHandler(w http.ResponseWriter, r *http.Request) {
 func sendDeploymentMessageToChannel(deployMessage deployRequest) error {
 	api := slack.New(botToken)
 	channelID := "C07H5TFEKBM"
+	imageNameWithTag := deployMessage.ImageName + ":" + deployMessage.ImageTag
 	messageText := "이 메시지는 아래 커밋 메시지에 의해 트리거된 배포 파이프라인 입니다. \n 커밋 링크 & 메시지 \n" + deployMessage.CommitLink + "\n" + "아래 이미지를 배포할까요? \n 이미지 이름: " + deployMessage.ImageName + "\n 이미지 태그: " + deployMessage.ImageTag + "\n"
-	deployButton := slack.NewButtonBlockElement("deploy_button", "apply", slack.NewTextBlockObject("plain_text", ":white_check_mark: 네", false, false))
+	deployButton := slack.NewButtonBlockElement("deploy_button", imageNameWithTag, slack.NewTextBlockObject("plain_text", ":white_check_mark: 네", false, false))
 	noDeployButton := slack.NewButtonBlockElement("no_deploy_button", "delete", slack.NewTextBlockObject("plain_text", ":no_entry_sign: 아니요", false, false))
 	actionBlock := slack.NewActionBlock("deploy_action", deployButton, noDeployButton)
 	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", messageText, false, false), nil, nil)
 	messageBlocks := slack.MsgOptionBlocks(section, actionBlock)
 	_, _, err := api.PostMessage(channelID, messageBlocks)
 	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func triggerDeployment(actionValue string, payload slack.InteractionCallback) error {
+	api := slack.New(botToken)
+	channelID := payload.Channel.ID
+	imageNameWithTag := actionValue
+	messageText := "이미지 배포가 요청되었습니다. 이미지 이름: " + imageNameWithTag
+	_, _, err := api.PostMessage(channelID, slack.MsgOptionText(messageText, false))
+	if err != nil {
+		log.Println(err)
 		return err
 	}
 	return nil
