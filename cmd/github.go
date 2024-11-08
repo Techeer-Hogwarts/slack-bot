@@ -17,6 +17,11 @@ type deployRequest struct {
 	Secret     string `json:"secret"`
 }
 
+type actionsRequestWrapper struct {
+	Reference string         `json:"ref"`
+	Inputs    actionsRequest `json:"inputs"`
+}
+
 type actionsRequest struct {
 	ImageName     string `json:"imageName"`
 	ImageTag      string `json:"imageTag"`
@@ -94,11 +99,16 @@ func triggerDeployment(actionValue string, payload slack.InteractionCallback) er
 		ReplicaCouint: replicaCount,
 	}
 
-	err = sendDeploymentRequest(imageDeploy)
+	finalBody := actionsRequestWrapper{
+		Reference: "main",
+		Inputs:    imageDeploy,
+	}
+
+	err = sendDeploymentRequest(finalBody)
 	return nil
 }
 
-func sendDeploymentRequest(deployBody actionsRequest) error {
+func sendDeploymentRequest(deployBody actionsRequestWrapper) error {
 	log.Println("Send Deployment Request")
 	jsonBody, err := json.Marshal(deployBody)
 	if err != nil {
