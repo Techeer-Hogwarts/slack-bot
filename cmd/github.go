@@ -15,6 +15,12 @@ type deployRequest struct {
 	Secret     string `json:"secret"`
 }
 
+type actionsRequest struct {
+	ImageName     string `json:"imageName"`
+	ImageTag      string `json:"imageTag"`
+	ReplicaCouint string `json:"replicaCount"`
+}
+
 func DeployImageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Not Allowed", http.StatusMethodNotAllowed)
@@ -73,7 +79,7 @@ func triggerDeployment(actionValue string, payload slack.InteractionCallback) er
 	pyalodJsonVal, _ := json.MarshalIndent(payload, "", "  ")
 	log.Printf("Payload: %s", pyalodJsonVal)
 	log.Printf("Testing State: %s", payload.View.State.Values["replica_action"]["replica_count"].Value)
-	log.Printf("Testing State2: %s", payload.BlockActionState.Values["replica_action"]["replica_count"].Value)
+	// log.Printf("Testing State2: %s", payload.BlockActionState.Values["replica_action"]["replica_count"].Value)
 	// imageNameAndTag := strings.Split(imageNameWithTag, ":")
 	// imageName := imageNameAndTag[0]
 	// imageTag := imageNameAndTag[1]
