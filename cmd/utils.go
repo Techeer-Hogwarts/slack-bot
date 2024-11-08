@@ -45,7 +45,7 @@ func init() {
 	channelID = config.GetEnv("CHANNEL_ID2", "")
 	sheetsID = config.GetEnv("GSHEETS_ID", "")
 	githubURL = config.GetEnv("GITHUB_URL", "")
-	githubToken = config.GetEnv("GITHUB_TOKEN", "")
+	githubToken = config.GetEnv("GITHUB_ACTIONS_TOKEN", "")
 	roleMap = map[string]string{
 		"frontend":  "Frontend Developer",
 		"backend":   "Backend Developer",
