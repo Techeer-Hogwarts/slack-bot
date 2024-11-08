@@ -87,6 +87,9 @@ func triggerDeployment(actionValue string, payload slack.InteractionCallback) er
 	imageNameWithTag := actionValue
 	replicaCount := payload.BlockActionState.Values["replica_action"]["replica_count"].Value
 	log.Printf("Image Name: %s, Replica Count: %s", imageNameWithTag, replicaCount)
+	if replicaCount == "" {
+		replicaCount = "1"
+	}
 	imageNameAndTag := strings.Split(imageNameWithTag, ":")
 	imageName := imageNameAndTag[0]
 	imageTag := imageNameAndTag[1]
