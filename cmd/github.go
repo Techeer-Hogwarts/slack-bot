@@ -78,8 +78,8 @@ func triggerDeployment(actionValue string, payload slack.InteractionCallback) er
 	imageNameWithTag := actionValue
 	pyalodJsonVal, _ := json.MarshalIndent(payload, "", "  ")
 	log.Printf("Payload: %s", pyalodJsonVal)
-	log.Printf("Testing State: %s", payload.View.State.Values["replica_action"]["replica_count"].Value)
-	// log.Printf("Testing State2: %s", payload.BlockActionState.Values["replica_action"]["replica_count"].Value)
+	log.Printf("Testing State: %v", payload.View.State.Values)
+	log.Printf("Testing State2: %v", payload.BlockActionState.Values)
 	// imageNameAndTag := strings.Split(imageNameWithTag, ":")
 	// imageName := imageNameAndTag[0]
 	// imageTag := imageNameAndTag[1]
