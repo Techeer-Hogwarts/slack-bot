@@ -108,7 +108,7 @@ func sendDeploymentRequest(deployBody actionsRequest) error {
 	url := githubURL
 	token := githubToken
 	req, err := http.NewRequest("POST", url, strings.NewReader(string(jsonBody)))
-	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Authorization", "token "+token)
 	req.Header.Set("Accept", "application/vnd.github.v3+json")
 
 	client := &http.Client{}
