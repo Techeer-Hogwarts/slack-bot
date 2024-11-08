@@ -72,14 +72,21 @@ func triggerDeployment(actionValue string, payload slack.InteractionCallback) er
 	imageNameWithTag := actionValue
 	pyalodJsonVal, _ := json.MarshalIndent(payload, "", "  ")
 	log.Printf("Payload: %s", pyalodJsonVal)
+	log.Printf("Testing State: %s", payload.View.State.Values["replica_action"]["replica_count"].Value)
+	log.Printf("Testing State2: %s", payload.BlockActionState.Values["replica_action"]["replica_count"].Value)
 	// imageNameAndTag := strings.Split(imageNameWithTag, ":")
 	// imageName := imageNameAndTag[0]
 	// imageTag := imageNameAndTag[1]
-	messageText := "이미지 배포가 요청되었습니다. 이미지 이름: " + imageNameWithTag
+	// messageText := fmt.Sprintf("이미지 배포가 요청되었습니다.\n이미지 이름: %s\n이미지 태그: %s\n 복제 컨테이너 개수: %s", imageName, imageTag, payload.View.
+	messageText := "이미지 배포가 요청되었습니다.\n이미지 이름: " + imageNameWithTag
 	_, _, err := api.PostMessage(channelID, slack.MsgOptionText(messageText, false))
 	if err != nil {
 		log.Println(err)
 		return err
 	}
 	return nil
+}
+
+func sendDeploymentRequest() {
+	log.Println("Send Deployment Request")
 }
