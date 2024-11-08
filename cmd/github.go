@@ -86,13 +86,13 @@ func triggerDeployment(actionValue string, payload slack.InteractionCallback) er
 	channelID := payload.Channel.ID
 	imageNameWithTag := actionValue
 	replicaCount := payload.BlockActionState.Values["replica_action"]["replica_count"].Value
-	log.Printf("Image Name: %s, Replica Count: %s", imageNameWithTag, replicaCount)
 	if replicaCount == "" {
 		replicaCount = "1"
 	}
 	imageNameAndTag := strings.Split(imageNameWithTag, ":")
 	imageName := imageNameAndTag[0]
 	imageTag := imageNameAndTag[1]
+	log.Printf("Image Name: %s, Image Tag: %s, Replica Count: %s", imageName, imageTag, replicaCount)
 	messageText := fmt.Sprintf("이미지 배포가 요청되었습니다.\n이미지 이름: %s\n이미지 태그: %s\n 복제 컨테이너 개수: %s", imageName, imageTag, replicaCount)
 	_, _, err := api.PostMessage(channelID, slack.MsgOptionText(messageText, false))
 	if err != nil {
