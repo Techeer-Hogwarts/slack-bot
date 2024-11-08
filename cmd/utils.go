@@ -18,12 +18,14 @@ import (
 )
 
 var (
-	signingKey string
-	botToken   string
-	channelID  string
-	roleMap    map[string]string
-	secret     string
-	sheetsID   string
+	signingKey  string
+	botToken    string
+	channelID   string
+	roleMap     map[string]string
+	secret      string
+	sheetsID    string
+	githubURL   string
+	githubToken string
 )
 
 const (
@@ -42,6 +44,8 @@ func init() {
 	secret = config.GetEnv("SECRET_ALLOW", "")
 	channelID = config.GetEnv("CHANNEL_ID2", "")
 	sheetsID = config.GetEnv("GSHEETS_ID", "")
+	githubURL = config.GetEnv("GITHUB_URL", "")
+	githubToken = config.GetEnv("GITHUB_ACTIONS_TOKEN", "")
 	roleMap = map[string]string{
 		"frontend":  "Frontend Developer",
 		"backend":   "Backend Developer",
