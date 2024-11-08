@@ -25,9 +25,9 @@ type actionsRequestWrapper struct {
 }
 
 type actionsRequest struct {
-	ImageName     string `json:"imageName"`
-	ImageTag      string `json:"imageTag"`
-	ReplicaCouint string `json:"replicaCount"`
+	ImageName     string `json:"image_name"`
+	ImageTag      string `json:"image_tag"`
+	ReplicaCouint string `json:"replicas"`
 }
 
 func DeployImageHandler(w http.ResponseWriter, r *http.Request) {
@@ -123,9 +123,6 @@ func sendDeploymentRequest(deployBody actionsRequestWrapper) error {
 	req.Header.Set("Authorization", "token "+token)
 	req.Header.Set("Accept", "application/vnd.github.v3+json")
 
-	log.Printf("Request URL: %s", req.URL)
-	log.Printf("Request Header: %s", req.Header)
-	log.Printf("Request Body: %s", req.Body)
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
