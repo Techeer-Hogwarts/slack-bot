@@ -2,8 +2,10 @@ package cmd
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/slack-go/slack"
 )
@@ -76,22 +78,50 @@ func triggerDeployment(actionValue string, payload slack.InteractionCallback) er
 	api := slack.New(botToken)
 	channelID := payload.Channel.ID
 	imageNameWithTag := actionValue
-	pyalodJsonVal, _ := json.MarshalIndent(payload, "", "  ")
-	log.Printf("Payload: %s", pyalodJsonVal)
-	log.Printf("Testing State2: %v", payload.BlockActionState.Values["replica_action"]["replica_count"].Value)
-	// imageNameAndTag := strings.Split(imageNameWithTag, ":")
-	// imageName := imageNameAndTag[0]
-	// imageTag := imageNameAndTag[1]
-	// messageText := fmt.Sprintf("이미지 배포가 요청되었습니다.\n이미지 이름: %s\n이미지 태그: %s\n 복제 컨테이너 개수: %s", imageName, imageTag, payload.View.
-	messageText := "이미지 배포가 요청되었습니다.\n이미지 이름: " + imageNameWithTag
+	replicaCount := payload.BlockActionState.Values["replica_action"]["replica_count"].Value
+	imageNameAndTag := strings.Split(imageNameWithTag, ":")
+	imageName := imageNameAndTag[0]
+	imageTag := imageNameAndTag[1]
+	messageText := fmt.Sprintf("이미지 배포가 요청되었습니다.\n이미지 이름: %s\n이미지 태그: %s\n 복제 컨테이너 개수: %s", imageName, imageTag, replicaCount)
 	_, _, err := api.PostMessage(channelID, slack.MsgOptionText(messageText, false))
 	if err != nil {
 		log.Println(err)
 		return err
 	}
+	imageDeploy := actionsRequest{
+		ImageName:     imageName,
+		ImageTag:      imageTag,
+		ReplicaCouint: replicaCount,
+	}
+
+	err = sendDeploymentRequest(imageDeploy)
 	return nil
 }
 
-func sendDeploymentRequest() {
+func sendDeploymentRequest(deployBody actionsRequest) error {
 	log.Println("Send Deployment Request")
+	jsonBody, err := json.Marshal(deployBody)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	url := githubURL
+	token := githubToken
+	req, err := http.NewRequest("POST", url, strings.NewReader(string(jsonBody)))
+	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Accept", "application/vnd.github.v3+json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusNoContent {
+		log.Println("Failed to send deployment request")
+		return fmt.Errorf("Failed to send deployment request")
+	}
+	return nil
 }
