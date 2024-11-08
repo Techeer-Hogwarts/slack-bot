@@ -215,12 +215,11 @@ func InitialDataUsers() {
 }
 
 func InitialDataTags() {
-	api := slack.New(botToken)
 	stacks, err := loadStacksFromFile("stacks.json")
 	if err != nil {
 		log.Printf("Failed to load stacks from file: %v", err)
 	}
-	err = addAllTags(api, stacks)
+	err = addAllTags(stacks)
 	if err != nil {
 		log.Printf("Failed to add all tags: %v", err)
 	}
@@ -250,10 +249,6 @@ func addAllUsers(api *slack.Client) error {
 			}
 		}
 	}
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
 
@@ -274,14 +269,11 @@ func getAllUsers(api *slack.Client) error {
 		}
 	}
 	log.Printf("Total number of users: %v", counter)
-	if err != nil {
-		return err
-	}
 
 	return nil
 }
 
-func addAllTags(api *slack.Client, stacks []db.Stack) error {
+func addAllTags(stacks []db.Stack) error {
 	for _, value := range stacks {
 		ms, _, _, err := db.GetTag(value.Key)
 		if ms == "na" {
@@ -291,9 +283,7 @@ func addAllTags(api *slack.Client, stacks []db.Stack) error {
 			}
 		}
 		if err != nil {
-			if err != nil {
-				return fmt.Errorf("failed to get tag: %s", err.Error())
-			}
+			return fmt.Errorf("failed to get tag: %s", err.Error())
 		}
 	}
 	return nil
