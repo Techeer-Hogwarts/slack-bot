@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"strings"
@@ -117,10 +119,13 @@ func sendDeploymentRequest(deployBody actionsRequestWrapper) error {
 	}
 	url := githubURL
 	token := githubToken
-	req, err := http.NewRequest("POST", url, strings.NewReader(string(jsonBody)))
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonBody))
 	req.Header.Set("Authorization", "token "+token)
 	req.Header.Set("Accept", "application/vnd.github.v3+json")
 
+	log.Printf("Request URL: %s", req.URL)
+	log.Printf("Request Header: %s", req.Header)
+	log.Printf("Request Body: %s", req.Body)
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -129,6 +134,13 @@ func sendDeploymentRequest(deployBody actionsRequestWrapper) error {
 	}
 	defer resp.Body.Close()
 
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println("Error reading response:", err)
+		return err
+	}
+	log.Printf("Response Status: %s", resp.Status)
+	log.Printf("Response Body: %s", body)
 	if resp.StatusCode != http.StatusNoContent {
 		log.Println("Failed to send deployment request")
 		return fmt.Errorf("Failed to send deployment request")
