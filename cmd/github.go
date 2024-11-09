@@ -65,7 +65,7 @@ func sendDeploymentMessageToChannel(deployMessage deployRequest) error {
 	api := slack.New(botToken)
 	channelID := "C07H5TFEKBM"
 	imageNameWithTag := deployMessage.ImageName + ":" + deployMessage.ImageTag
-	messageText := "이 메시지는 아래 커밋 메시지에 의해 트리거된 배포 파이프라인 입니다. \n 커밋 링크 & 메시지 \n" + deployMessage.CommitLink + "\n" + "아래 이미지를 배포할까요? \n 이미지 이름: " + deployMessage.ImageName + "\n 이미지 태그: " + deployMessage.ImageTag + "\n"
+	messageText := fmt.Sprintf("새로운 이미지가 빌드 되었습니다.\n>커밋 링크 & 메시지: \n%s\n*아래 이미지를 배포할까요?*\n이미지 이름: `%s`\n이미지 태그: `%s`\n", deployMessage.CommitLink, deployMessage.ImageName, deployMessage.ImageTag)
 	deployButton := slack.NewButtonBlockElement("deploy_button", imageNameWithTag, slack.NewTextBlockObject("plain_text", ":white_check_mark: 네", false, false))
 	noDeployButton := slack.NewButtonBlockElement("no_deploy_button", "delete", slack.NewTextBlockObject("plain_text", ":no_entry_sign: 아니요", false, false))
 	inputElement := slack.NewPlainTextInputBlockElement(slack.NewTextBlockObject("plain_text", "기본값: 1", false, false), "replica_count")
@@ -93,7 +93,7 @@ func triggerDeployment(actionValue string, payload slack.InteractionCallback) er
 	imageName := imageNameAndTag[0]
 	imageTag := imageNameAndTag[1]
 	log.Printf("Image Name: %s, Image Tag: %s, Replica Count: %s", imageName, imageTag, replicaCount)
-	messageText := fmt.Sprintf("이미지 배포가 요청되었습니다.\n이미지 이름: %s\n이미지 태그: %s\n 복제 컨테이너 개수: %s", imageName, imageTag, replicaCount)
+	messageText := fmt.Sprintf("*이미지 배포가 요청되었습니다.*\n이미지 이름: `%s`\n이미지 태그: `%s`\n복제 컨테이너 개수: `%s`\n요청 처리중......", imageName, imageTag, replicaCount)
 	_, _, err := api.PostMessage(channelID, slack.MsgOptionText(messageText, false))
 	if err != nil {
 		log.Println(err)
