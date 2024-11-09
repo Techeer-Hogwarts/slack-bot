@@ -30,6 +30,16 @@ type actionsRequest struct {
 	ReplicaCouint string `json:"replicas"`
 }
 
+type statusRequest struct {
+	Status     string `json:"status"`
+	ImageName  string `json:"imageName"`
+	ImageTag   string `json:"imageTag"`
+	FailedStep string `json:"failedStep"`
+	Logs       string `json:"logs"`
+	Secret     string `json:"secret"`
+	JobURL     string `json:"jobURL"`
+}
+
 func DeployImageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Not Allowed", http.StatusMethodNotAllowed)
@@ -145,6 +155,71 @@ func sendDeploymentRequest(deployBody actionsRequestWrapper) error {
 	if resp.StatusCode != http.StatusNoContent {
 		log.Println("Failed to send deployment request")
 		return fmt.Errorf("Failed to send deployment request")
+	}
+	return nil
+}
+
+func DeployStatusHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	log.Println("Deploy Status Handler")
+	var jobStatusRequest statusRequest
+	requestBody := r.Body
+	err := json.NewDecoder(requestBody).Decode(&jobStatusRequest)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Println(err)
+		return
+	}
+	if jobStatusRequest.Secret != secret {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		log.Println("Unauthorized")
+		return
+	}
+	defer requestBody.Close()
+	log.Println(jobStatusRequest.ImageName)
+	log.Println(jobStatusRequest.ImageTag)
+	if jobStatusRequest.Status == "success" {
+		err = sendDeploymentStatusToChannel(jobStatusRequest)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	} else {
+		err = sendFailedStatusToChannel(jobStatusRequest)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+}
+
+func sendDeploymentStatusToChannel(status statusRequest) error {
+	api := slack.New(botToken)
+	channelID := "C07H5TFEKBM"
+	messageText := fmt.Sprintf("*새로운 이미지 배포를 성공하였습니다.*\n>이미지 이름: `%s`\n이미지 태그: `%s`\n링크: %s", status.ImageName, status.ImageTag, status.JobURL)
+	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", messageText, false, false), nil, nil)
+	messageBlocks := slack.MsgOptionBlocks(section)
+	_, _, err := api.PostMessage(channelID, messageBlocks)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func sendFailedStatusToChannel(status statusRequest) error {
+	api := slack.New(botToken)
+	channelID := "C07H5TFEKBM"
+	messageText := fmt.Sprintf("*새로운 이미지 배포를 실패하였습니다.*\n>이미지 이름: `%s`\n이미지 태그: `%s`\n링크: %s\n실패한 단계: >%s\n로그: ```%s```", status.ImageName, status.ImageTag, status.FailedStep, status.Logs, status.JobURL)
+	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", messageText, false, false), nil, nil)
+	messageBlocks := slack.MsgOptionBlocks(section)
+	_, _, err := api.PostMessage(channelID, messageBlocks)
+	if err != nil {
+		return err
 	}
 	return nil
 }

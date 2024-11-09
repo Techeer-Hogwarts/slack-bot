@@ -20,6 +20,7 @@ func main() {
 	http.HandleFunc("/", cmd.SendHelloWorld)
 	http.HandleFunc("/api/v1/profile/picture", cmd.ZipPictureHandler)
 	http.HandleFunc("/api/v1/deploy/image", cmd.DeployImageHandler)
+	http.HandleFunc("/api/v1/deploy/status", cmd.DeployStatusHandler)
 	if port == "" {
 		port = "8080"
 	}
