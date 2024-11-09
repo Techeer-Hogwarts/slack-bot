@@ -201,7 +201,7 @@ func DeployStatusHandler(w http.ResponseWriter, r *http.Request) {
 func sendDeploymentStatusToChannel(status statusRequest) error {
 	api := slack.New(botToken)
 	channelID := "C07H5TFEKBM"
-	messageText := fmt.Sprintf("*새로운 이미지 배포를 성공하였습니다.*\n>이미지 이름: `%s`\n이미지 태그: `%s`\n링크: %s", status.ImageName, status.ImageTag, status.JobURL)
+	messageText := fmt.Sprintf(":approved::approved: *새로운 이미지 배포를 성공하였습니다.* :approved::approved:\n>이미지 이름: `%s`\n이미지 태그: `%s`\n링크: %s", status.ImageName, status.ImageTag, status.JobURL)
 	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", messageText, false, false), nil, nil)
 	messageBlocks := slack.MsgOptionBlocks(section)
 	_, _, err := api.PostMessage(channelID, messageBlocks)
@@ -214,7 +214,7 @@ func sendDeploymentStatusToChannel(status statusRequest) error {
 func sendFailedStatusToChannel(status statusRequest) error {
 	api := slack.New(botToken)
 	channelID := "C07H5TFEKBM"
-	messageText := fmt.Sprintf("*새로운 이미지 배포를 실패하였습니다.*\n>이미지 이름: `%s`\n이미지 태그: `%s`\n링크: %s\n실패한 단계: >%s\n로그: ```%s```", status.ImageName, status.ImageTag, status.JobURL, status.FailedStep, status.Logs)
+	messageText := fmt.Sprintf(":exclamation::exclamation: *새로운 이미지 배포를 실패하였습니다.* :exclamation::exclamation:\n이미지 이름: `%s`\n이미지 태그: `%s`\n링크: %s\n실패한 단계: %s\n로그: ```%s```", status.ImageName, status.ImageTag, status.JobURL, status.FailedStep, status.Logs)
 	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", messageText, false, false), nil, nil)
 	messageBlocks := slack.MsgOptionBlocks(section)
 	_, _, err := api.PostMessage(channelID, messageBlocks)
