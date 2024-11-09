@@ -96,7 +96,7 @@ func triggerDeployment(actionValue string, payload slack.InteractionCallback) er
 	channelID := payload.Channel.ID
 	imageNameWithTag := actionValue
 	replicaCount := payload.BlockActionState.Values["replica_action"]["replica_count"].Value
-	if replicaCount == "" {
+	if replicaCount == "" || replicaCount == "0" {
 		replicaCount = "1"
 	}
 	imageNameAndTag := strings.Split(imageNameWithTag, ":")
@@ -201,7 +201,7 @@ func DeployStatusHandler(w http.ResponseWriter, r *http.Request) {
 func sendDeploymentStatusToChannel(status statusRequest) error {
 	api := slack.New(botToken)
 	channelID := "C07H5TFEKBM"
-	messageText := fmt.Sprintf(":approved::approved: *새로운 이미지 배포를 성공하였습니다.* :approved::approved:\n>이미지 이름: `%s`\n이미지 태그: `%s`\n링크: %s", status.ImageName, status.ImageTag, status.JobURL)
+	messageText := fmt.Sprintf(":approved::approved: *새로운 이미지 배포를 성공하였습니다.* :approved::approved:\n이미지 이름: `%s`\n이미지 태그: `%s`\n링크: %s", status.ImageName, status.ImageTag, status.JobURL)
 	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", messageText, false, false), nil, nil)
 	messageBlocks := slack.MsgOptionBlocks(section)
 	_, _, err := api.PostMessage(channelID, messageBlocks)
