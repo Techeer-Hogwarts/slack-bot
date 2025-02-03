@@ -21,6 +21,9 @@ func main() {
 	http.HandleFunc("/api/v1/profile/picture", cmd.ZipPictureHandler)
 	http.HandleFunc("/api/v1/deploy/image", cmd.DeployImageHandler)
 	http.HandleFunc("/api/v1/deploy/status", cmd.DeployStatusHandler)
+	// 알림 기능
+	http.HandleFunc("/api/v1/alert/user", cmd.AlertUserHandler)
+	http.HandleFunc("/api/v1/alert/channel", cmd.AlertChannelHandler)
 	if port == "" {
 		port = "8080"
 	}
