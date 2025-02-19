@@ -50,6 +50,10 @@ type userMessageSchema struct {
 	Result         string `json:"result"`
 }
 
+const (
+	redirectURL = "https://www.techeerzip.cloud/project/detail/%s/%d"
+)
+
 func AlertChannelHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Not Allowed", http.StatusMethodNotAllowed)
@@ -83,8 +87,12 @@ func AlertChannelHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println("Error mapping to studySchema:", err)
 			return
 		}
-		message := sendStudyMessage(study, api, channelID)
-		log.Println("Message:", message)
+		err = sendStudyMessage(study, api, channelID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("Error sending study message:", err)
+			return
+		}
 
 	case "project":
 		var project projectSchema
@@ -94,8 +102,12 @@ func AlertChannelHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println("Error mapping to projectSchema:", err)
 			return
 		}
-		message := sendProjectMessage(project, api, channelID)
-		log.Println("Message:", message)
+		err = sendProjectMessage(project, api, channelID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("Error sending project message:", err)
+			return
+		}
 	default:
 		http.Error(w, "Invalid type", http.StatusBadRequest)
 		log.Println("Invalid type:", typeStr)
@@ -144,40 +156,54 @@ func mapToStruct(m map[string]interface{}, target interface{}) error {
 	return json.Unmarshal(data, target)
 }
 
-func sendProjectMessage(project projectSchema, api *slack.Client, channelID string) string {
+func sendProjectMessage(project projectSchema, api *slack.Client, channelID string) error {
 	profile, err := api.GetUserByEmail(project.Email)
 	if err != nil {
 		log.Printf("Failed to get user by email %s: %v", project.Email, err)
-		return ""
+		return err
 	}
 	userCode := profile.ID
-	testMessaege := "[" + emoji_people + " *새로운 프로젝트 팀 공고가 올라왔습니다* " + emoji_people + "]\n" +
+	projectMessage := "[" + emoji_people + " *새로운 프로젝트 팀 공고가 올라왔습니다* " + emoji_people + "]\n" +
 		"> " + ":name_badge:" + " *팀 이름* \n " + project.Name + "\n\n\n\n" +
-		"> " + emoji_star + " *팀장* <<@" + userCode + ">>\n\n\n\n" +
+		"> " + emoji_star + " *팀장* <@" + userCode + ">\n\n\n\n" +
 		"> " + emoji_notebook + " *팀/프로젝트 설명입니다*\n" + project.ProjectExplain + "\n\n\n\n" +
-		"> " + emoji_notebook + " *이런 사람을 원합니다!*\n" + project.RecruitExplain + "\n\n\n\n" +
+		"> " + ":woman-raising-hand:" + " *이런 사람을 원합니다!*\n" + project.RecruitExplain + "\n\n\n\n" +
 		"> " + emoji_stack + " *사용되는 기술입니다*\n" + convertStackToEmojiString(project.Stack) + "\n\n\n" +
 		"> " + emoji_dart + " *모집하는 직군 & 인원*\n" + convertRecruitNumToEmojiString(project) + "\n\n\n\n" +
 		"> " + ":notion:" + "*노션 링크* \n" + project.NotionLink + "\n\n자세한 문의사항은" + "<@" + userCode + ">" + "에게 DM으로 문의 주세요!"
-	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", testMessaege, false, false), nil, nil)
+	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", projectMessage, false, false), nil, nil)
 	messageBlocks := slack.MsgOptionBlocks(section)
 	_, _, err = api.PostMessage(channelID, messageBlocks)
 	if err != nil {
 		log.Printf("Failed to send message to channel %s: %v", channelID, err)
-		return ""
+		return err
 	}
-	return ""
+	return nil
 }
 
-func sendStudyMessage(study studySchema, api *slack.Client, channelID string) string {
-	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", "스터디 테스트입니다", false, false), nil, nil)
+func sendStudyMessage(study studySchema, api *slack.Client, channelID string) error {
+	profile, err := api.GetUserByEmail(study.Email)
+	if err != nil {
+		log.Printf("Failed to get user by email %s: %v", study.Email, err)
+		return err
+	}
+	userCode := profile.ID
+	studyMessage := "[" + emoji_people + " *새로운 스터디 팀 공고가 올라왔습니다* " + emoji_people + "]\n" +
+		"> " + ":name_badge:" + " *팀 이름* \n " + study.Name + "\n\n\n\n" +
+		"> " + emoji_star + " *팀장* <@" + userCode + ">\n\n\n\n" +
+		"> " + emoji_notebook + " *팀/프로젝트 설명입니다*\n" + study.StudyExplain + "\n\n\n\n" +
+		"> " + ":man-raising-hand:" + " *이런 사람을 원합니다!*\n" + study.RecruitExplain + "\n\n\n\n" +
+		"> " + ":pencil:" + " *지켜야 하는 규칙입니다!*\n" + study.Rule + "\n\n\n" +
+		"> " + emoji_dart + " *모집하는 스터디 인원*\n" + strconv.Itoa(study.RecruitNum) + "명\n\n\n\n" +
+		"> " + ":notion:" + "*노션 링크* \n" + study.NotionLink + "\n\n자세한 문의사항은" + "<@" + userCode + ">" + "에게 DM으로 문의 주세요!"
+	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", studyMessage, false, false), nil, nil)
 	messageBlocks := slack.MsgOptionBlocks(section)
-	_, _, err := api.PostMessage(channelID, messageBlocks)
+	_, _, err = api.PostMessage(channelID, messageBlocks)
 	if err != nil {
 		log.Printf("Failed to send message to channel %s: %v", channelID, err)
-		return ""
+		return err
 	}
-	return ""
+	return nil
 }
 
 func convertStackToEmojiString(stack []string) string {
