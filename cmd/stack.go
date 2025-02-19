@@ -4,7 +4,7 @@ var stackMap = map[string]string{}
 var categoryMap = map[string]string{}
 
 func init() {
-	stackMap = map[string]string{
+	categoryMap = map[string]string{
 		"없음":                          "OTHER",
 		"React.js":                    "FRONTEND",
 		"Vue.js":                      "FRONTEND",
@@ -89,7 +89,7 @@ func init() {
 		"React Testing Library":       "FRONTEND",
 		"RabbitMQ":                    "DEVOPS",
 	}
-	categoryMap = map[string]string{
+	stackMap = map[string]string{
 		"없음":                          ":none:",
 		"React.js":                    ":react:",
 		"Vue.js":                      ":vue:",
