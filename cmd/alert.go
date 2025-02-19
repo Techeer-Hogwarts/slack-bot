@@ -57,7 +57,7 @@ func AlertChannelHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Println("Alert Channel Handler")
-	var temp alertRequest
+	var temp interface{}
 	requestBody := r.Body
 
 	err := json.NewDecoder(requestBody).Decode(&temp)
@@ -84,7 +84,7 @@ func AlertUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Println("Alert User Handler")
-	var temp alertRequest
+	var temp userMessageSchema
 	requestBody := r.Body
 	log.Println(requestBody)
 	err := json.NewDecoder(requestBody).Decode(&temp)
