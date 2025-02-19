@@ -4,12 +4,9 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-)
 
-type alertRequest struct {
-	Secret string
-	Alert  string
-}
+	"github.com/slack-go/slack"
+)
 
 type studySchema struct {
 	ID             int    `json:"id"`
@@ -57,7 +54,7 @@ func AlertChannelHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Println("Alert Channel Handler")
-	var temp interface{}
+	var temp map[string]interface{}
 	requestBody := r.Body
 
 	err := json.NewDecoder(requestBody).Decode(&temp)
@@ -68,7 +65,40 @@ func AlertChannelHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	jsonVal, _ := json.MarshalIndent(temp, "", "  ")
 	log.Println(string(jsonVal))
+	typeStr, ok := temp["type"].(string)
+	if !ok {
+		http.Error(w, "Missing or invalid 'type' field", http.StatusBadRequest)
+		log.Println("Missing 'type' field")
+		return
+	}
+	api := slack.New(botToken)
+	switch typeStr {
+	case "study":
+		var study studySchema
+		err := mapToStruct(temp, &study)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			log.Println("Error mapping to studySchema:", err)
+			return
+		}
+		message := sendStudyMessage(study, api, channelID)
+		log.Println("Message:", message)
 
+	case "project":
+		var project projectSchema
+		err := mapToStruct(temp, &project)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			log.Println("Error mapping to projectSchema:", err)
+			return
+		}
+		message := sendProjectMessage(project, api, channelID)
+		log.Println("Message:", message)
+	default:
+		http.Error(w, "Invalid type", http.StatusBadRequest)
+		log.Println("Invalid type:", typeStr)
+		return
+	}
 	// if temp.Secret != secret {
 	// 	http.Error(w, "Unauthorized", http.StatusUnauthorized)
 	// 	log.Println("Unauthorized")
@@ -102,4 +132,34 @@ func AlertUserHandler(w http.ResponseWriter, r *http.Request) {
 	// }
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Alert User Handler"))
+}
+
+func mapToStruct(m map[string]interface{}, target interface{}) error {
+	data, err := json.Marshal(m)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(data, target)
+}
+
+func sendProjectMessage(project projectSchema, api *slack.Client, channelID string) string {
+	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", "프로젝트 테스트입니다", false, false), nil, nil)
+	messageBlocks := slack.MsgOptionBlocks(section)
+	_, _, err := api.PostMessage(channelID, messageBlocks)
+	if err != nil {
+		log.Printf("Failed to send message to channel %s: %v", channelID, err)
+		return ""
+	}
+	return ""
+}
+
+func sendStudyMessage(study studySchema, api *slack.Client, channelID string) string {
+	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", "스터디 테스트입니다", false, false), nil, nil)
+	messageBlocks := slack.MsgOptionBlocks(section)
+	_, _, err := api.PostMessage(channelID, messageBlocks)
+	if err != nil {
+		log.Printf("Failed to send message to channel %s: %v", channelID, err)
+		return ""
+	}
+	return ""
 }
