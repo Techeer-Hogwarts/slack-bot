@@ -143,16 +143,18 @@ func mapToStruct(m map[string]interface{}, target interface{}) error {
 }
 
 func sendProjectMessage(project projectSchema, api *slack.Client, channelID string) string {
+	profile, err := api.GetUserByEmail(project.Email)
+	userCode := profile.ID
 	testMessaege := "[" + emoji_people + project.ProjectExplain + emoji_people + "]\n" +
 		"> " + emoji_golf + " *팀 이름* \n " + project.Name + "\n\n\n\n" +
-		"> " + emoji_star + " *팀장* <<@" + "윤정은" + ">>\n\n\n\n" +
+		"> " + emoji_star + " *팀장* <<@" + userCode + ">>\n\n\n\n" +
 		"> " + emoji_notebook + " *팀/프로젝트 설명*\n" + project.RecruitExplain + "\n\n\n\n" +
 		"> " + emoji_stack + " *사용되는 기술*\n" + "테스트" + "\n\n\n\n" +
 		"> " + emoji_dart + " *모집하는 직군 & 인원*\n" + "직군" + "\n\n\n\n" +
 		"> " + "*그 외 추가적인 정보* \n" + project.NotionLink + "\n\n자세한 문의사항은" + "<@" + project.Leader + ">" + "에게 DM으로 문의 주세요!"
 	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", testMessaege, false, false), nil, nil)
 	messageBlocks := slack.MsgOptionBlocks(section)
-	_, _, err := api.PostMessage(channelID, messageBlocks)
+	_, _, err = api.PostMessage(channelID, messageBlocks)
 	if err != nil {
 		log.Printf("Failed to send message to channel %s: %v", channelID, err)
 		return ""
