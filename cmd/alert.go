@@ -59,13 +59,15 @@ func AlertChannelHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Alert Channel Handler")
 	var temp alertRequest
 	requestBody := r.Body
-	log.Println(requestBody)
+
 	err := json.NewDecoder(requestBody).Decode(&temp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		log.Println(err)
 		return
 	}
+	jsonVal, _ := json.MarshalIndent(temp, "", "  ")
+	log.Println(string(jsonVal))
 
 	// if temp.Secret != secret {
 	// 	http.Error(w, "Unauthorized", http.StatusUnauthorized)
@@ -91,7 +93,8 @@ func AlertUserHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-
+	jsonVal, _ := json.MarshalIndent(temp, "", "  ")
+	log.Println(string(jsonVal))
 	// if temp.Secret != secret {
 	// 	http.Error(w, "Unauthorized", http.StatusUnauthorized)
 	// 	log.Println("Unauthorized")
