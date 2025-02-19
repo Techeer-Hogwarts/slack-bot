@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/slack-go/slack"
 )
@@ -149,13 +151,14 @@ func sendProjectMessage(project projectSchema, api *slack.Client, channelID stri
 		return ""
 	}
 	userCode := profile.ID
-	testMessaege := "[" + emoji_people + project.ProjectExplain + emoji_people + "]\n" +
-		"> " + emoji_golf + " *팀 이름* \n " + project.Name + "\n\n\n\n" +
+	testMessaege := "[" + emoji_people + " *새로운 프로젝트 팀 공고가 올라왔습니다* " + emoji_people + "]\n" +
+		"> " + ":name_badge:" + " *팀 이름* \n " + project.Name + "\n\n\n\n" +
 		"> " + emoji_star + " *팀장* <<@" + userCode + ">>\n\n\n\n" +
-		"> " + emoji_notebook + " *팀/프로젝트 설명*\n" + project.RecruitExplain + "\n\n\n\n" +
-		"> " + emoji_stack + " *사용되는 기술*\n" + "테스트" + "\n\n\n\n" +
-		"> " + emoji_dart + " *모집하는 직군 & 인원*\n" + "직군" + "\n\n\n\n" +
-		"> " + "*그 외 추가적인 정보* \n" + project.NotionLink + "\n\n자세한 문의사항은" + "<@" + project.Leader + ">" + "에게 DM으로 문의 주세요!"
+		"> " + emoji_notebook + " *팀/프로젝트 설명입니다*\n" + project.ProjectExplain + "\n\n\n\n" +
+		"> " + emoji_notebook + " *이런 사람을 원합니다!*\n" + project.RecruitExplain + "\n\n\n\n" +
+		"> " + emoji_stack + " *사용되는 기술입니다*\n" + convertStackToEmojiString(project.Stack) + "\n\n\n" +
+		"> " + emoji_dart + " *모집하는 직군 & 인원*\n" + convertRecruitNumToEmojiString(project) + "\n\n\n\n" +
+		"> " + ":notion:" + "*노션 링크* \n" + project.NotionLink + "\n\n자세한 문의사항은" + "<@" + userCode + ">" + "에게 DM으로 문의 주세요!"
 	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", testMessaege, false, false), nil, nil)
 	messageBlocks := slack.MsgOptionBlocks(section)
 	_, _, err = api.PostMessage(channelID, messageBlocks)
@@ -175,4 +178,63 @@ func sendStudyMessage(study studySchema, api *slack.Client, channelID string) st
 		return ""
 	}
 	return ""
+}
+
+func convertStackToEmojiString(stack []string) string {
+	var backArray []string
+	var frontArray []string
+	var devOpsArray []string
+	var otherArray []string
+	var stackString string
+
+	for _, s := range stack {
+		category := categoryMap[s]
+		emoji := stackMap[s]
+		switch category {
+		case "BACKEND":
+			backArray = append(backArray, emoji)
+		case "FRONTEND":
+			frontArray = append(frontArray, emoji)
+		case "DEVOPS":
+			devOpsArray = append(devOpsArray, emoji)
+		case "OTHER":
+			otherArray = append(otherArray, emoji)
+		default:
+			log.Printf("Unknown category: %s", category)
+			otherArray = append(otherArray, s)
+		}
+	}
+	if len(backArray) > 0 {
+		stackString += ":backend:" + " : " + strings.Join(backArray, " ") + "\n"
+	}
+	if len(frontArray) > 0 {
+		stackString += ":frontend:" + " : " + strings.Join(frontArray, " ") + "\n"
+	}
+	if len(devOpsArray) > 0 {
+		stackString += ":devops:" + " : " + strings.Join(devOpsArray, " ") + "\n"
+	}
+	if len(otherArray) > 0 {
+		stackString += ":other:" + " : " + strings.Join(otherArray, " ") + "\n"
+	}
+	return stackString
+}
+
+func convertRecruitNumToEmojiString(project projectSchema) string {
+	var recruitString string
+	if project.FrontNum > 0 {
+		recruitString += ":frontend:" + " " + strconv.Itoa(project.FrontNum) + "명\n"
+	}
+	if project.BackNum > 0 {
+		recruitString += ":backend:" + " " + strconv.Itoa(project.BackNum) + "명\n"
+	}
+	if project.DataEngNum > 0 {
+		recruitString += ":data_engineer:" + " " + strconv.Itoa(project.DataEngNum) + "명\n"
+	}
+	if project.DevOpsNum > 0 {
+		recruitString += ":devops:" + " " + strconv.Itoa(project.DevOpsNum) + "명\n"
+	}
+	if project.uiUxNum > 0 {
+		recruitString += ":figma:" + " " + strconv.Itoa(project.uiUxNum) + "명\n"
+	}
+	return recruitString
 }
