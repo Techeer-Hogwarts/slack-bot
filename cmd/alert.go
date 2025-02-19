@@ -145,7 +145,7 @@ func mapToStruct(m map[string]interface{}, target interface{}) error {
 func sendProjectMessage(project projectSchema, api *slack.Client, channelID string) string {
 	testMessaege := "[" + emoji_people + project.ProjectExplain + emoji_people + "]\n" +
 		"> " + emoji_golf + " *팀 이름* \n " + project.Name + "\n\n\n\n" +
-		"> " + emoji_star + " *팀장* <<@" + project.Leader + ">>\n\n\n\n" +
+		"> " + emoji_star + " *팀장* <<@" + "윤정은" + ">>\n\n\n\n" +
 		"> " + emoji_notebook + " *팀/프로젝트 설명*\n" + project.RecruitExplain + "\n\n\n\n" +
 		"> " + emoji_stack + " *사용되는 기술*\n" + "테스트" + "\n\n\n\n" +
 		"> " + emoji_dart + " *모집하는 직군 & 인원*\n" + "직군" + "\n\n\n\n" +
