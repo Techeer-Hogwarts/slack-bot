@@ -91,6 +91,7 @@ func AlertUserHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
+
 	// if temp.Secret != secret {
 	// 	http.Error(w, "Unauthorized", http.StatusUnauthorized)
 	// 	log.Println("Unauthorized")
