@@ -144,6 +144,10 @@ func mapToStruct(m map[string]interface{}, target interface{}) error {
 
 func sendProjectMessage(project projectSchema, api *slack.Client, channelID string) string {
 	profile, err := api.GetUserByEmail(project.Email)
+	if err != nil {
+		log.Printf("Failed to get user by email %s: %v", project.Email, err)
+		return ""
+	}
 	userCode := profile.ID
 	testMessaege := "[" + emoji_people + project.ProjectExplain + emoji_people + "]\n" +
 		"> " + emoji_golf + " *팀 이름* \n " + project.Name + "\n\n\n\n" +
