@@ -146,7 +146,7 @@ func AlertUserHandler(w http.ResponseWriter, r *http.Request) {
 	api := slack.New(botToken)
 
 	switch result {
-	case "PENDGING":
+	case "PENDING":
 		statusMsg = "지원이 완료됐습니다."
 	case "CANCELLED":
 		statusMsg = "지원자께서 취소 하셨습니다."
