@@ -165,7 +165,7 @@ func AlertUserHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error sending user message:", err)
 		return
 	}
-	err = sendLeaderStatusMessage(statusMsg, temp, api)
+	err = sendLeaderStatusMessage(temp, api)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Println("Error sending leader message:", err)
@@ -267,7 +267,7 @@ func sendUserStatusMessage(status string, userMessage userMessageSchema, api *sl
 	return nil
 }
 
-func sendLeaderStatusMessage(status string, userMessage userMessageSchema, api *slack.Client) error {
+func sendLeaderStatusMessage(userMessage userMessageSchema, api *slack.Client) error {
 	profile, err := api.GetUserByEmail(userMessage.LeaderEmail)
 	if err != nil {
 		log.Printf("Failed to get user by email %s: %v", userMessage.LeaderEmail, err)
@@ -278,6 +278,7 @@ func sendLeaderStatusMessage(status string, userMessage userMessageSchema, api *
 		log.Printf("Failed to get user by email %s: %v", userMessage.LeaderEmail, err)
 		return err
 	}
+	var status string
 	switch userMessage.Result {
 	case "PENDING":
 		status = "지원자가 있습니다."
