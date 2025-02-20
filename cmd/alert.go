@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -42,7 +43,7 @@ type projectSchema struct {
 }
 
 type userMessageSchema struct {
-	ID             int    `json:"id"`
+	TeamID         int    `json:"teamId"`
 	TeamName       string `json:"teamName"`
 	Type           string `json:"type"`
 	LeaderEmail    string `json:"leaderEmail"`
@@ -139,6 +140,37 @@ func AlertUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	jsonVal, _ := json.MarshalIndent(temp, "", "  ")
 	log.Println(string(jsonVal))
+
+	result := temp.Result
+	var statusMsg string
+	api := slack.New(botToken)
+
+	switch result {
+	case "PENDGING":
+		statusMsg = "지원이 완료됐습니다."
+	case "CANCELLED":
+		statusMsg = "지원자께서 취소 하셨습니다."
+	case "REJECT":
+		statusMsg = "거절 돼서 팀에 합류하지 못하셨습니다."
+	case "APPROVED":
+		statusMsg = "수락 돼서 팀에 합류하셨습니다!"
+	default:
+		http.Error(w, "Invalid result", http.StatusBadRequest)
+		log.Println("Invalid result:", result)
+		return
+	}
+	err = sendUserStatusMessage(statusMsg, temp, api)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println("Error sending user message:", err)
+		return
+	}
+	err = sendLeaderStatusMessage(statusMsg, temp, api)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println("Error sending leader message:", err)
+		return
+	}
 	// if temp.Secret != secret {
 	// 	http.Error(w, "Unauthorized", http.StatusUnauthorized)
 	// 	log.Println("Unauthorized")
@@ -172,7 +204,11 @@ func sendProjectMessage(project projectSchema, api *slack.Client, channelID stri
 		"> " + emoji_dart + " *모집하는 직군 & 인원*\n" + convertRecruitNumToEmojiString(project) + "\n\n\n\n" +
 		"> " + ":notion:" + "*노션 링크* \n" + project.NotionLink + "\n\n자세한 문의사항은" + "<@" + userCode + ">" + "에게 DM으로 문의 주세요!"
 	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", projectMessage, false, false), nil, nil)
-	messageBlocks := slack.MsgOptionBlocks(section)
+	applyButton := slack.NewButtonBlockElement("", "apply", slack.NewTextBlockObject("plain_text", ":white_check_mark: 팀 지원하기!", false, false))
+	applyButton.URL = fmt.Sprintf(redirectURL, project.Type, project.ID)
+	deleteButton := slack.NewButtonBlockElement("delete_button", "delete", slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", false, false))
+	actionBlock := slack.NewActionBlock("apply_action", applyButton, deleteButton)
+	messageBlocks := slack.MsgOptionBlocks(section, actionBlock)
 	_, _, err = api.PostMessage(channelID, messageBlocks)
 	if err != nil {
 		log.Printf("Failed to send message to channel %s: %v", channelID, err)
@@ -195,12 +231,58 @@ func sendStudyMessage(study studySchema, api *slack.Client, channelID string) er
 		"> " + ":man-raising-hand:" + " *이런 사람을 원합니다!*\n" + study.RecruitExplain + "\n\n\n\n" +
 		"> " + ":pencil:" + " *지켜야 하는 규칙입니다!*\n" + study.Rule + "\n\n\n" +
 		"> " + emoji_dart + " *모집하는 스터디 인원*\n" + strconv.Itoa(study.RecruitNum) + "명\n\n\n\n" +
-		"> " + ":notion:" + "*노션 링크* \n" + study.NotionLink + "\n\n자세한 문의사항은" + "<@" + userCode + ">" + "에게 DM으로 문의 주세요!"
+		"> " + ":notion:" + " *노션 링크* \n" + study.NotionLink + "\n\n자세한 문의사항은" + "<@" + userCode + ">" + "에게 DM으로 문의 주세요!"
 	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", studyMessage, false, false), nil, nil)
-	messageBlocks := slack.MsgOptionBlocks(section)
+	applyButton := slack.NewButtonBlockElement("", "apply", slack.NewTextBlockObject("plain_text", ":white_check_mark: 팀 지원하기!", false, false))
+	applyButton.URL = fmt.Sprintf(redirectURL, study.Type, study.ID)
+	deleteButton := slack.NewButtonBlockElement("delete_button", "delete", slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", false, false))
+	actionBlock := slack.NewActionBlock("apply_action", applyButton, deleteButton)
+	messageBlocks := slack.MsgOptionBlocks(section, actionBlock)
 	_, _, err = api.PostMessage(channelID, messageBlocks)
 	if err != nil {
 		log.Printf("Failed to send message to channel %s: %v", channelID, err)
+		return err
+	}
+	return nil
+}
+
+func sendUserStatusMessage(status string, userMessage userMessageSchema, api *slack.Client) error {
+	profile, err := api.GetUserByEmail(userMessage.ApplicantEmail)
+	if err != nil {
+		log.Printf("Failed to get user by email %s: %v", userMessage.ApplicantEmail, err)
+		return err
+	}
+	msg := "[" + emoji_people + " *지원 결과 알림* " + emoji_people + "]\n" +
+		"> " + ":name_badge:" + " *팀 이름* \n " + userMessage.TeamName + "\n\n\n\n" +
+		"> " + emoji_star + " *지원자:* <@" + profile.ID + ">\n\n\n\n" +
+		"> " + emoji_notebook + " *지원 결과:* " + status + "\n\n\n\n" +
+		"> " + emoji_dart + " *링크* \n" + fmt.Sprintf(redirectURL, userMessage.Type, userMessage.TeamID) + "\n\n\n\n"
+	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", msg, false, false), nil, nil)
+	messageBlocks := slack.MsgOptionBlocks(section)
+	_, _, err = api.PostMessage(profile.ID, messageBlocks)
+	if err != nil {
+		log.Printf("Failed to send message to channel %s: %v", profile.ID, err)
+		return err
+	}
+	return nil
+}
+
+func sendLeaderStatusMessage(status string, userMessage userMessageSchema, api *slack.Client) error {
+	profile, err := api.GetUserByEmail(userMessage.LeaderEmail)
+	if err != nil {
+		log.Printf("Failed to get user by email %s: %v", userMessage.LeaderEmail, err)
+		return err
+	}
+	msg := "[" + emoji_people + " *지원 결과 알림* " + emoji_people + "]\n" +
+		"> " + ":name_badge:" + " *팀 이름* \n " + userMessage.TeamName + "\n\n\n\n" +
+		"> " + emoji_star + " *팀장* <@" + profile.ID + ">\n\n\n\n" +
+		"> " + emoji_notebook + " *지원 결과입니다:* " + status + "\n\n\n\n" +
+		"> " + emoji_dart + " *링크* \n" + fmt.Sprintf(redirectURL, userMessage.Type, userMessage.TeamID) + "\n\n\n\n"
+	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", msg, false, false), nil, nil)
+	messageBlocks := slack.MsgOptionBlocks(section)
+	_, _, err = api.PostMessage(profile.ID, messageBlocks)
+	if err != nil {
+		log.Printf("Failed to send message to channel %s: %v", profile.ID, err)
 		return err
 	}
 	return nil
