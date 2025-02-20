@@ -273,10 +273,29 @@ func sendLeaderStatusMessage(status string, userMessage userMessageSchema, api *
 		log.Printf("Failed to get user by email %s: %v", userMessage.LeaderEmail, err)
 		return err
 	}
+	applicantProfile, err := api.GetUserByEmail(userMessage.ApplicantEmail)
+	if err != nil {
+		log.Printf("Failed to get user by email %s: %v", userMessage.LeaderEmail, err)
+		return err
+	}
+	switch userMessage.Result {
+	case "PENDING":
+		status = "지원자가 있습니다."
+	case "CANCELLED":
+		status = "지원자께서 지원을 취소 하셨습니다."
+	case "REJECT":
+		status = "팀원중 한명이 지원자를 거절 하셨습니다."
+	case "APPROVED":
+		status = "지원자를 수락 하셨습니다."
+	default:
+		log.Println("Invalid result:", userMessage.Result)
+		return fmt.Errorf("invalid result: %s", userMessage.Result)
+	}
+
 	msg := "[" + emoji_people + " *지원 결과 알림* " + emoji_people + "]\n" +
 		"> " + ":name_badge:" + " *팀 이름* \n " + userMessage.TeamName + "\n\n\n\n" +
-		"> " + emoji_star + " *팀장* <@" + profile.ID + ">\n\n\n\n" +
-		"> " + emoji_notebook + " *지원 결과입니다:* " + status + "\n\n\n\n" +
+		"> " + emoji_star + " *지원자* <@" + applicantProfile.ID + ">\n\n\n\n" +
+		"> " + emoji_notebook + " *상태:* " + status + "\n\n\n\n" +
 		"> " + emoji_dart + " *링크* \n" + fmt.Sprintf(redirectURL, userMessage.Type, userMessage.TeamID) + "\n\n\n\n"
 	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", msg, false, false), nil, nil)
 	messageBlocks := slack.MsgOptionBlocks(section)
