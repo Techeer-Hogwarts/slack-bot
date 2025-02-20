@@ -206,7 +206,7 @@ func sendProjectMessage(project projectSchema, api *slack.Client, channelID stri
 	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", projectMessage, false, false), nil, nil)
 	applyButton := slack.NewButtonBlockElement("", "apply", slack.NewTextBlockObject("plain_text", ":white_check_mark: 팀 지원하기!", false, false))
 	applyButton.URL = fmt.Sprintf(redirectURL, project.Type, project.ID)
-	deleteButton := slack.NewButtonBlockElement("delete_button", project.Email, slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", false, false))
+	deleteButton := slack.NewButtonBlockElement("delete_button2", project.Email, slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", false, false))
 	actionBlock := slack.NewActionBlock("apply_action", applyButton, deleteButton)
 	messageBlocks := slack.MsgOptionBlocks(section, actionBlock)
 	_, _, err = api.PostMessage(channelID, messageBlocks)
