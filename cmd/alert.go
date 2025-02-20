@@ -34,7 +34,7 @@ type projectSchema struct {
 	BackNum        int      `json:"backNum"`
 	DataEngNum     int      `json:"dataEngNum"`
 	DevOpsNum      int      `json:"devOpsNum"`
-	uiUxNum        int      `json:"uiUxNum"`
+	FullStack      int      `json:"fullStack"`
 	Leader         string   `json:"leader"`
 	Email          string   `json:"email"`
 	RecruitExplain string   `json:"recruitExplain"`
@@ -361,8 +361,8 @@ func convertRecruitNumToEmojiString(project projectSchema) string {
 	if project.DevOpsNum > 0 {
 		recruitString += ":devops:" + " " + strconv.Itoa(project.DevOpsNum) + "명\n"
 	}
-	if project.uiUxNum > 0 {
-		recruitString += ":figma:" + " " + strconv.Itoa(project.uiUxNum) + "명\n"
+	if project.FullStack > 0 {
+		recruitString += ":fullstack:" + " " + strconv.Itoa(project.FullStack) + "명\n"
 	}
 	return recruitString
 }
