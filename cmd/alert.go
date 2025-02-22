@@ -252,9 +252,14 @@ func sendUserStatusMessage(status string, userMessage userMessageSchema, api *sl
 		log.Printf("Failed to get user by email %s: %v", userMessage.ApplicantEmail, err)
 		return err
 	}
+	leaderProfile, err := api.GetUserByEmail(userMessage.LeaderEmail)
+	if err != nil {
+		log.Printf("Failed to get user by email %s: %v", userMessage.LeaderEmail, err)
+		return err
+	}
 	msg := "[" + emoji_people + " *지원 결과 알림* " + emoji_people + "]\n" +
 		"> " + ":name_badge:" + " *팀 이름* \n " + userMessage.TeamName + "\n\n\n\n" +
-		"> " + emoji_star + " *지원자:* <@" + profile.ID + ">\n\n\n\n" +
+		"> " + emoji_star + " *팀장:* <@" + leaderProfile.ID + ">\n\n\n\n" +
 		"> " + emoji_notebook + " *지원 결과:* " + status + "\n\n\n\n" +
 		"> " + emoji_dart + " *링크* \n" + fmt.Sprintf(redirectURL, userMessage.Type, userMessage.TeamID) + "\n\n\n\n"
 	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", msg, false, false), nil, nil)
