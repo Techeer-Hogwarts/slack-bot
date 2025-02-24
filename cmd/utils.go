@@ -42,7 +42,7 @@ func init() {
 	signingKey = config.GetEnv("SLACK_SIGNING_SECRET", "")
 	botToken = config.GetEnv("SLACK_BOT_TOKEN", "")
 	secret = config.GetEnv("SECRET_ALLOW", "")
-	channelID = config.GetEnv("CHANNEL_I2", "")
+	channelID = config.GetEnv("CHANNEL_ID2", "")
 	sheetsID = config.GetEnv("GSHEETS_ID", "")
 	githubURL = config.GetEnv("GITHUB_URL", "")
 	githubToken = config.GetEnv("GITHUB_ACTIONS_TOKEN", "")
