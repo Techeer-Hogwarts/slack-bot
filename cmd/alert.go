@@ -149,11 +149,11 @@ func AlertUserHandler(w http.ResponseWriter, r *http.Request) {
 	case "PENDING":
 		statusMsg = "지원이 완료됐습니다."
 	case "CANCELLED":
-		statusMsg = "지원자께서 취소 하셨습니다."
+		statusMsg = "지원자께서 지원을 취소 하셨습니다."
 	case "REJECT":
-		statusMsg = "거절 돼서 팀에 합류하지 못하셨습니다."
+		statusMsg = "지원이 거절되었습니다. 다음 기회에 함께할 수 있길 바랍니다! :pray:"
 	case "APPROVED":
-		statusMsg = "수락 돼서 팀에 합류하셨습니다!"
+		statusMsg = "지원이 승인되어 팀에 합류하셨습니다! 함께 열심히 해봐요! :rocket:"
 	default:
 		http.Error(w, "Invalid result", http.StatusBadRequest)
 		log.Println("Invalid result:", result)
@@ -202,7 +202,7 @@ func sendProjectMessage(project projectSchema, api *slack.Client, channelID stri
 		"> " + ":woman-raising-hand:" + " *이런 사람을 원합니다!*\n" + project.RecruitExplain + "\n\n\n\n" +
 		"> " + emoji_stack + " *사용되는 기술입니다*\n" + convertStackToEmojiString(project.Stack) + "\n\n\n" +
 		"> " + emoji_dart + " *모집하는 직군 & 인원*\n" + convertRecruitNumToEmojiString(project) + "\n\n\n\n" +
-		"> " + ":notion:" + "*노션 링크* \n" + project.NotionLink + "\n\n자세한 문의사항은" + "<@" + userCode + ">" + "에게 DM으로 문의 주세요!"
+		"> " + ":notion:" + " *노션 링크* \n" + project.NotionLink + "\n\n자세한 문의사항은" + "<@" + userCode + ">" + "에게 DM으로 문의 주세요!"
 	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", projectMessage, false, false), nil, nil)
 	applyButton := slack.NewButtonBlockElement("", "apply", slack.NewTextBlockObject("plain_text", ":white_check_mark: 팀 지원하기!", false, false))
 	applyButton.URL = fmt.Sprintf(redirectURL, project.Type, project.ID)
@@ -292,7 +292,7 @@ func sendLeaderStatusMessage(userMessage userMessageSchema, api *slack.Client) e
 	case "REJECT":
 		status = "팀원중 한명이 지원자를 거절 하셨습니다."
 	case "APPROVED":
-		status = "지원자를 수락 하셨습니다."
+		status = "팀원중 한명이 지원자를 수락 하셨습니다."
 	default:
 		log.Println("Invalid result:", userMessage.Result)
 		return fmt.Errorf("invalid result: %s", userMessage.Result)
