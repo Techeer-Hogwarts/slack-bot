@@ -139,6 +139,8 @@ func AlertUserHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
+	jsonVal, _ := json.MarshalIndent(forlogging, "", "  ")
+	log.Println(string(jsonVal))
 
 	err = json.NewDecoder(requestBody).Decode(&temp)
 	if err != nil {
@@ -146,7 +148,7 @@ func AlertUserHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	jsonVal, _ := json.MarshalIndent(temp, "", "  ")
+	jsonVal, _ = json.MarshalIndent(temp, "", "  ")
 	log.Println(string(jsonVal))
 
 	result := temp.Result
