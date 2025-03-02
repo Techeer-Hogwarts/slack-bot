@@ -132,23 +132,23 @@ func AlertUserHandler(w http.ResponseWriter, r *http.Request) {
 	var temp userMessageSchema
 	requestBody := r.Body
 
-	var forlogging []interface{}
-	err := json.NewDecoder(requestBody).Decode(&forlogging)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		log.Println(err)
-		return
-	}
-	jsonVal, _ := json.MarshalIndent(forlogging, "", "  ")
-	log.Println(string(jsonVal))
+	// var forlogging []interface{}
+	// err := json.NewDecoder(requestBody).Decode(&forlogging)
+	// if err != nil {
+	// 	http.Error(w, err.Error(), http.StatusBadRequest)
+	// 	log.Println(err)
+	// 	return
+	// }
+	// jsonVal, _ := json.MarshalIndent(forlogging, "", "  ")
+	// log.Println(string(jsonVal))
 
-	err = json.NewDecoder(requestBody).Decode(&temp)
+	err := json.NewDecoder(requestBody).Decode(&temp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		log.Println(err)
 		return
 	}
-	jsonVal, _ = json.MarshalIndent(temp, "", "  ")
+	jsonVal, _ := json.MarshalIndent(temp, "", "  ")
 	log.Println(string(jsonVal))
 
 	result := temp.Result
