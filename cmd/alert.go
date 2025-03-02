@@ -12,17 +12,17 @@ import (
 )
 
 type studySchema struct {
-	ID             int    `json:"id"`
-	Type           string `json:"type"`
-	Name           string `json:"name"`
-	StudyExplain   string `json:"studyExplain"`
-	RecruitNum     int    `json:"recruitNum"`
-	Leader         string `json:"leader"`
-	Email          string `json:"email"`
-	RecruitExplain string `json:"recruitExplain"`
-	NotionLink     string `json:"notionLink"`
-	Goal           string `json:"goal"`
-	Rule           string `json:"rule"`
+	ID             int      `json:"id"`
+	Type           string   `json:"type"`
+	Name           string   `json:"name"`
+	StudyExplain   string   `json:"studyExplain"`
+	RecruitNum     int      `json:"recruitNum"`
+	Leader         []string `json:"leader"`
+	Email          []string `json:"email"`
+	RecruitExplain string   `json:"recruitExplain"`
+	NotionLink     string   `json:"notionLink"`
+	Goal           string   `json:"goal"`
+	Rule           string   `json:"rule"`
 }
 
 type projectSchema struct {
@@ -35,8 +35,8 @@ type projectSchema struct {
 	DataEngNum     int      `json:"dataEngNum"`
 	DevOpsNum      int      `json:"devOpsNum"`
 	FullStack      int      `json:"fullStack"`
-	Leader         string   `json:"leader"`
-	Email          string   `json:"email"`
+	Leader         []string `json:"leader"`
+	Email          []string `json:"email"`
 	RecruitExplain string   `json:"recruitExplain"`
 	NotionLink     string   `json:"notionLink"`
 	Stack          []string `json:"stack"`
@@ -189,27 +189,32 @@ func mapToStruct(m map[string]interface{}, target interface{}) error {
 }
 
 func sendProjectMessage(project projectSchema, api *slack.Client, channelID string) error {
-	profile, err := api.GetUserByEmail(project.Email)
-	if err != nil {
-		log.Printf("Failed to get user by email %s: %v", project.Email, err)
-		return err
+	var profileIDs []string
+	for _, email := range project.Email {
+		profile, err := api.GetUserByEmail(email)
+		if err != nil {
+			log.Printf("Failed to get user by email %s: %v", email, err)
+			return err
+		}
+		profileIDs = append(profileIDs, profile.ID)
 	}
-	userCode := profile.ID
+	teamLeaderString := strings.Join(profileIDs, ">, <@")
+	teamLeaderString = "<@" + teamLeaderString + ">"
 	projectMessage := "[" + emoji_people + " *새로운 프로젝트 팀 공고가 올라왔습니다* " + emoji_people + "]\n" +
 		"> " + ":name_badge:" + " *팀 이름* \n " + project.Name + "\n\n\n\n" +
-		"> " + emoji_star + " *팀장* <@" + userCode + ">\n\n\n\n" +
+		"> " + emoji_star + " *팀장* " + teamLeaderString + "\n\n\n\n" +
 		"> " + emoji_notebook + " *팀/프로젝트 설명입니다*\n" + project.ProjectExplain + "\n\n\n\n" +
 		"> " + ":woman-raising-hand:" + " *이런 사람을 원합니다!*\n" + project.RecruitExplain + "\n\n\n\n" +
 		"> " + emoji_stack + " *사용되는 기술입니다*\n" + convertStackToEmojiString(project.Stack) + "\n\n\n" +
 		"> " + emoji_dart + " *모집하는 직군 & 인원*\n" + convertRecruitNumToEmojiString(project) + "\n\n\n\n" +
-		"> " + ":notion:" + " *노션 링크* \n" + project.NotionLink + "\n\n자세한 문의사항은" + "<@" + userCode + ">" + "에게 DM으로 문의 주세요!"
+		"> " + ":notion:" + " *노션 링크* \n" + project.NotionLink + "\n\n자세한 문의사항은 " + teamLeaderString + " 에게 DM으로 문의 주세요!"
 	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", projectMessage, false, false), nil, nil)
 	applyButton := slack.NewButtonBlockElement("", "apply", slack.NewTextBlockObject("plain_text", ":white_check_mark: 팀 지원하기!", false, false))
 	applyButton.URL = fmt.Sprintf(redirectURL, project.Type, project.ID)
-	deleteButton := slack.NewButtonBlockElement("delete_button2", project.Email, slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", false, false))
+	deleteButton := slack.NewButtonBlockElement("delete_button2", project.Email[0], slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", false, false))
 	actionBlock := slack.NewActionBlock("apply_action", applyButton, deleteButton)
 	messageBlocks := slack.MsgOptionBlocks(section, actionBlock)
-	_, _, err = api.PostMessage(channelID, messageBlocks)
+	_, _, err := api.PostMessage(channelID, messageBlocks)
 	if err != nil {
 		log.Printf("Failed to send message to channel %s: %v", channelID, err)
 		return err
@@ -218,27 +223,32 @@ func sendProjectMessage(project projectSchema, api *slack.Client, channelID stri
 }
 
 func sendStudyMessage(study studySchema, api *slack.Client, channelID string) error {
-	profile, err := api.GetUserByEmail(study.Email)
-	if err != nil {
-		log.Printf("Failed to get user by email %s: %v", study.Email, err)
-		return err
+	var profileIDs []string
+	for _, email := range study.Email {
+		profile, err := api.GetUserByEmail(email)
+		if err != nil {
+			log.Printf("Failed to get user by email %s: %v", email, err)
+			return err
+		}
+		profileIDs = append(profileIDs, profile.ID)
 	}
-	userCode := profile.ID
+	teamLeaderString := strings.Join(profileIDs, ">, <@")
+	teamLeaderString = "<@" + teamLeaderString + ">"
 	studyMessage := "[" + emoji_people + " *새로운 스터디 팀 공고가 올라왔습니다* " + emoji_people + "]\n" +
 		"> " + ":name_badge:" + " *팀 이름* \n " + study.Name + "\n\n\n\n" +
-		"> " + emoji_star + " *팀장* <@" + userCode + ">\n\n\n\n" +
+		"> " + emoji_star + " *팀장* " + teamLeaderString + "\n\n\n\n" +
 		"> " + emoji_notebook + " *팀/프로젝트 설명입니다*\n" + study.StudyExplain + "\n\n\n\n" +
 		"> " + ":man-raising-hand:" + " *이런 사람을 원합니다!*\n" + study.RecruitExplain + "\n\n\n\n" +
 		"> " + ":pencil:" + " *지켜야 하는 규칙입니다!*\n" + study.Rule + "\n\n\n" +
 		"> " + emoji_dart + " *모집하는 스터디 인원*\n" + strconv.Itoa(study.RecruitNum) + "명\n\n\n\n" +
-		"> " + ":notion:" + " *노션 링크* \n" + study.NotionLink + "\n\n자세한 문의사항은" + "<@" + userCode + ">" + "에게 DM으로 문의 주세요!"
+		"> " + ":notion:" + " *노션 링크* \n" + study.NotionLink + "\n\n자세한 문의사항은 " + teamLeaderString + " 에게 DM으로 문의 주세요!"
 	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", studyMessage, false, false), nil, nil)
 	applyButton := slack.NewButtonBlockElement("", "apply", slack.NewTextBlockObject("plain_text", ":white_check_mark: 팀 지원하기!", false, false))
 	applyButton.URL = fmt.Sprintf(redirectURL, study.Type, study.ID)
-	deleteButton := slack.NewButtonBlockElement("delete_button2", study.Email, slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", false, false))
+	deleteButton := slack.NewButtonBlockElement("delete_button2", study.Email[0], slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", false, false))
 	actionBlock := slack.NewActionBlock("apply_action", applyButton, deleteButton)
 	messageBlocks := slack.MsgOptionBlocks(section, actionBlock)
-	_, _, err = api.PostMessage(channelID, messageBlocks)
+	_, _, err := api.PostMessage(channelID, messageBlocks)
 	if err != nil {
 		log.Printf("Failed to send message to channel %s: %v", channelID, err)
 		return err
@@ -247,6 +257,10 @@ func sendStudyMessage(study studySchema, api *slack.Client, channelID string) er
 }
 
 func sendUserStatusMessage(status string, userMessage userMessageSchema, api *slack.Client) error {
+	if userMessage.ApplicantEmail == "Null" {
+		log.Println("Applicant email is Null")
+		return nil
+	}
 	profile, err := api.GetUserByEmail(userMessage.ApplicantEmail)
 	if err != nil {
 		log.Printf("Failed to get user by email %s: %v", userMessage.ApplicantEmail, err)
