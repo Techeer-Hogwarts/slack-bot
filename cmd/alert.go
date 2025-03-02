@@ -132,7 +132,7 @@ func AlertUserHandler(w http.ResponseWriter, r *http.Request) {
 	var temp userMessageSchema
 	requestBody := r.Body
 
-	var forlogging map[string]interface{}
+	var forlogging []interface{}
 	err := json.NewDecoder(requestBody).Decode(&forlogging)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
