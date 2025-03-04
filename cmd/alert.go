@@ -342,6 +342,7 @@ func convertStackToEmojiString(stack []string) string {
 	var frontArray []string
 	var devOpsArray []string
 	var otherArray []string
+	var databaseArray []string
 	var stackString string
 
 	for _, s := range stack {
@@ -356,6 +357,8 @@ func convertStackToEmojiString(stack []string) string {
 			devOpsArray = append(devOpsArray, emoji)
 		case "OTHER":
 			otherArray = append(otherArray, emoji)
+		case "DATABASE":
+			databaseArray = append(databaseArray, emoji)
 		default:
 			log.Printf("Unknown category: %s", category)
 			otherArray = append(otherArray, s)
@@ -372,6 +375,9 @@ func convertStackToEmojiString(stack []string) string {
 	}
 	if len(otherArray) > 0 {
 		stackString += ":other:" + " : " + strings.Join(otherArray, " ") + "\n"
+	}
+	if len(databaseArray) > 0 {
+		stackString += ":database:" + " : " + strings.Join(databaseArray, " ") + "\n"
 	}
 	return stackString
 }

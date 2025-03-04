@@ -200,7 +200,7 @@ func init() {
 		"InfluxDB":                    ":influxdb:",
 		"Supabase":                    ":supabase:",
 		"Amazon RDS":                  ":rds:",
-		"Goolge Cloud SQL":            "cloudsql:",
+		"Goolge Cloud SQL":            ":cloudsql:",
 		"Google BigQuery":             ":bigquery:",
 		"Memcached":                   ":memcached:",
 		"Apache Flink":                ":flink:",
