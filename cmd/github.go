@@ -13,10 +13,11 @@ import (
 )
 
 type deployRequest struct {
-	ImageName  string `json:"imageName"`
-	ImageTag   string `json:"imageTag"`
-	CommitLink string `json:"commitLink"`
-	Secret     string `json:"secret"`
+	ImageName   string `json:"imageName"`
+	ImageTag    string `json:"imageTag"`
+	CommitLink  string `json:"commitLink"`
+	Environment string `json:"environment"`
+	Secret      string `json:"secret"`
 }
 
 type actionsRequestWrapper struct {
@@ -25,19 +26,21 @@ type actionsRequestWrapper struct {
 }
 
 type actionsRequest struct {
-	ImageName     string `json:"image_name"`
-	ImageTag      string `json:"image_tag"`
-	ReplicaCouint string `json:"replicas"`
+	ImageName    string `json:"image_name"`
+	ImageTag     string `json:"image_tag"`
+	Environment  string `json:"environment"`
+	ReplicaCount string `json:"replicas"`
 }
 
 type statusRequest struct {
-	Status     string `json:"status"`
-	ImageName  string `json:"imageName"`
-	ImageTag   string `json:"imageTag"`
-	FailedStep string `json:"failedStep"`
-	Logs       string `json:"logs"`
-	Secret     string `json:"secret"`
-	JobURL     string `json:"jobURL"`
+	Status      string `json:"status"`
+	ImageName   string `json:"imageName"`
+	ImageTag    string `json:"imageTag"`
+	Environment string `json:"environment"`
+	FailedStep  string `json:"failedStep"`
+	Logs        string `json:"logs"`
+	Secret      string `json:"secret"`
+	JobURL      string `json:"jobURL"`
 }
 
 func DeployImageHandler(w http.ResponseWriter, r *http.Request) {
@@ -74,8 +77,8 @@ func DeployImageHandler(w http.ResponseWriter, r *http.Request) {
 func sendDeploymentMessageToChannel(deployMessage deployRequest) error {
 	api := slack.New(botToken)
 	channelID := "C07H5TFEKBM"
-	imageNameWithTag := deployMessage.ImageName + ":" + deployMessage.ImageTag
-	messageText := fmt.Sprintf("새로운 이미지가 빌드 되었습니다.\n>커밋 링크 & 메시지: \n%s\n*아래 이미지를 배포할까요?*\n이미지 이름: `%s`\n이미지 태그: `%s`\n", deployMessage.CommitLink, deployMessage.ImageName, deployMessage.ImageTag)
+	imageNameWithTag := deployMessage.ImageName + ":" + deployMessage.ImageTag + ":" + deployMessage.Environment
+	messageText := fmt.Sprintf("새로운 이미지가 빌드 되었습니다.\n>커밋 링크 & 메시지: \n%s\n*아래 이미지를 배포할까요?*\n이미지 이름: `%s`\n이미지 태그: `%s`\n 배포 환경: `%s`\n", deployMessage.CommitLink, deployMessage.ImageName, deployMessage.ImageTag, deployMessage.Environment)
 	deployButton := slack.NewButtonBlockElement("deploy_button", imageNameWithTag, slack.NewTextBlockObject("plain_text", ":white_check_mark: 네", false, false))
 	noDeployButton := slack.NewButtonBlockElement("no_deploy_button", "delete", slack.NewTextBlockObject("plain_text", ":no_entry_sign: 아니요", false, false))
 	inputElement := slack.NewPlainTextInputBlockElement(slack.NewTextBlockObject("plain_text", "기본값: 1", false, false), "replica_count")
@@ -102,25 +105,39 @@ func triggerDeployment(actionValue string, payload slack.InteractionCallback) er
 	imageNameAndTag := strings.Split(imageNameWithTag, ":")
 	imageName := imageNameAndTag[0]
 	imageTag := imageNameAndTag[1]
+	deployEnvironment := imageNameAndTag[2]
 	log.Printf("Image Name: %s, Image Tag: %s, Replica Count: %s", imageName, imageTag, replicaCount)
-	messageText := fmt.Sprintf("*이미지 배포가 요청되었습니다.*\n이미지 이름: `%s`\n이미지 태그: `%s`\n복제 컨테이너 개수: `%s`\n요청 처리중......", imageName, imageTag, replicaCount)
+	messageText := fmt.Sprintf("*이미지 배포가 요청되었습니다.*\n이미지 이름: `%s`\n이미지 태그: `%s`\n복제 컨테이너 개수: `%s`\n배포 환경: `%s`\n요청 처리중......", imageName, imageTag, deployEnvironment, replicaCount)
 	_, _, err := api.PostMessage(channelID, slack.MsgOptionText(messageText, false))
 	if err != nil {
 		log.Println(err)
 		return err
 	}
 	imageDeploy := actionsRequest{
-		ImageName:     imageName,
-		ImageTag:      imageTag,
-		ReplicaCouint: replicaCount,
+		ImageName:    imageName,
+		ImageTag:     imageTag,
+		Environment:  deployEnvironment,
+		ReplicaCount: replicaCount,
 	}
+	var finalBody actionsRequestWrapper
 
-	finalBody := actionsRequestWrapper{
-		Reference: "main",
-		Inputs:    imageDeploy,
+	if deployEnvironment == "production" {
+		finalBody = actionsRequestWrapper{
+			Reference: "main",
+			Inputs:    imageDeploy,
+		}
+	} else {
+		finalBody = actionsRequestWrapper{
+			Reference: "develop",
+			Inputs:    imageDeploy,
+		}
 	}
 
 	err = sendDeploymentRequest(finalBody)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
 	return nil
 }
 
@@ -134,6 +151,10 @@ func sendDeploymentRequest(deployBody actionsRequestWrapper) error {
 	url := githubURL
 	token := githubToken
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonBody))
+	if err != nil {
+		log.Println(err)
+		return err
+	}
 	req.Header.Set("Authorization", "token "+token)
 	req.Header.Set("Accept", "application/vnd.github.v3+json")
 
@@ -154,7 +175,7 @@ func sendDeploymentRequest(deployBody actionsRequestWrapper) error {
 	log.Printf("Response Body: %s", body)
 	if resp.StatusCode != http.StatusNoContent {
 		log.Println("Failed to send deployment request")
-		return fmt.Errorf("Failed to send deployment request")
+		return fmt.Errorf("failed to send deployment request")
 	}
 	return nil
 }
@@ -201,7 +222,7 @@ func DeployStatusHandler(w http.ResponseWriter, r *http.Request) {
 func sendDeploymentStatusToChannel(status statusRequest) error {
 	api := slack.New(botToken)
 	channelID := "C07H5TFEKBM"
-	messageText := fmt.Sprintf(":approved::approved: *새로운 이미지 배포를 성공하였습니다.* :approved::approved:\n이미지 이름: `%s`\n이미지 태그: `%s`\n링크: %s", status.ImageName, status.ImageTag, status.JobURL)
+	messageText := fmt.Sprintf(":approved::approved: *새로운 이미지 배포를 성공하였습니다.* :approved::approved:\n이미지 이름: `%s`\n이미지 태그: `%s`\n배포 환경: `%s`\n링크: %s", status.ImageName, status.ImageTag, status.Environment, status.JobURL)
 	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", messageText, false, false), nil, nil)
 	messageBlocks := slack.MsgOptionBlocks(section)
 	_, _, err := api.PostMessage(channelID, messageBlocks)
