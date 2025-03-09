@@ -119,18 +119,10 @@ func triggerDeployment(actionValue string, payload slack.InteractionCallback) er
 		Environment:  deployEnvironment,
 		ReplicaCount: replicaCount,
 	}
-	var finalBody actionsRequestWrapper
 
-	if deployEnvironment == "production" {
-		finalBody = actionsRequestWrapper{
-			Reference: "main",
-			Inputs:    imageDeploy,
-		}
-	} else {
-		finalBody = actionsRequestWrapper{
-			Reference: "develop",
-			Inputs:    imageDeploy,
-		}
+	finalBody := actionsRequestWrapper{
+		Reference: "main",
+		Inputs:    imageDeploy,
 	}
 
 	err = sendDeploymentRequest(finalBody)
