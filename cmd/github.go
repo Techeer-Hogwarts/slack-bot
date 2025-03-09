@@ -81,7 +81,7 @@ func sendDeploymentMessageToChannel(deployMessage deployRequest) error {
 	imageNameWithTag := deployMessage.ImageName + ":" + deployMessage.ImageTag + ":" + deployMessage.Environment
 	messageText := fmt.Sprintf("새로운 이미지가 빌드 되었습니다.\n>커밋 링크 & 메시지: \n%s\n*아래 이미지를 배포할까요?*\n이미지 이름: `%s`\n이미지 태그: `%s`\n 배포 환경: `%s`\n", deployMessage.CommitLink, deployMessage.ImageName, deployMessage.ImageTag, deployMessage.Environment)
 	deployButton := slack.NewButtonBlockElement("deploy_button", imageNameWithTag, slack.NewTextBlockObject("plain_text", ":white_check_mark: 네", false, false))
-	noDeployButton := slack.NewButtonBlockElement("no_deploy_button", "delete", slack.NewTextBlockObject("plain_text", ":no_entry_sign: 아니요", false, false))
+	noDeployButton := slack.NewButtonBlockElement("delete_button2", "delete", slack.NewTextBlockObject("plain_text", ":no_entry_sign: 아니요", false, false))
 	inputElement := slack.NewPlainTextInputBlockElement(slack.NewTextBlockObject("plain_text", "기본값: 1", false, false), "replica_count")
 	inputElement.MaxLength = 2
 	inputBlock := slack.NewInputBlock("replica_action", slack.NewTextBlockObject("plain_text", "복제 컨테이너 개수", false, false), slack.NewTextBlockObject("plain_text", "Scale Out 갯수", false, false), inputElement)
