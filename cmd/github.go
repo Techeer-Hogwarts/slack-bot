@@ -108,7 +108,7 @@ func triggerDeployment(actionValue string, payload slack.InteractionCallback) er
 	imageTag := imageNameAndTag[1]
 	deployEnvironment := imageNameAndTag[2]
 	log.Printf("Image Name: %s, Image Tag: %s, Replica Count: %s", imageName, imageTag, replicaCount)
-	messageText := fmt.Sprintf("*이미지 배포가 요청되었습니다.*\n이미지 이름: `%s`\n이미지 태그: `%s`\n복제 컨테이너 개수: `%s`\n배포 환경: `%s`\n요청 처리중......", imageName, imageTag, deployEnvironment, replicaCount)
+	messageText := fmt.Sprintf("*이미지 배포가 요청되었습니다.*\n이미지 이름: `%s`\n이미지 태그: `%s`\n복제 컨테이너 개수: `%s`\n배포 환경: `%s`\n요청 처리중......", imageName, imageTag, replicaCount, deployEnvironment)
 	_, _, err := api.PostMessage(channelID, slack.MsgOptionText(messageText, false))
 	if err != nil {
 		log.Println(err)
