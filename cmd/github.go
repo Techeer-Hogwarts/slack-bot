@@ -65,6 +65,7 @@ func DeployImageHandler(w http.ResponseWriter, r *http.Request) {
 	defer requestBody.Close()
 	log.Println(temp.ImageName)
 	log.Println(temp.ImageTag)
+	log.Println(temp.Environment)
 	err = sendDeploymentMessageToChannel(temp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
