@@ -10,6 +10,7 @@ import (
 
 // LoadEnv 함수는 .env (filename) 파일을 읽어서 환경변수를 설정합니다.
 func LoadEnvFile(filename string) {
+	log.Println("환경변수를 설정합니다.")
 	err := godotenv.Load(filename)
 	if err != nil {
 		log.Println(".env 파일을 읽는데 실패했습니다.")

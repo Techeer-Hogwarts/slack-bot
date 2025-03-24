@@ -11,6 +11,7 @@ import (
 
 type UserService interface {
 	Login(email, password string) (string, error)
+	ResetPassword(userID int, currentPass, newPass string) error
 }
 
 type userService struct {
@@ -38,4 +39,26 @@ func (s *userService) Login(email, password string) (string, error) {
 	}
 
 	return token, nil
+}
+
+func (s *userService) ResetPassword(userID int, currentPass, newPass string) error {
+	// Retrieve user by ID
+	storedHash, err := s.userRepo.GetUserPasswordHash(userID)
+	if err != nil {
+		return errors.New("user not found")
+	}
+
+	// Verify current password
+	if err := bcrypt.CompareHashAndPassword([]byte(storedHash), []byte(currentPass)); err != nil {
+		return errors.New("current password is incorrect")
+	}
+
+	// Hash new password
+	newHash, err := bcrypt.GenerateFromPassword([]byte(newPass), bcrypt.DefaultCost)
+	if err != nil {
+		return errors.New("failed to hash new password")
+	}
+
+	// Update password in database
+	return s.userRepo.UpdateUserPassword(userID, string(newHash))
 }

@@ -17,6 +17,11 @@ const docTemplate = `{
     "paths": {
         "/auth/login": {
             "post": {
+                "security": [
+                    {
+                        "JwtAuth": []
+                    }
+                ],
                 "description": "Login to the system",
                 "consumes": [
                     "application/json"
@@ -27,31 +32,82 @@ const docTemplate = `{
                 "tags": [
                     "auth"
                 ],
-                "summary": "Login",
+                "summary": "Login user",
                 "parameters": [
                     {
-                        "description": "User",
+                        "description": "User Login Request Body",
                         "name": "user",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/models.UserLoginRequest"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Login successful",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Bad request",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/reset": {
+            "post": {
+                "security": [
+                    {
+                        "JwtAuth": []
+                    }
+                ],
+                "description": "Allows authenticated users to change their password by providing the current and new password.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Reset user password",
+                "parameters": [
+                    {
+                        "description": "Password Reset Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.PasswordResetRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Password updated successfully",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     }
                 }
@@ -59,19 +115,57 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.User": {
+        "models.PasswordResetRequest": {
             "type": "object",
+            "required": [
+                "current_password",
+                "new_password"
+            ],
             "properties": {
-                "email": {
-                    "type": "string"
+                "current_password": {
+                    "type": "string",
+                    "example": "oldpassword"
                 },
-                "id": {
-                    "type": "integer"
-                },
-                "password": {
-                    "type": "string"
+                "new_password": {
+                    "type": "string",
+                    "minLength": 8,
+                    "example": "newsecurepassword"
                 }
             }
+        },
+        "models.UserLoginRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "test@gmail.com"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "password"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "APIKeyAuth": {
+            "type": "apiKey",
+            "name": "X-API-Key",
+            "in": "header"
+        },
+        "JwtAuth": {
+            "type": "apiKey",
+            "name": "access_token",
+            "in": "cookie"
+        },
+        "SlackSigningSecret": {
+            "type": "apiKey",
+            "name": "X-Slack-Signature",
+            "in": "header"
         }
     }
 }`

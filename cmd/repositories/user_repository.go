@@ -9,6 +9,8 @@ import (
 
 type UserRepository interface {
 	GetUserByEmail(email string) (models.User, error)
+	GetUserPasswordHash(userID int) (string, error)
+	UpdateUserPassword(userID int, newPasswordHash string) error
 }
 
 type userRepository struct {
@@ -32,4 +34,18 @@ func (r *userRepository) GetUserByEmail(email string) (models.User, error) {
 	}
 
 	return user, nil
+}
+
+func (r *userRepository) GetUserPasswordHash(userID int) (string, error) {
+	var passwordHash string
+	err := r.db.QueryRow("SELECT password FROM users WHERE id = $1", userID).Scan(&passwordHash)
+	if err != nil {
+		return "", err
+	}
+	return passwordHash, nil
+}
+
+func (r *userRepository) UpdateUserPassword(userID int, newPasswordHash string) error {
+	_, err := r.db.Exec("UPDATE users SET password = $1 WHERE id = $2", newPasswordHash, userID)
+	return err
 }

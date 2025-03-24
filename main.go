@@ -5,12 +5,19 @@ import (
 	"github.com/Techeer-Hogwarts/slack-bot/config"
 )
 
-// "github.com/Techeer-Hogwarts/slack-bot/config"
-// _ "github.com/jackc/pgx/v5/stdlib"
-// "github.com/thomas-and-friends/slack-bot/config"
-
 // var err error
 
+// @securityDefinitions.apikey SlackSigningSecret
+// @in header
+// @name X-Slack-Signature
+
+// @securityDefinitions.apikey APIKeyAuth
+// @in header
+// @name X-API-Key
+
+// @securityDefinitions.apikey JwtAuth
+// @in cookie
+// @name access_token
 func main() {
 	// reload := config.GetEnv("RELOAD", "true")
 	// port := config.GetEnv("PORT", "")
@@ -47,6 +54,7 @@ func main() {
 	// log.Printf("Server started on port: %v", port)
 	// log.Fatal(http.ListenAndServe(":"+port, nil))
 	config.LoadEnvFile(".env")
+
 	port := config.GetEnvVarAsString("PORT", "8080")
 	server.StartServer(port)
 }

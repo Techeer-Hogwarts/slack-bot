@@ -24,9 +24,9 @@ type JWTClaims struct {
 }
 
 var (
-	jwtSecret      = config.GetEnvVarAsString("JWT_SECRET", "ak")
-	signingKey     = config.GetEnvVarAsString("SLACK_SIGNING_SECRET", "ak")
-	wildcardAPIKey = config.GetEnvVarAsString("CICD_API_KEY", "ak")
+	jwtSecret      = config.GetEnvVarAsString("JWT_SECRET", "ak1")
+	signingKey     = config.GetEnvVarAsString("SLACK_SIGNING_SECRET", "ak2")
+	wildcardAPIKey = config.GetEnvVarAsString("CICD_API_KEY", "ak3")
 )
 
 func ValidateAPIKey() gin.HandlerFunc {

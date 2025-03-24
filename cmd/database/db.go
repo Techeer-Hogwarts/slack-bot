@@ -52,6 +52,6 @@ func MigrateSQLFile(filePath string, db *sql.DB) error {
 			return fmt.Errorf("failed to execute SQL command: %v", err)
 		}
 	}
-
+	log.Println("Database migrated")
 	return nil
 }

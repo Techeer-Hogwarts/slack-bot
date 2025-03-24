@@ -1,12 +1,28 @@
 definitions:
-  models.User:
+  models.PasswordResetRequest:
+    properties:
+      current_password:
+        example: oldpassword
+        type: string
+      new_password:
+        example: newsecurepassword
+        minLength: 8
+        type: string
+    required:
+    - current_password
+    - new_password
+    type: object
+  models.UserLoginRequest:
     properties:
       email:
+        example: test@gmail.com
         type: string
-      id:
-        type: integer
       password:
+        example: password
         type: string
+    required:
+    - email
+    - password
     type: object
 info:
   contact: {}
@@ -17,26 +33,74 @@ paths:
       - application/json
       description: Login to the system
       parameters:
-      - description: User
+      - description: User Login Request Body
         in: body
         name: user
         required: true
         schema:
-          $ref: '#/definitions/models.User'
+          $ref: '#/definitions/models.UserLoginRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Login successful
           schema:
             additionalProperties: true
             type: object
         "400":
-          description: Bad Request
+          description: Bad request
           schema:
             additionalProperties: true
             type: object
-      summary: Login
+      security:
+      - JwtAuth: []
+      summary: Login user
       tags:
       - auth
+  /auth/reset:
+    post:
+      consumes:
+      - application/json
+      description: Allows authenticated users to change their password by providing
+        the current and new password.
+      parameters:
+      - description: Password Reset Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.PasswordResetRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Password updated successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - JwtAuth: []
+      summary: Reset user password
+      tags:
+      - auth
+securityDefinitions:
+  APIKeyAuth:
+    in: header
+    name: X-API-Key
+    type: apiKey
+  JwtAuth:
+    in: cookie
+    name: access_token
+    type: apiKey
+  SlackSigningSecret:
+    in: header
+    name: X-Slack-Signature
+    type: apiKey
 swagger: "2.0"
