@@ -91,7 +91,7 @@ func HandleInteraction(w http.ResponseWriter, r *http.Request) {
 				return
 			} else if action.ActionID == "delete_button2" {
 				log.Println("Delete button clicked")
-				if payload.User.ID == "U02AES3BH17" || payload.User.ID == "U033UTX061X" || payload.User.ID == "U08EWM4AJJE" {
+				if payload.User.ID == "U02AES3BH17" || payload.User.ID == "U033UTX061X" || payload.User.ID == "U08EWM4AJJE" || payload.User.ID == "U05QXSG51T5" {
 					_, _, err = api.DeleteMessage(payload.Channel.ID, payload.Message.Timestamp)
 					if err != nil {
 						log.Printf("Failed to delete message: %v", err)
