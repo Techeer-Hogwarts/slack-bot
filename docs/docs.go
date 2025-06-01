@@ -15,14 +15,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/auth/login": {
+        "/alert/find-member": {
             "post": {
-                "security": [
-                    {
-                        "JwtAuth": []
-                    }
-                ],
-                "description": "Login to the system",
+                "description": "Find member",
                 "consumes": [
                     "application/json"
                 ],
@@ -30,23 +25,12 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "alert"
                 ],
-                "summary": "Login user",
-                "parameters": [
-                    {
-                        "description": "User Login Request Body",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.UserLoginRequest"
-                        }
-                    }
-                ],
+                "summary": "Find member",
                 "responses": {
                     "200": {
-                        "description": "Login successful",
+                        "description": "Member found",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -62,14 +46,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/reset": {
+        "/alert/message": {
             "post": {
-                "security": [
-                    {
-                        "JwtAuth": []
-                    }
-                ],
-                "description": "Allows authenticated users to change their password by providing the current and new password.",
+                "description": "Send alert message",
                 "consumes": [
                     "application/json"
                 ],
@@ -77,37 +56,237 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "alert"
                 ],
-                "summary": "Reset user password",
+                "summary": "Send alert message",
+                "responses": {
+                    "200": {
+                        "description": "Alert message sent",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/deploy/image": {
+            "post": {
+                "security": [
+                    {
+                        "APIKeyAuth": []
+                    }
+                ],
+                "description": "Deploy image",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "deploy"
+                ],
+                "summary": "Deploy image",
                 "parameters": [
                     {
-                        "description": "Password Reset Payload",
-                        "name": "request",
+                        "description": "Deployment request",
+                        "name": "deployRequest",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.PasswordResetRequest"
+                            "$ref": "#/definitions/models.ImageDeployRequest"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Password updated successfully",
+                        "description": "Deployment request received",
                         "schema": {
                             "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "additionalProperties": true
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Bad request",
                         "schema": {
                             "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "additionalProperties": true
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/deploy/status": {
+            "post": {
+                "security": [
+                    {
+                        "APIKeyAuth": []
+                    }
+                ],
+                "description": "Deploy status",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "deploy"
+                ],
+                "summary": "Deploy status",
+                "parameters": [
+                    {
+                        "description": "Status request",
+                        "name": "statusRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.StatusRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Status request received",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/picture": {
+            "post": {
+                "description": "Get profile picture",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "profile"
+                ],
+                "summary": "Get profile picture",
+                "responses": {
+                    "200": {
+                        "description": "Profile picture retrieved successfully",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/slack/command": {
+            "post": {
+                "description": "Handle Slack command",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "slack"
+                ],
+                "summary": "Handle Slack command",
+                "responses": {
+                    "200": {
+                        "description": "Slack command received",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/slack/interaction": {
+            "post": {
+                "description": "Handle Slack interaction",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "slack"
+                ],
+                "summary": "Handle Slack interaction",
+                "responses": {
+                    "200": {
+                        "description": "Slack interaction received",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -115,38 +294,46 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.PasswordResetRequest": {
+        "models.ImageDeployRequest": {
             "type": "object",
-            "required": [
-                "current_password",
-                "new_password"
-            ],
             "properties": {
-                "current_password": {
-                    "type": "string",
-                    "example": "oldpassword"
+                "commitLink": {
+                    "type": "string"
                 },
-                "new_password": {
-                    "type": "string",
-                    "minLength": 8,
-                    "example": "newsecurepassword"
+                "environment": {
+                    "type": "string"
+                },
+                "imageName": {
+                    "type": "string"
+                },
+                "imageTag": {
+                    "type": "string"
                 }
             }
         },
-        "models.UserLoginRequest": {
+        "models.StatusRequest": {
             "type": "object",
-            "required": [
-                "email",
-                "password"
-            ],
             "properties": {
-                "email": {
-                    "type": "string",
-                    "example": "test@gmail.com"
+                "environment": {
+                    "type": "string"
                 },
-                "password": {
-                    "type": "string",
-                    "example": "password"
+                "failedStep": {
+                    "type": "string"
+                },
+                "imageName": {
+                    "type": "string"
+                },
+                "imageTag": {
+                    "type": "string"
+                },
+                "jobURL": {
+                    "type": "string"
+                },
+                "logs": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
                 }
             }
         }

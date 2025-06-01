@@ -12,7 +12,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-func setupRouter(handler *handlers.Hanlder) *gin.Engine {
+func setupRouter(handler *handlers.Handler) *gin.Engine {
 	username := config.GetEnvVarAsString("SWAGGER_USERNAME", "admin")
 	password := config.GetEnvVarAsString("SWAGGER_PASSWORD", "admin")
 	authUsers := gin.Accounts{
@@ -39,52 +39,32 @@ func setupRouter(handler *handlers.Hanlder) *gin.Engine {
 
 	apiGroup := router.Group("/api/v1")
 	{
-		userGroup := apiGroup.Group("/auth")
-		userGroup.Use(auth.ValidateJWT())
-		{
-			userGroup.POST("/login", handler.UserHandler.LoginHandler)  // ui 로그인
-			userGroup.PATCH("/reset", handler.UserHandler.LoginHandler) // ui 비밀번호 초기화
-			userGroup.POST("/logout", handler.UserHandler.LoginHandler) // ui 로그아웃
-			userGroup.GET("/tokens", handler.UserHandler.LoginHandler)  // 토큰 발급
-		}
-
 		slackGroup := apiGroup.Group("/slack")
 		slackGroup.Use(auth.VerifySlackRequest())
 		{
-			slackGroup.POST("/interactions", handler.UserHandler.LoginHandler) // slack 봇 버튼 등 상호작용 처리
-			slackGroup.POST("/commands", handler.UserHandler.LoginHandler)     // slack 봇 slash command 처리
+			slackGroup.POST("/interactions", handler.SlackHandler.SlackInteractionHandler) // slack 봇 버튼 등 상호작용 처리
+			slackGroup.POST("/commands", handler.SlackHandler.SlackCommandHandler)         // slack 봇 slash command 처리
+		}
+
+		profileGroup := apiGroup.Group("/profile") // legacy
+		profileGroup.Use(auth.ValidateAPIKey())
+		{
+			profileGroup.POST("/picture", handler.ProfileHandler.ProfilePictureHandler) // 프로필 확인 및 사진 제공 legacy
 		}
 
 		alertGroup := apiGroup.Group("/alert")
 		alertGroup.Use(auth.ValidateAPIKey())
 		{
-			slackGroup.GET("/profiles", handler.UserHandler.LoginHandler) // 프로필 확인 및 사진 제공
-
-			alertGroup.POST("/events", handler.UserHandler.LoginHandler)      // slack 봇으로 이벤트 알림 전송
-			alertGroup.POST("/blogs", handler.UserHandler.LoginHandler)       // slack 봇으로 블로그 알림 전송
-			alertGroup.GET("/channels", handler.UserHandler.LoginHandler)     // 채널 알림
-			alertGroup.GET("/users", handler.UserHandler.LoginHandler)        // 유저 알림
-			alertGroup.GET("/dev/channels", handler.UserHandler.LoginHandler) // 개발용 채널 알림
-			alertGroup.GET("/dev/users", handler.UserHandler.LoginHandler)    // 개발용 유저 알림
+			alertGroup.POST("/messages", handler.AlertHandler.AlertMessageHandler)       // slack 봇으로 slack 메시지 전송
+			alertGroup.POST("/find-member", handler.AlertHandler.AlertFindMemberHandler) // slack 봇으로 slack 메시지 전송
 		}
 
-		workflowGroup := apiGroup.Group("/workflows")
-		workflowGroup.Use(auth.ValidateAPIKey())
-		workflowGroup.Use(auth.ValidateJWT())
+		deployGroup := apiGroup.Group("/deploy")
+		deployGroup.Use(auth.ValidateAPIKey())
 		{
-			workflowGroup.POST("", handler.UserHandler.LoginHandler)               // 워크플로우 생성
-			workflowGroup.GET("/:id", handler.UserHandler.LoginHandler)            // 워크플로우 조회
-			workflowGroup.PATCH("/:id", handler.UserHandler.LoginHandler)          // 워크플로우 수정
-			workflowGroup.GET("/events", handler.UserHandler.LoginHandler)         // 워크플로우 이벤트들 확인
-			workflowGroup.POST("/events", handler.UserHandler.LoginHandler)        // 워크플로우 이벤트들 생성 (깃헙 액션에서 보내면 됨)
-			workflowGroup.GET("/events/:id", handler.UserHandler.LoginHandler)     // 워크플로우 이벤트들 확인
-			workflowGroup.POST("/events/deploy", handler.UserHandler.LoginHandler) // 워크플로우 배포
+			deployGroup.POST("/image", handler.DeployHandler.DeployImageHandler)   // 배포 요청
+			deployGroup.POST("/status", handler.DeployHandler.DeployStatusHandler) // 배포 요청
 		}
-
-		// githubGroup := apiGroup.Group("/github")
-		// {
-		// 	githubGroup.POST("/events", handler.UserHandler.LoginHandler)
-		// }
 	}
 	swagger := router.Group("/swagger", gin.BasicAuth(authUsers))
 	swagger.GET("/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

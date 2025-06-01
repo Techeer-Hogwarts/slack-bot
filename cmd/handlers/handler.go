@@ -2,18 +2,18 @@ package handlers
 
 import "github.com/Techeer-Hogwarts/slack-bot/cmd/services"
 
-type Hanlder struct {
-	GitHubHandler   *GitHubHandler
-	UserHandler     *UserHandler
-	SlackHandler    *SlackHandler
-	WorkflowHanlder *WorkflowHanlder
+type Handler struct {
+	AlertHandler   *AlertHandler
+	ProfileHandler *ProfileHandler
+	SlackHandler   *SlackHandler
+	DeployHandler  *DeployHandler
 }
 
-func NewHandler(service *services.Service) *Hanlder {
-	return &Hanlder{
-		GitHubHandler:   NewGitHubHandler(service.GitHubService),
-		UserHandler:     NewUserHandler(service.UserService),
-		SlackHandler:    NewSlackHandler(service.SlackService),
-		WorkflowHanlder: NewWorkflowHandler(service.WorkflowService),
+func NewHandler(service *services.Service) *Handler {
+	return &Handler{
+		AlertHandler:   NewAlertHandler(service.AlertService),
+		ProfileHandler: NewProfileHandler(service.ProfileService),
+		SlackHandler:   NewSlackHandler(service.SlackService),
+		DeployHandler:  NewDeployHandler(service.DeployService),
 	}
 }

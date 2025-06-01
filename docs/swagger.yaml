@@ -1,49 +1,45 @@
 definitions:
-  models.PasswordResetRequest:
+  models.ImageDeployRequest:
     properties:
-      current_password:
-        example: oldpassword
+      commitLink:
         type: string
-      new_password:
-        example: newsecurepassword
-        minLength: 8
+      environment:
         type: string
-    required:
-    - current_password
-    - new_password
+      imageName:
+        type: string
+      imageTag:
+        type: string
     type: object
-  models.UserLoginRequest:
+  models.StatusRequest:
     properties:
-      email:
-        example: test@gmail.com
+      environment:
         type: string
-      password:
-        example: password
+      failedStep:
         type: string
-    required:
-    - email
-    - password
+      imageName:
+        type: string
+      imageTag:
+        type: string
+      jobURL:
+        type: string
+      logs:
+        type: string
+      status:
+        type: string
     type: object
 info:
   contact: {}
 paths:
-  /auth/login:
+  /alert/find-member:
     post:
       consumes:
       - application/json
-      description: Login to the system
-      parameters:
-      - description: User Login Request Body
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/models.UserLoginRequest'
+      description: Find member
       produces:
       - application/json
       responses:
         "200":
-          description: Login successful
+          description: Member found
           schema:
             additionalProperties: true
             type: object
@@ -52,44 +48,173 @@ paths:
           schema:
             additionalProperties: true
             type: object
-      security:
-      - JwtAuth: []
-      summary: Login user
+      summary: Find member
       tags:
-      - auth
-  /auth/reset:
+      - alert
+  /alert/message:
     post:
       consumes:
       - application/json
-      description: Allows authenticated users to change their password by providing
-        the current and new password.
-      parameters:
-      - description: Password Reset Payload
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/models.PasswordResetRequest'
+      description: Send alert message
       produces:
       - application/json
       responses:
         "200":
-          description: Password updated successfully
+          description: Alert message sent
           schema:
-            additionalProperties:
-              type: string
+            additionalProperties: true
             type: object
         "400":
-          description: Bad Request
+          description: Bad request
           schema:
-            additionalProperties:
-              type: string
+            additionalProperties: true
+            type: object
+      summary: Send alert message
+      tags:
+      - alert
+  /deploy/image:
+    post:
+      consumes:
+      - application/json
+      description: Deploy image
+      parameters:
+      - description: Deployment request
+        in: body
+        name: deployRequest
+        required: true
+        schema:
+          $ref: '#/definitions/models.ImageDeployRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Deployment request received
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
             type: object
       security:
-      - JwtAuth: []
-      summary: Reset user password
+      - APIKeyAuth: []
+      summary: Deploy image
       tags:
-      - auth
+      - deploy
+  /deploy/status:
+    post:
+      consumes:
+      - application/json
+      description: Deploy status
+      parameters:
+      - description: Status request
+        in: body
+        name: statusRequest
+        required: true
+        schema:
+          $ref: '#/definitions/models.StatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Status request received
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - APIKeyAuth: []
+      summary: Deploy status
+      tags:
+      - deploy
+  /profile/picture:
+    post:
+      consumes:
+      - application/json
+      description: Get profile picture
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Profile picture retrieved successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get profile picture
+      tags:
+      - profile
+  /slack/command:
+    post:
+      consumes:
+      - application/json
+      description: Handle Slack command
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Slack command received
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Handle Slack command
+      tags:
+      - slack
+  /slack/interaction:
+    post:
+      consumes:
+      - application/json
+      description: Handle Slack interaction
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Slack interaction received
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Handle Slack interaction
+      tags:
+      - slack
 securityDefinitions:
   APIKeyAuth:
     in: header

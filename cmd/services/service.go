@@ -1,23 +1,22 @@
 package services
 
 import (
-	"github.com/Techeer-Hogwarts/slack-bot/cmd/repositories"
 	"github.com/slack-go/slack"
 )
 
 type Service struct {
-	UserService     UserService
-	SlackService    SlackService
-	GitHubService   GitHubService
-	WorkflowService WorkflowService
+	SlackService   SlackService
+	DeployService  DeployService
+	ProfileService ProfileService
+	AlertService   AlertService
 }
 
 // NewService creates a new instance of Service with all required services.
-func NewService(repo *repositories.Repository, slackClient *slack.Client, githubURL, githubToken string) *Service {
+func NewService(slackClient *slack.Client, githubURL, githubToken, cicdChannelID string) *Service {
 	return &Service{
-		UserService:     NewUserService(repo.UserRepository),
-		SlackService:    NewSlackService(slackClient),
-		GitHubService:   NewGitHubService(githubURL, githubToken),
-		WorkflowService: NewWorkflowService(repo.WorkflowRepository),
+		AlertService:   NewAlertService(slackClient),
+		SlackService:   NewSlackService(slackClient),
+		DeployService:  NewDeployService(slackClient, githubURL, githubToken, cicdChannelID),
+		ProfileService: NewProfileService(slackClient),
 	}
 }
