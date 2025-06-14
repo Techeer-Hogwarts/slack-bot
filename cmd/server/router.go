@@ -64,11 +64,11 @@ func setupRouter(handler *handlers.Handler) *gin.Engine {
 		deployGroup := apiGroup.Group("/deploy")
 		deployGroup.Use(auth.ValidateAPIKey())
 		{
-			deployGroup.POST("/image", handler.DeployHandler.DeployImageHandler)   // 배포 요청
-			deployGroup.POST("/status", handler.DeployHandler.DeployStatusHandler) // 배포 요청
+			deployGroup.POST("/image", handler.DeployHandler.DeployImageHandler)   // 배포 요청 메시지 생성
+			deployGroup.POST("/status", handler.DeployHandler.DeployStatusHandler) // 배포 상태 메시지 전송 (cd 끝나고 배포 상태 메시지 전송)
 		}
 	}
-	swagger := router.Group("/swagger", gin.BasicAuth(authUsers))
+	swagger := apiGroup.Group("/swagger", gin.BasicAuth(authUsers))
 	swagger.GET("/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	return router
 }
