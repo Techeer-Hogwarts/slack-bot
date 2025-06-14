@@ -10,11 +10,12 @@ import (
 )
 
 var (
-	slackToken    string
-	slackClient   *slack.Client
-	githubURL     string
-	githubToken   string
-	cicdChannelID string
+	slackToken          string
+	slackClient         *slack.Client
+	githubURL           string
+	githubToken         string
+	cicdChannelID       string
+	findMemberChannelID string
 )
 
 func StartServer(port string) {
@@ -32,10 +33,11 @@ func StartServer(port string) {
 	githubToken = config.GetEnvVarAsString("GITHUB_ACTIONS_TOKEN", "")
 	githubURL = config.GetEnvVarAsString("GITHUB_URL", "")
 	cicdChannelID = config.GetEnvVarAsString("CICD_CHANNEL_ID", "")
+	findMemberChannelID = config.GetEnvVarAsString("FIND_MEMBER_CHANNEL_ID", "")
 
 	slackClient = slack.New(slackToken)
 
-	service := services.NewService(slackClient, githubURL, githubToken, cicdChannelID)
+	service := services.NewService(slackClient, githubURL, githubToken, cicdChannelID, findMemberChannelID)
 
 	handler := handlers.NewHandler(service)
 

@@ -1,4 +1,60 @@
 definitions:
+  models.AlertMessageSchema:
+    properties:
+      channelId:
+        type: string
+      email:
+        type: string
+      message:
+        type: string
+      type:
+        type: string
+    type: object
+  models.FindMemberSchema:
+    properties:
+      backNum:
+        type: integer
+      dataEngNum:
+        type: integer
+      devOpsNum:
+        type: integer
+      email:
+        items:
+          type: string
+        type: array
+      frontNum:
+        type: integer
+      fullStack:
+        type: integer
+      goal:
+        type: string
+      id:
+        type: integer
+      leader:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      notionLink:
+        type: string
+      projectExplain:
+        type: string
+      recruitExplain:
+        type: string
+      recruitNum:
+        type: integer
+      rule:
+        type: string
+      stack:
+        items:
+          type: string
+        type: array
+      studyExplain:
+        type: string
+      type:
+        type: string
+    type: object
   models.ImageDeployRequest:
     properties:
       commitLink:
@@ -9,6 +65,20 @@ definitions:
         type: string
       imageTag:
         type: string
+    type: object
+  models.ProfilePictureRequest:
+    properties:
+      email:
+        type: string
+    type: object
+  models.ProfilePictureResponse:
+    properties:
+      email:
+        type: string
+      image:
+        type: string
+      isTecheer:
+        type: boolean
     type: object
   models.StatusRequest:
     properties:
@@ -27,19 +97,41 @@ definitions:
       status:
         type: string
     type: object
+  models.UserMessageSchema:
+    properties:
+      applicantEmail:
+        type: string
+      leaderEmail:
+        type: string
+      result:
+        type: string
+      teamId:
+        type: integer
+      teamName:
+        type: string
+      type:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
-  /alert/find-member:
+  /alert/channel:
     post:
       consumes:
       - application/json
-      description: Find member
+      description: Send channel message to find_member channel (legacy)
+      parameters:
+      - description: FindMemberSchema
+        in: body
+        name: models.FindMemberSchema
+        required: true
+        schema:
+          $ref: '#/definitions/models.FindMemberSchema'
       produces:
       - application/json
       responses:
         "200":
-          description: Member found
+          description: Channel message sent
           schema:
             additionalProperties: true
             type: object
@@ -48,7 +140,39 @@ paths:
           schema:
             additionalProperties: true
             type: object
-      summary: Find member
+      security:
+      - APIKeyAuth: []
+      summary: Send channel message to find_member channel (legacy)
+      tags:
+      - alert
+  /alert/find-member:
+    post:
+      consumes:
+      - application/json
+      description: Send Message to Find member
+      parameters:
+      - description: FindMemberSchema
+        in: body
+        name: models.FindMemberSchema
+        required: true
+        schema:
+          $ref: '#/definitions/models.FindMemberSchema'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - APIKeyAuth: []
+      summary: Send Message to Find member
       tags:
       - alert
   /alert/message:
@@ -56,6 +180,13 @@ paths:
       consumes:
       - application/json
       description: Send alert message
+      parameters:
+      - description: AlertMessageSchema
+        in: body
+        name: models.AlertMessageSchema
+        required: true
+        schema:
+          $ref: '#/definitions/models.AlertMessageSchema'
       produces:
       - application/json
       responses:
@@ -69,7 +200,39 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - APIKeyAuth: []
       summary: Send alert message
+      tags:
+      - alert
+  /alert/user:
+    post:
+      consumes:
+      - application/json
+      description: Send user message (legacy)
+      parameters:
+      - description: UserMessageSchema
+        in: body
+        name: models.UserMessageSchema
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserMessageSchema'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User message sent
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - APIKeyAuth: []
+      summary: Send user message (legacy)
       tags:
       - alert
   /deploy/image:
@@ -157,43 +320,30 @@ paths:
       consumes:
       - application/json
       description: Get profile picture
+      parameters:
+      - description: Profile picture request
+        in: body
+        name: profilePictureRequest
+        required: true
+        schema:
+          $ref: '#/definitions/models.ProfilePictureRequest'
       produces:
       - application/json
       responses:
         "200":
           description: Profile picture retrieved successfully
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/models.ProfilePictureResponse'
         "400":
           description: Bad request
           schema:
             additionalProperties: true
             type: object
+      security:
+      - APIKeyAuth: []
       summary: Get profile picture
       tags:
       - profile
-  /slack/command:
-    post:
-      consumes:
-      - application/json
-      description: Handle Slack command
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Slack command received
-          schema:
-            additionalProperties: true
-            type: object
-        "400":
-          description: Bad request
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Handle Slack command
-      tags:
-      - slack
   /slack/interaction:
     post:
       consumes:

@@ -43,7 +43,7 @@ func setupRouter(handler *handlers.Handler) *gin.Engine {
 		slackGroup.Use(auth.VerifySlackRequest())
 		{
 			slackGroup.POST("/interactions", handler.SlackHandler.SlackInteractionHandler) // slack 봇 버튼 등 상호작용 처리
-			slackGroup.POST("/commands", handler.SlackHandler.SlackCommandHandler)         // slack 봇 slash command 처리
+			// slackGroup.POST("/commands", handler.SlackHandler.SlackCommandHandler)         // slack 봇 slash command 처리
 		}
 
 		profileGroup := apiGroup.Group("/profile") // legacy
@@ -56,7 +56,9 @@ func setupRouter(handler *handlers.Handler) *gin.Engine {
 		alertGroup.Use(auth.ValidateAPIKey())
 		{
 			alertGroup.POST("/messages", handler.AlertHandler.AlertMessageHandler)       // slack 봇으로 slack 메시지 전송
-			alertGroup.POST("/find-member", handler.AlertHandler.AlertFindMemberHandler) // slack 봇으로 slack 메시지 전송
+			alertGroup.POST("/find-member", handler.AlertHandler.AlertFindMemberHandler) // slack 봇으로 find_member 채널 메시지 전송
+			alertGroup.POST("/user", handler.AlertHandler.AlertUserMessageHandler)       // legacy find_member 답변 전송
+			alertGroup.POST("/channel", handler.AlertHandler.AlertChannelMessageHandler) // legacy find_member 채널 메시지 전송
 		}
 
 		deployGroup := apiGroup.Group("/deploy")

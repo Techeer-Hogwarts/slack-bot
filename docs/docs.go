@@ -15,9 +15,14 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/alert/find-member": {
+        "/alert/channel": {
             "post": {
-                "description": "Find member",
+                "security": [
+                    {
+                        "APIKeyAuth": []
+                    }
+                ],
+                "description": "Send channel message to find_member channel (legacy)",
                 "consumes": [
                     "application/json"
                 ],
@@ -27,10 +32,68 @@ const docTemplate = `{
                 "tags": [
                     "alert"
                 ],
-                "summary": "Find member",
+                "summary": "Send channel message to find_member channel (legacy)",
+                "parameters": [
+                    {
+                        "description": "FindMemberSchema",
+                        "name": "models.FindMemberSchema",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.FindMemberSchema"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Member found",
+                        "description": "Channel message sent",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/alert/find-member": {
+            "post": {
+                "security": [
+                    {
+                        "APIKeyAuth": []
+                    }
+                ],
+                "description": "Send Message to Find member",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "alert"
+                ],
+                "summary": "Send Message to Find member",
+                "parameters": [
+                    {
+                        "description": "FindMemberSchema",
+                        "name": "models.FindMemberSchema",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.FindMemberSchema"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -48,6 +111,11 @@ const docTemplate = `{
         },
         "/alert/message": {
             "post": {
+                "security": [
+                    {
+                        "APIKeyAuth": []
+                    }
+                ],
                 "description": "Send alert message",
                 "consumes": [
                     "application/json"
@@ -59,9 +127,67 @@ const docTemplate = `{
                     "alert"
                 ],
                 "summary": "Send alert message",
+                "parameters": [
+                    {
+                        "description": "AlertMessageSchema",
+                        "name": "models.AlertMessageSchema",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.AlertMessageSchema"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Alert message sent",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/alert/user": {
+            "post": {
+                "security": [
+                    {
+                        "APIKeyAuth": []
+                    }
+                ],
+                "description": "Send user message (legacy)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "alert"
+                ],
+                "summary": "Send user message (legacy)",
+                "parameters": [
+                    {
+                        "description": "UserMessageSchema",
+                        "name": "models.UserMessageSchema",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserMessageSchema"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User message sent",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -201,6 +327,11 @@ const docTemplate = `{
         },
         "/profile/picture": {
             "post": {
+                "security": [
+                    {
+                        "APIKeyAuth": []
+                    }
+                ],
                 "description": "Get profile picture",
                 "consumes": [
                     "application/json"
@@ -212,43 +343,22 @@ const docTemplate = `{
                     "profile"
                 ],
                 "summary": "Get profile picture",
+                "parameters": [
+                    {
+                        "description": "Profile picture request",
+                        "name": "profilePictureRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ProfilePictureRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Profile picture retrieved successfully",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            }
-        },
-        "/slack/command": {
-            "post": {
-                "description": "Handle Slack command",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "slack"
-                ],
-                "summary": "Handle Slack command",
-                "responses": {
-                    "200": {
-                        "description": "Slack command received",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/models.ProfilePictureResponse"
                         }
                     },
                     "400": {
@@ -294,6 +404,91 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "models.AlertMessageSchema": {
+            "type": "object",
+            "properties": {
+                "channelId": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.FindMemberSchema": {
+            "type": "object",
+            "properties": {
+                "backNum": {
+                    "type": "integer"
+                },
+                "dataEngNum": {
+                    "type": "integer"
+                },
+                "devOpsNum": {
+                    "type": "integer"
+                },
+                "email": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "frontNum": {
+                    "type": "integer"
+                },
+                "fullStack": {
+                    "type": "integer"
+                },
+                "goal": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "leader": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "notionLink": {
+                    "type": "string"
+                },
+                "projectExplain": {
+                    "type": "string"
+                },
+                "recruitExplain": {
+                    "type": "string"
+                },
+                "recruitNum": {
+                    "type": "integer"
+                },
+                "rule": {
+                    "type": "string"
+                },
+                "stack": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "studyExplain": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
         "models.ImageDeployRequest": {
             "type": "object",
             "properties": {
@@ -308,6 +503,28 @@ const docTemplate = `{
                 },
                 "imageTag": {
                     "type": "string"
+                }
+            }
+        },
+        "models.ProfilePictureRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ProfilePictureResponse": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "isTecheer": {
+                    "type": "boolean"
                 }
             }
         },
@@ -333,6 +550,29 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UserMessageSchema": {
+            "type": "object",
+            "properties": {
+                "applicantEmail": {
+                    "type": "string"
+                },
+                "leaderEmail": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "string"
+                },
+                "teamId": {
+                    "type": "integer"
+                },
+                "teamName": {
+                    "type": "string"
+                },
+                "type": {
                     "type": "string"
                 }
             }

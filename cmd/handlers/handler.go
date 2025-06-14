@@ -13,7 +13,7 @@ func NewHandler(service *services.Service) *Handler {
 	return &Handler{
 		AlertHandler:   NewAlertHandler(service.AlertService),
 		ProfileHandler: NewProfileHandler(service.ProfileService),
-		SlackHandler:   NewSlackHandler(service.SlackService),
+		SlackHandler:   NewSlackHandler(service.SlackService, service.DeployService),
 		DeployHandler:  NewDeployHandler(service.DeployService),
 	}
 }
