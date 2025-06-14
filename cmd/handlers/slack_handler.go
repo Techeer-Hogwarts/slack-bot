@@ -37,6 +37,7 @@ func NewSlackHandler(service services.SlackService, deployService services.Deplo
 // @Tags slack
 // @Accept json
 // @Produce json
+// @Security SlackSigningSecret
 // @Success 200 {object} map[string]interface{} "Slack interaction received"
 // @Failure 400 {object} map[string]interface{} "Bad request"
 // @Router /slack/interaction [post]
