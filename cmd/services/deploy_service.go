@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strings"
 
@@ -111,7 +112,7 @@ func (s *deployService) TriggerDeployment(actionValue string, payload slack.Inte
 			ReplicaCount: replicaCount,
 		},
 	}
-
+	log.Printf("deployBody: %+v", deployBody)
 	return s.sendDeploymentRequest(deployBody)
 }
 

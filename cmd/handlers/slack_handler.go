@@ -1,10 +1,12 @@
 package handlers
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 
 	"github.com/Techeer-Hogwarts/slack-bot/cmd/services"
+	"github.com/Techeer-Hogwarts/slack-bot/cmd/slackmessages"
 	"github.com/gin-gonic/gin"
 	"github.com/slack-go/slack"
 )
@@ -55,21 +57,38 @@ func (h *SlackHandler) SlackInteractionHandler(c *gin.Context) {
 		return
 	}
 
-	log.Println("length of actions", len(payload.ActionCallback.BlockActions))
 	if payload.Type == slack.InteractionTypeBlockActions {
 		action := payload.ActionCallback.BlockActions[0]
 
 		switch action.ActionID {
 		case "deploy_button":
-			h.deployService.TriggerDeployment(action.Value, payload)
+			err := h.deployService.TriggerDeployment(action.Value, payload)
+			if err != nil {
+				log.Printf("Failed to trigger deployment: %v", err)
+			}
 		case "no_deploy_button":
-			h.slackService.DeleteMessage(payload.Channel.ID, payload.Message.Timestamp)
+			err := h.slackService.DeleteMessage(payload.Channel.ID, payload.Message.Timestamp)
+			if err != nil {
+				log.Printf("Failed to delete message: %v", err)
+			}
 		case "delete_button":
-			h.slackService.DeleteMessage(payload.Channel.ID, payload.Message.Timestamp)
+			userID := payload.User.ID
+			userIDButtonValue := action.Value
+			var profileIDs []string
+			json.Unmarshal([]byte(userIDButtonValue), &profileIDs)
+			if !slackmessages.CheckUserIsAllowed(profileIDs, userID) {
+				log.Printf("User is not allowed to delete message")
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "User is not allowed to delete message"})
+				return
+			}
+			err := h.slackService.DeleteMessage(payload.Channel.ID, payload.Message.Timestamp)
+			if err != nil {
+				log.Printf("Failed to delete message: %v", err)
+			}
 		default:
 			log.Printf("Unknown action: %s", action.ActionID)
 		}
 	}
-
+	log.Printf("Action: %+v success", payload.ActionCallback.BlockActions)
 	c.JSON(http.StatusOK, gin.H{"message": "success"})
 }
