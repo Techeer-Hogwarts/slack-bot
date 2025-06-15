@@ -10,7 +10,7 @@ import (
 )
 
 type AlertService interface {
-	SendAlert(channelID, message string) error
+	SendAlert(alertMessage models.AlertMessageSchema) error
 	SendAlertToFindMember(FindMemberObject models.FindMemberSchema) error
 	SendAlertToUser(UserObject models.UserMessageSchema) error
 }
@@ -28,10 +28,23 @@ func NewAlertService(client *slack.Client, findMemberChannelID string) *alertSer
 }
 
 // SendAlert 유저 메시지 전송 (/alert/message 에서 사용 - 새로운거)
-func (s *alertService) SendAlert(channelID, message string) error {
-	log.Printf("channelID: %s, message: %s", channelID, message)
-	_, _, err := s.client.PostMessage(channelID, slack.MsgOptionText(message, false))
-	return err
+func (s *alertService) SendAlert(alertMessage models.AlertMessageSchema) error {
+	switch alertMessage.Type {
+	case "user":
+		user, err := s.client.GetUserByEmail(alertMessage.ChannelID)
+		if err != nil {
+			return err
+		}
+		log.Printf("userID: %s, message: %s", user.ID, alertMessage.Message)
+		_, _, err = s.client.PostMessage(user.ID, slack.MsgOptionText(alertMessage.Message, false))
+		return err
+	case "channel":
+		log.Printf("channelID: %s, message: %s", alertMessage.ChannelID, alertMessage.Message)
+		_, _, err := s.client.PostMessage(alertMessage.ChannelID, slack.MsgOptionText(alertMessage.Message, false))
+		return err
+	default:
+		return errors.New("invalid type")
+	}
 }
 
 // SendAlertToFindMember 스터디 팀 공고 메시지 전송 (/alert/find-member 와 /alert/channel 에서 사용)

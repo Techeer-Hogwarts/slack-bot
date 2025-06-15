@@ -18,7 +18,7 @@ func NewAlertHandler(service services.AlertService) *AlertHandler {
 
 // AlertMessageHandler godoc
 // @Summary Send alert message
-// @Description Send alert message
+// @Description Send alert message. Type은 "user" 또는 "channel" 중 하나
 // @Tags alert
 // @Accept json
 // @Produce json
@@ -34,7 +34,7 @@ func (h *AlertHandler) AlertMessageHandler(c *gin.Context) {
 		return
 	}
 
-	err := h.service.SendAlert(alertMessage.ChannelID, alertMessage.Message)
+	err := h.service.SendAlert(alertMessage)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
