@@ -12,7 +12,6 @@ import (
 )
 
 func ConstructApplicantAndLeaderMessage(leaderProfile, applicantProfile *slack.User, userMessage models.UserMessageSchema) (slack.MsgOption, slack.MsgOption, error) {
-	log.Printf("UserObject: %+v", userMessage)
 	var leaderStatus string
 	var applicantStatus string
 	switch userMessage.Result {
@@ -52,7 +51,6 @@ func ConstructApplicantAndLeaderMessage(leaderProfile, applicantProfile *slack.U
 }
 
 func ConstructProjectMessage(project models.FindMemberSchema, profileIDs []string) (slack.MsgOption, error) {
-	log.Printf("UserObject: %+v", project)
 	teamLeaderString := strings.Join(profileIDs, ">, <@")
 	teamLeaderString = "<@" + teamLeaderString + ">"
 	projectMessage := "[" + emoji_people + " *새로운 프로젝트 팀 공고가 올라왔습니다* " + emoji_people + "]\n" +
@@ -74,7 +72,6 @@ func ConstructProjectMessage(project models.FindMemberSchema, profileIDs []strin
 }
 
 func ConstructStudyMessage(study models.FindMemberSchema, profileIDs []string) (slack.MsgOption, error) {
-	log.Printf("UserObject: %+v", study)
 	teamLeaderString := strings.Join(profileIDs, ">, <@")
 	teamLeaderString = "<@" + teamLeaderString + ">"
 	studyMessage := "[" + emoji_people + " *새로운 스터디 팀 공고가 올라왔습니다* " + emoji_people + "]\n" +

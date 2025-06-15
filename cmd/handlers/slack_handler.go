@@ -65,11 +65,15 @@ func (h *SlackHandler) SlackInteractionHandler(c *gin.Context) {
 			err := h.deployService.TriggerDeployment(action.Value, payload)
 			if err != nil {
 				log.Printf("Failed to trigger deployment: %v", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to trigger deployment"})
+				return
 			}
 		case "no_deploy_button":
 			err := h.slackService.DeleteMessage(payload.Channel.ID, payload.Message.Timestamp)
 			if err != nil {
 				log.Printf("Failed to delete message: %v", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete message"})
+				return
 			}
 		case "delete_button":
 			userID := payload.User.ID
@@ -81,14 +85,19 @@ func (h *SlackHandler) SlackInteractionHandler(c *gin.Context) {
 				c.JSON(http.StatusUnauthorized, gin.H{"error": "User is not allowed to delete message"})
 				return
 			}
+			log.Printf("User is allowed to delete message")
 			err := h.slackService.DeleteMessage(payload.Channel.ID, payload.Message.Timestamp)
 			if err != nil {
 				log.Printf("Failed to delete message: %v", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete message"})
+				return
 			}
 		default:
 			log.Printf("Unknown action: %s", action.ActionID)
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Unknown action"})
+			return
 		}
 	}
-	log.Printf("Action: %+v success", payload.ActionCallback.BlockActions)
+	log.Printf("Action: %+v success", payload.ActionCallback.BlockActions[0].ActionID)
 	c.JSON(http.StatusOK, gin.H{"message": "success"})
 }

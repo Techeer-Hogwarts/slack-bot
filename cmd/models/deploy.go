@@ -1,6 +1,6 @@
 package models
 
-// DeployRequest represents a request to deploy a new image
+// DeployRequest represents the input parameters for GitHub Actions deployment
 type DeployRequest struct {
 	ImageTag    string `json:"imageTag"`
 	ImageName   string `json:"imageName"`
@@ -10,17 +10,11 @@ type DeployRequest struct {
 
 // ActionsRequestWrapper represents the wrapper for GitHub Actions deployment request
 type ActionsRequestWrapper struct {
-	Reference string         `json:"ref"`
-	Inputs    ActionsRequest `json:"inputs"`
+	Reference string        `json:"ref"`
+	Inputs    DeployRequest `json:"inputs"`
 }
 
-// ActionsRequest represents the input parameters for GitHub Actions deployment
-type ActionsRequest struct {
-	ImageName    string `json:"image_name"`
-	ImageTag     string `json:"image_tag"`
-	ReplicaCount string `json:"replicas"`
-}
-
+// ImageDeployRequest represents the input parameters for image deployment
 type ImageDeployRequest struct {
 	ImageName   string `json:"imageName"`
 	ImageTag    string `json:"imageTag"`

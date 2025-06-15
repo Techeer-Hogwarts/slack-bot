@@ -36,7 +36,6 @@ func (s *alertService) SendAlert(channelID, message string) error {
 
 // SendAlertToFindMember 스터디 팀 공고 메시지 전송 (/alert/find-member 와 /alert/channel 에서 사용)
 func (s *alertService) SendAlertToFindMember(FindMemberObject models.FindMemberSchema) error {
-	log.Printf("FindMemberObject: %+v", FindMemberObject)
 	profileIDs := []string{}
 	for _, email := range FindMemberObject.Email {
 		profile, err := s.client.GetUserByEmail(email)
@@ -68,7 +67,6 @@ func (s *alertService) SendAlertToFindMember(FindMemberObject models.FindMemberS
 
 // SendAlertToUser 스터디 팀 공고 지원자/팀장 메시지 전송
 func (s *alertService) SendAlertToUser(UserObject models.UserMessageSchema) error {
-	log.Printf("UserObject: %+v", UserObject)
 	leaderProfile, err := s.client.GetUserByEmail(UserObject.LeaderEmail)
 	if err != nil {
 		return err
