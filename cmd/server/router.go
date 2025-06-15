@@ -55,7 +55,7 @@ func setupRouter(handler *handlers.Handler) *gin.Engine {
 		alertGroup := apiGroup.Group("/alert")
 		alertGroup.Use(auth.ValidateAPIKey())
 		{
-			alertGroup.POST("/messages", handler.AlertHandler.AlertMessageHandler)       // slack 봇으로 slack 메시지 전송
+			alertGroup.POST("/message", handler.AlertHandler.AlertMessageHandler)        // slack 봇으로 slack 메시지 전송
 			alertGroup.POST("/find-member", handler.AlertHandler.AlertFindMemberHandler) // slack 봇으로 find_member 채널 메시지 전송
 			alertGroup.POST("/user", handler.AlertHandler.AlertUserMessageHandler)       // legacy find_member 답변 전송
 			alertGroup.POST("/channel", handler.AlertHandler.AlertChannelMessageHandler) // legacy find_member 채널 메시지 전송
