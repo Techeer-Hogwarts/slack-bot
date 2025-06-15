@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/Techeer-Hogwarts/slack-bot/cmd/services"
@@ -48,8 +48,6 @@ func (h *SlackHandler) SlackInteractionHandler(c *gin.Context) {
 		return
 	}
 
-	fmt.Printf("payloadStr: %+v", payloadStr)
-
 	var payload slack.InteractionCallback
 	err := payload.UnmarshalJSON([]byte(payloadStr))
 	if err != nil {
@@ -57,10 +55,10 @@ func (h *SlackHandler) SlackInteractionHandler(c *gin.Context) {
 		return
 	}
 
-	if payload.Type == slack.InteractionTypeBlockActions {
-		fmt.Printf("payload: %+v", payload.BlockActionState.Values)
-		// h.deployService.TriggerDeployment(payload.BlockActionState.Values["deploy_button"]["image_name"].Value, payload)
-	}
+	log.Println("length of actions", len(payload.ActionCallback.BlockActions))
+	// if payload.Type == slack.InteractionTypeBlockActions {
+
+	// }
 
 	c.JSON(http.StatusOK, gin.H{"message": "payload.BlockActionState.Values"})
 }
