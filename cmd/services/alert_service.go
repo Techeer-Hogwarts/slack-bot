@@ -31,7 +31,7 @@ func NewAlertService(client *slack.Client, findMemberChannelID string) *alertSer
 func (s *alertService) SendAlert(alertMessage models.AlertMessageSchema) error {
 	switch alertMessage.Type {
 	case "user":
-		user, err := s.client.GetUserByEmail(alertMessage.ChannelID)
+		user, err := s.client.GetUserByEmail(alertMessage.Email)
 		if err != nil {
 			return err
 		}
