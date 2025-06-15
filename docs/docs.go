@@ -371,8 +371,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/slack/interaction": {
+        "/slack/interactions": {
             "post": {
+                "security": [
+                    {
+                        "SlackSigningSecret": []
+                    }
+                ],
                 "description": "Handle Slack interaction",
                 "consumes": [
                     "application/json"

@@ -344,7 +344,7 @@ paths:
       summary: Get profile picture
       tags:
       - profile
-  /slack/interaction:
+  /slack/interactions:
     post:
       consumes:
       - application/json
@@ -362,6 +362,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - SlackSigningSecret: []
       summary: Handle Slack interaction
       tags:
       - slack
