@@ -2,8 +2,8 @@ package models
 
 // DeployRequest represents the input parameters for GitHub Actions deployment
 type DeployRequest struct {
-	ImageTag    string `json:"imageTag"`
-	ImageName   string `json:"imageName"`
+	ImageTag    string `json:"image_tag"`
+	ImageName   string `json:"image_name"`
 	Replicas    string `json:"replicas"`
 	Environment string `json:"environment"`
 }
