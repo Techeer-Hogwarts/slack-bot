@@ -33,12 +33,6 @@ func NewDeployHandler(service services.DeployService) *DeployHandler {
 // @Failure 500 {object} map[string]interface{} "Internal server error"
 // @Router /deploy/image [post]
 func (h *DeployHandler) DeployImageHandler(c *gin.Context) {
-	apiKey, _ := c.Get("valid_api_key")
-	if apiKey != true {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
-
 	var req models.ImageDeployRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -68,12 +62,6 @@ func (h *DeployHandler) DeployImageHandler(c *gin.Context) {
 // @Failure 500 {object} map[string]interface{} "Internal server error"
 // @Router /deploy/status [post]
 func (h *DeployHandler) DeployStatusHandler(c *gin.Context) {
-	apiKey, _ := c.Get("valid_api_key")
-	if apiKey != true {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
-
 	var status models.StatusRequest
 	if err := c.ShouldBindJSON(&status); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

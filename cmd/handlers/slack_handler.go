@@ -48,6 +48,8 @@ func (h *SlackHandler) SlackInteractionHandler(c *gin.Context) {
 		return
 	}
 
+	log.Printf("payloadStr: %+v", payloadStr)
+
 	var payload slack.InteractionCallback
 	err := payload.UnmarshalJSON([]byte(payloadStr))
 	if err != nil {
@@ -60,5 +62,5 @@ func (h *SlackHandler) SlackInteractionHandler(c *gin.Context) {
 		// h.deployService.TriggerDeployment(payload.BlockActionState.Values["deploy_button"]["image_name"].Value, payload)
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Slack interaction received"})
+	c.JSON(http.StatusOK, gin.H{"message": "payload.BlockActionState.Values"})
 }

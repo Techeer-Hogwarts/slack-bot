@@ -28,12 +28,6 @@ func NewProfileHandler(service services.ProfileService) *ProfileHandler {
 // @Failure 400 {object} map[string]interface{} "Bad request"
 // @Router /profile/picture [post]
 func (h *ProfileHandler) ProfilePictureHandler(c *gin.Context) {
-	apiKey, _ := c.Get("valid_api_key")
-	if apiKey != true {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
-
 	var req models.ProfilePictureRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

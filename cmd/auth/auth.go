@@ -34,9 +34,9 @@ func ValidateAPIKey() gin.HandlerFunc {
 		}
 
 		// wildcard key
-		if apiKey == wildcardAPIKey {
-			c.Set("valid_api_key", true)
-			c.Next()
+		if apiKey != wildcardAPIKey {
+			c.JSON(http.StatusForbidden, gin.H{"error": "Invalid API key"})
+			c.Abort()
 			return
 		}
 
@@ -49,7 +49,6 @@ func ValidateAPIKey() gin.HandlerFunc {
 		// 	return
 		// }
 
-		c.Set("valid_api_key", false)
 		c.Next()
 	}
 }
