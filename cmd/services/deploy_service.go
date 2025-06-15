@@ -89,7 +89,7 @@ func (s *deployService) TriggerDeployment(actionValue string, payload slack.Inte
 	}
 
 	imageNameAndTag := strings.Split(actionValue, ":")
-	if len(imageNameAndTag) != 2 {
+	if len(imageNameAndTag) != 3 {
 		return fmt.Errorf("invalid image name and tag format")
 	}
 

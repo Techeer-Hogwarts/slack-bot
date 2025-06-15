@@ -22,10 +22,6 @@ func JsonLoggerMiddleware() gin.HandlerFunc {
 				log["error"] = params.ErrorMessage
 			}
 
-			if params.Request.Form != nil {
-				log["form"] = params.Request.Form
-			}
-
 			s, _ := json.Marshal(log)
 			return string(s) + "\n"
 		},
