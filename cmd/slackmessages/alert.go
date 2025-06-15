@@ -1,6 +1,7 @@
 package slackmessages
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"strconv"
@@ -65,7 +66,8 @@ func ConstructProjectMessage(project models.FindMemberSchema, profileIDs []strin
 	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", projectMessage, false, false), nil, nil)
 	applyButton := slack.NewButtonBlockElement("", "apply", slack.NewTextBlockObject("plain_text", ":link: 팀 지원하러 가기!", false, false))
 	applyButton.URL = fmt.Sprintf(redirectURL, project.Type, project.ID)
-	deleteButton := slack.NewButtonBlockElement("delete_button2", project.Email[0], slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", false, false))
+	profileIDsJSON, _ := json.Marshal(profileIDs)
+	deleteButton := slack.NewButtonBlockElement("delete_button", string(profileIDsJSON), slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", false, false))
 	actionBlock := slack.NewActionBlock("apply_action", applyButton, deleteButton)
 	messageBlocks := slack.MsgOptionBlocks(section, actionBlock)
 	return messageBlocks, nil
@@ -86,7 +88,8 @@ func ConstructStudyMessage(study models.FindMemberSchema, profileIDs []string) (
 	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", studyMessage, false, false), nil, nil)
 	applyButton := slack.NewButtonBlockElement("", "apply", slack.NewTextBlockObject("plain_text", ":link: 팀 지원하러 가기!", false, false))
 	applyButton.URL = fmt.Sprintf(redirectURL, study.Type, study.ID)
-	deleteButton := slack.NewButtonBlockElement("delete_button2", study.Email[0], slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", false, false))
+	profileIDsJSON, _ := json.Marshal(profileIDs)
+	deleteButton := slack.NewButtonBlockElement("delete_button", string(profileIDsJSON), slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", false, false))
 	actionBlock := slack.NewActionBlock("apply_action", applyButton, deleteButton)
 	messageBlocks := slack.MsgOptionBlocks(section, actionBlock)
 	return messageBlocks, nil

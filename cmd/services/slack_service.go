@@ -3,7 +3,7 @@ package services
 import "github.com/slack-go/slack"
 
 type SlackService interface {
-	// Define methods for Slack service
+	DeleteMessage(channelID string, message string) error
 }
 
 type slackService struct {
@@ -12,4 +12,9 @@ type slackService struct {
 
 func NewSlackService(client *slack.Client) SlackService {
 	return &slackService{client: client}
+}
+
+func (s *slackService) DeleteMessage(channelID string, messageTimestamp string) error {
+	_, _, err := s.client.DeleteMessage(channelID, messageTimestamp)
+	return err
 }

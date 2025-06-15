@@ -2,7 +2,6 @@ package logger
 
 import (
 	"encoding/json"
-	"io"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,13 +20,6 @@ func JsonLoggerMiddleware() gin.HandlerFunc {
 
 			if params.ErrorMessage != "" {
 				log["error"] = params.ErrorMessage
-			}
-
-			if params.Request.Body != nil {
-				var body map[string]interface{}
-				bodyBytes, _ := io.ReadAll(params.Request.Body)
-				json.Unmarshal(bodyBytes, &body)
-				log["request_body"] = body
 			}
 
 			if params.Request.Form != nil {

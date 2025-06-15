@@ -10,12 +10,12 @@ import (
 )
 
 type SlackHandler struct {
-	service       services.SlackService
+	slackService  services.SlackService
 	deployService services.DeployService
 }
 
-func NewSlackHandler(service services.SlackService, deployService services.DeployService) *SlackHandler {
-	return &SlackHandler{service: service, deployService: deployService}
+func NewSlackHandler(slackService services.SlackService, deployService services.DeployService) *SlackHandler {
+	return &SlackHandler{slackService: slackService, deployService: deployService}
 }
 
 // // SlackCommandHandler godoc
@@ -56,9 +56,20 @@ func (h *SlackHandler) SlackInteractionHandler(c *gin.Context) {
 	}
 
 	log.Println("length of actions", len(payload.ActionCallback.BlockActions))
-	// if payload.Type == slack.InteractionTypeBlockActions {
+	if payload.Type == slack.InteractionTypeBlockActions {
+		action := payload.ActionCallback.BlockActions[0]
 
-	// }
+		switch action.ActionID {
+		case "deploy_button":
+			h.deployService.TriggerDeployment(action.Value, payload)
+		case "no_deploy_button":
+			h.slackService.DeleteMessage(payload.Channel.ID, payload.Message.Timestamp)
+		case "delete_button":
+			h.slackService.DeleteMessage(payload.Channel.ID, payload.Message.Timestamp)
+		default:
+			log.Printf("Unknown action: %s", action.ActionID)
+		}
+	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "payload.BlockActionState.Values"})
+	c.JSON(http.StatusOK, gin.H{"message": "success"})
 }
