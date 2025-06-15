@@ -116,7 +116,7 @@ const docTemplate = `{
                         "APIKeyAuth": []
                     }
                 ],
-                "description": "Send alert message",
+                "description": "Send alert message. Type은 \"user\" 또는 \"channel\" 중 하나",
                 "consumes": [
                     "application/json"
                 ],
