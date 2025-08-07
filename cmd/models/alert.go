@@ -19,6 +19,7 @@ type FindMemberSchema struct {
 	Goal           string   `json:"goal,omitempty"`
 	Rule           string   `json:"rule,omitempty"`
 	Stack          []string `json:"stack,omitempty"`
+	Environment    string   `json:"environment,omitempty"`
 }
 
 type UserMessageSchema struct {
