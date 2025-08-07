@@ -16,14 +16,16 @@ type AlertService interface {
 }
 
 type alertService struct {
-	client              *slack.Client
-	findMemberChannelID string
+	client                 *slack.Client
+	findMemberChannelID    string
+	findMemberChannelIDDev string
 }
 
-func NewAlertService(client *slack.Client, findMemberChannelID string) *alertService {
+func NewAlertService(client *slack.Client, findMemberChannelID, findMemberChannelIDDev string) *alertService {
 	return &alertService{
-		client:              client,
-		findMemberChannelID: findMemberChannelID,
+		client:                 client,
+		findMemberChannelID:    findMemberChannelID,
+		findMemberChannelIDDev: findMemberChannelIDDev,
 	}
 }
 
@@ -70,9 +72,18 @@ func (s *alertService) SendAlertToFindMember(FindMemberObject models.FindMemberS
 	if err != nil {
 		return err
 	}
-	_, _, err = s.client.PostMessage(s.findMemberChannelID, message)
+	var slackChannel string
+	switch FindMemberObject.Environment {
+	case "staging":
+		slackChannel = s.findMemberChannelIDDev
+	case "production":
+		slackChannel = s.findMemberChannelID
+	default:
+		slackChannel = s.findMemberChannelIDDev
+	}
+	_, _, err = s.client.PostMessage(slackChannel, message)
 	if err != nil {
-		log.Printf("Failed to send message to channel %s: %v", s.findMemberChannelID, err)
+		log.Printf("Failed to send message to channel %s: %v", slackChannel, err)
 		return err
 	}
 	return nil

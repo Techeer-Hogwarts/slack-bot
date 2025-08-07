@@ -12,9 +12,9 @@ type Service struct {
 }
 
 // NewService creates a new instance of Service with all required services.
-func NewService(slackClient *slack.Client, githubURL, githubToken, cicdChannelID, findMemberChannelID string) *Service {
+func NewService(slackClient *slack.Client, githubURL, githubToken, cicdChannelID, findMemberChannelID, findMemberChannelIDDev string) *Service {
 	return &Service{
-		AlertService:   NewAlertService(slackClient, findMemberChannelID),
+		AlertService:   NewAlertService(slackClient, findMemberChannelID, findMemberChannelIDDev),
 		SlackService:   NewSlackService(slackClient),
 		DeployService:  NewDeployService(slackClient, githubURL, githubToken, cicdChannelID),
 		ProfileService: NewProfileService(slackClient),
