@@ -93,10 +93,12 @@ func (s *alertService) SendAlertToFindMember(FindMemberObject models.FindMemberS
 func (s *alertService) SendAlertToUser(UserObject models.UserMessageSchema) error {
 	leaderProfile, err := s.client.GetUserByEmail(UserObject.LeaderEmail)
 	if err != nil {
+		log.Printf("Leader Email: %s", UserObject.LeaderEmail)
 		return err
 	}
 	applicantProfile, err := s.client.GetUserByEmail(UserObject.ApplicantEmail)
 	if err != nil {
+		log.Printf("Applicant Email: %s", UserObject.LeaderEmail)
 		return err
 	}
 	leaderMsg, applicantMsg, err := slackmessages.ConstructApplicantAndLeaderMessage(leaderProfile, applicantProfile, UserObject)
