@@ -92,6 +92,9 @@ func (h *SlackHandler) SlackInteractionHandler(c *gin.Context) {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete message"})
 				return
 			}
+		case "redirect_button":
+			log.Printf("Redirect action: %s", action.ActionID)
+			return
 		default:
 			log.Printf("Unknown action: %s", action.ActionID)
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Unknown action"})

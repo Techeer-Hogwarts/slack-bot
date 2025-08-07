@@ -62,7 +62,7 @@ func ConstructProjectMessage(project models.FindMemberSchema, profileIDs []strin
 		"> " + emoji_dart + " *모집하는 직군 & 인원*\n" + convertRecruitNumToEmojiString(project) + "\n\n\n\n" +
 		"> " + ":notion:" + " *노션 링크* \n" + project.NotionLink + "\n\n자세한 문의사항은 " + teamLeaderString + " 에게 DM으로 문의 주세요!"
 	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", projectMessage, false, false), nil, nil)
-	applyButton := slack.NewButtonBlockElement("", "apply", slack.NewTextBlockObject("plain_text", ":link: 팀 지원하러 가기!", false, false))
+	applyButton := slack.NewButtonBlockElement("redirect_button", "apply", slack.NewTextBlockObject("plain_text", ":link: 팀 지원하러 가기!", false, false))
 	applyButton.URL = fmt.Sprintf(redirectURL, project.Type, project.ID)
 	profileIDsJSON, _ := json.Marshal(profileIDs)
 	deleteButton := slack.NewButtonBlockElement("delete_button", string(profileIDsJSON), slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", false, false))
@@ -83,7 +83,7 @@ func ConstructStudyMessage(study models.FindMemberSchema, profileIDs []string) (
 		"> " + emoji_dart + " *모집하는 스터디 인원*\n" + strconv.Itoa(study.RecruitNum) + "명\n\n\n\n" +
 		"> " + ":notion:" + " *노션 링크* \n" + study.NotionLink + "\n\n자세한 문의사항은 " + teamLeaderString + " 에게 DM으로 문의 주세요!"
 	section := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", studyMessage, false, false), nil, nil)
-	applyButton := slack.NewButtonBlockElement("", "apply", slack.NewTextBlockObject("plain_text", ":link: 팀 지원하러 가기!", false, false))
+	applyButton := slack.NewButtonBlockElement("redirect_button", "apply", slack.NewTextBlockObject("plain_text", ":link: 팀 지원하러 가기!", false, false))
 	applyButton.URL = fmt.Sprintf(redirectURL, study.Type, study.ID)
 	profileIDsJSON, _ := json.Marshal(profileIDs)
 	deleteButton := slack.NewButtonBlockElement("delete_button", string(profileIDsJSON), slack.NewTextBlockObject("plain_text", ":warning: 삭제하기!", false, false))
