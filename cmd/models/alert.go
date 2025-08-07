@@ -23,12 +23,13 @@ type FindMemberSchema struct {
 }
 
 type UserMessageSchema struct {
-	TeamID         int    `json:"teamId"`
-	TeamName       string `json:"teamName"`
-	Type           string `json:"type"`
-	LeaderEmail    string `json:"leaderEmail"`
-	ApplicantEmail string `json:"applicantEmail"`
-	Result         string `json:"result"`
+	TeamID         int      `json:"teamId"`
+	TeamName       string   `json:"teamName"`
+	Type           string   `json:"type"`
+	LeaderEmail    string   `json:"leaderEmail,omitempty"`
+	LeaderEmails   []string `json:"leaderEmails,omitempty"`
+	ApplicantEmail string   `json:"applicantEmail"`
+	Result         string   `json:"result"`
 }
 
 type AlertMessageSchema struct {
