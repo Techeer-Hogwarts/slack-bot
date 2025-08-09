@@ -73,6 +73,7 @@ func (s *alertService) SendAlertToFindMember(FindMemberObject models.FindMemberS
 		return err
 	}
 	var slackChannel string
+	log.Printf("Spring Environment: %s", FindMemberObject.Environment)
 	switch FindMemberObject.Environment {
 	case "staging":
 		slackChannel = s.findMemberChannelIDDev
