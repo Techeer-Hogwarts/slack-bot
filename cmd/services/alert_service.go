@@ -91,23 +91,28 @@ func (s *alertService) SendAlertToFindMember(FindMemberObject models.FindMemberS
 
 // SendAlertToUser 스터디 팀 공고 지원자/팀장 메시지 전송
 func (s *alertService) SendAlertToUser(UserObject models.UserMessageSchema) error {
-	leaderProfile, err := s.client.GetUserByEmail(UserObject.LeaderEmail)
-	if err != nil {
-		log.Printf("Leader Email: %s", UserObject.LeaderEmail)
-		return err
-	}
 	applicantProfile, err := s.client.GetUserByEmail(UserObject.ApplicantEmail)
 	if err != nil {
 		log.Printf("Applicant Email: %s", UserObject.ApplicantEmail)
 		return err
 	}
-	leaderMsg, applicantMsg, err := slackmessages.ConstructApplicantAndLeaderMessage(leaderProfile, applicantProfile, UserObject)
+	leaderMsg, applicantMsg, err := slackmessages.ConstructApplicantAndLeaderMessage(applicantProfile, UserObject)
 	if err != nil {
 		return err
 	}
-	_, _, err = s.client.PostMessage(leaderProfile.ID, leaderMsg)
-	if err != nil {
-		return err
+	emails := len(UserObject.LeaderEmails)
+	log.Printf("Leader Emails: %v", UserObject.LeaderEmails)
+	for i := range emails {
+		email := UserObject.LeaderEmails[i]
+		leaderProfile, err := s.client.GetUserByEmail(email)
+		if err != nil {
+			log.Printf("Leader Email: %s", email)
+			return err
+		}
+		_, _, err = s.client.PostMessage(leaderProfile.ID, leaderMsg)
+		if err != nil {
+			return err
+		}
 	}
 	_, _, err = s.client.PostMessage(applicantProfile.ID, applicantMsg)
 	if err != nil {

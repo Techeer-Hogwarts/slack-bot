@@ -11,7 +11,7 @@ import (
 	"github.com/slack-go/slack"
 )
 
-func ConstructApplicantAndLeaderMessage(leaderProfile, applicantProfile *slack.User, userMessage models.UserMessageSchema) (slack.MsgOption, slack.MsgOption, error) {
+func ConstructApplicantAndLeaderMessage(applicantProfile *slack.User, userMessage models.UserMessageSchema) (slack.MsgOption, slack.MsgOption, error) {
 	var leaderStatus string
 	var applicantStatus string
 	switch userMessage.Result {
@@ -42,7 +42,6 @@ func ConstructApplicantAndLeaderMessage(leaderProfile, applicantProfile *slack.U
 
 	applicantMsg := "[" + emoji_people + " *지원 결과 알림* " + emoji_people + "]\n" +
 		"> " + ":name_badge:" + " *팀 이름* \n " + userMessage.TeamName + "\n\n\n\n" +
-		"> " + emoji_star + " *팀장:* <@" + leaderProfile.ID + ">\n\n\n\n" +
 		"> " + emoji_notebook + " *지원 결과:* " + applicantStatus + "\n\n\n\n" +
 		"> " + emoji_dart + " *링크* \n" + fmt.Sprintf(redirectURL, userMessage.Type, userMessage.TeamID) + "\n\n\n\n"
 	applicantsSction := slack.NewSectionBlock(slack.NewTextBlockObject("mrkdwn", applicantMsg, false, false), nil, nil)
