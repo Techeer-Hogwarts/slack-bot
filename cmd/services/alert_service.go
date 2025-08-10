@@ -99,6 +99,7 @@ func (s *alertService) SendAlertToUser(UserObject models.UserMessageSchema) erro
 	}
 	leaderMsg, applicantMsg, err := slackmessages.ConstructApplicantAndLeaderMessage(applicantProfile, UserObject)
 	if err != nil {
+		log.Println("Constructing message failed")
 		return err
 	}
 	emails := len(UserObject.LeaderEmails)
